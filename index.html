@@ -1,0 +1,2720 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台灣上市櫃與公發公司「資貸、背保、取處」智慧合規風控平台 (PRD v1.4.0)</title>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #15803d;
+      --success-bg: #f0fdf4;
+      --warning: #b45309;
+      --warning-bg: #fffbeb;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+      --purple: #6b21a8;
+      --purple-bg: #faf5ff;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background-color: var(--slate-100);
+      color: var(--slate-800);
+      line-height: 1.5;
+    }
+
+    /* Header & Navigation */
+    header {
+      background: linear-gradient(135deg, var(--slate-900) 0%, var(--primary) 100%);
+      color: white;
+      padding: 1.15rem 2rem;
+      box-shadow: var(--shadow);
+    }
+    .header-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .brand-badge {
+      font-size: 0.75rem;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 0.2rem 0.5rem;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .nav-tab-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .nav-tab-btn:hover { background: rgba(255, 255, 255, 0.15); }
+    .nav-tab-btn.active {
+      background: white;
+      color: var(--primary);
+      border-color: white;
+      font-weight: 700;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1440px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Layout Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 1080px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .card-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--slate-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--slate-50);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--slate-800);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-body { padding: 1.25rem; }
+
+    /* Forms */
+    .form-group { margin-bottom: 1rem; }
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--slate-700);
+      margin-bottom: 0.35rem;
+    }
+    .form-sublabel {
+      font-size: 0.75rem;
+      color: var(--slate-600);
+      font-weight: normal;
+    }
+    .form-control, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--slate-300);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      color: var(--slate-800);
+      background-color: white;
+      transition: border-color 0.15s;
+    }
+    .form-textarea {
+      font-family: inherit;
+      resize: vertical;
+      min-height: 120px;
+    }
+    .form-control:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 640px) {
+      .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    }
+
+    /* Toggle Pills */
+    .toggle-pills {
+      display: flex;
+      background: var(--slate-100);
+      padding: 0.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--slate-200);
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .toggle-pill-btn {
+      flex: 1;
+      text-align: center;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--slate-600);
+      border-radius: calc(var(--radius) - 2px);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .toggle-pill-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background-color: var(--primary); color: white; width: 100%; }
+    .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-secondary { background-color: var(--slate-200); color: var(--slate-700); }
+    .btn-secondary:hover { background-color: var(--slate-300); }
+    .btn-success { background-color: var(--success); color: white; }
+    .btn-success:hover { background-color: #166534; }
+    .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.8rem; }
+
+    /* Badges & Tags */
+    .rule-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .tag-pass { background: #dcfce7; color: var(--success); }
+    .tag-fail { background: #fee2e2; color: var(--danger); }
+    .tag-warn { background: #fef3c7; color: var(--warning); }
+    .tag-action { background: #e0e7ff; color: #3730a3; }
+    .tag-company { background: var(--purple-bg); color: var(--purple); border: 1px solid #e9d5ff; }
+
+    /* Diagnostic Banners */
+    .diagnostic-banner {
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid transparent;
+    }
+    .banner-pass { background-color: var(--success-bg); border-color: #bbf7d0; color: var(--success); }
+    .banner-warn { background-color: var(--warning-bg); border-color: #fde68a; color: var(--warning); }
+    .banner-danger { background-color: var(--danger-bg); border-color: #fecaca; color: var(--danger); }
+    .banner-icon { font-size: 2rem; line-height: 1; }
+    .banner-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .banner-desc { font-size: 0.85rem; opacity: 0.95; }
+
+    /* Announcement Alert Box */
+    .alert-box {
+      border-left: 4px solid var(--danger);
+      background-color: #fff1f2;
+      padding: 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin-bottom: 1.25rem;
+    }
+    .alert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+    .alert-title {
+      font-weight: 700;
+      color: #9f1239;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .alert-countdown {
+      background: #be123c;
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .alert-list { margin-left: 1.2rem; font-size: 0.85rem; color: #881337; }
+
+    /* Company Procedure Custom Alert Box */
+    .company-procedure-status-box {
+      border-left: 4px solid var(--purple);
+      background-color: var(--purple-bg);
+      padding: 0.85rem 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* Metric Grid */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .metric-box {
+      background-color: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      text-align: center;
+    }
+    .metric-label { font-size: 0.75rem; color: var(--slate-600); margin-bottom: 0.2rem; }
+    .metric-val { font-size: 1.05rem; font-weight: 700; color: var(--slate-900); }
+
+    /* Rule Item */
+    .rule-item {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--slate-200);
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.875rem;
+    }
+    .rule-item:last-child { border-bottom: none; }
+
+    /* Notice Box */
+    .notice-box {
+      background-color: var(--primary-light);
+      border: 1px solid #bfdbfe;
+      padding: 0.85rem;
+      border-radius: var(--radius);
+      font-size: 0.825rem;
+      color: #1e3a8a;
+      margin-bottom: 1rem;
+    }
+
+    /* Statutory Table Styling (格式五之一、五之二) */
+    .statutory-table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin: 1rem 0;
+      border: 1px solid var(--slate-300);
+      border-radius: var(--radius);
+    }
+    .statutory-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.775rem;
+      text-align: center;
+      background: white;
+      white-space: nowrap;
+    }
+    .statutory-table th {
+      background-color: #f1f5f9;
+      color: var(--slate-800);
+      font-weight: 700;
+      border: 1px solid var(--slate-300);
+      padding: 0.5rem 0.4rem;
+    }
+    .statutory-table td {
+      border: 1px solid var(--slate-300);
+      padding: 0.45rem 0.4rem;
+      color: var(--slate-700);
+    }
+    .statutory-table tr:hover { background-color: #f8fafc; }
+    .statutory-footnote {
+      font-size: 0.75rem;
+      color: var(--slate-600);
+      line-height: 1.6;
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: var(--slate-50);
+      border-radius: var(--radius);
+      border: 1px solid var(--slate-200);
+    }
+
+    /* Formal Report Pack Layout */
+    .report-paper {
+      background: white;
+      padding: 2.5rem;
+      border: 1px solid var(--slate-300);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .report-header-title {
+      text-align: center;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 0.4rem;
+      letter-spacing: 1px;
+    }
+    .report-header-sub {
+      text-align: center;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 0.6rem;
+    }
+    .report-meta-table, .report-sign-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+    }
+    .report-meta-table td, .report-meta-table th, .report-sign-table td, .report-sign-table th {
+      border: 1px solid var(--slate-300);
+      padding: 0.5rem 0.75rem;
+    }
+    .report-meta-table th, .report-sign-table th {
+      background-color: var(--slate-100);
+      font-weight: 700;
+      width: 18%;
+      color: var(--slate-800);
+    }
+    .sign-box-cell {
+      height: 70px;
+      vertical-align: top;
+      font-size: 0.75rem;
+      color: var(--slate-600);
+    }
+
+    /* Print styles */
+    @media print {
+      header, .btn, .nav-tabs, .search-bar-container, .filter-tags-row, #active-procedure-banner, .statutory-action-bar { display: none !important; }
+      body { background: white; color: black; font-size: 10pt; }
+      main { max-width: 100%; margin: 0; padding: 0; }
+      .card { box-shadow: none; border: none; }
+      .statutory-table-container { overflow: visible; }
+      .statutory-table { font-size: 6.5pt; }
+      .report-paper { box-shadow: none; border: none; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="brand-title">
+        <span>🏛️ 臺灣資貸、背保、取處智慧合規風控平台</span>
+        <span class="brand-badge">PRD v1.4.0 (含歷史台帳匯入)</span>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab-btn active" onclick="switchNavTab('wizard')">🎯 交易合規導航精靈</button>
+        <button class="nav-tab-btn" onclick="switchNavTab('board-pack')">📄 董事會簽核包 & 格式五之一/五之二</button>
+        <button class="nav-tab-btn" onclick="switchNavTab('company-procedure')">📑 公司內部辦法上傳與設定</button>
+        <button class="nav-tab-btn" onclick="switchNavTab('faq')">📚 法規與官方問答集 (全文檢索)</button>
+        <button class="nav-tab-btn" onclick="switchNavTab('benchmarks')">📊 典型案例演練庫</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main>
+
+    <!-- =================================================================== -->
+    <!-- TAB 1: 交易合規導航精靈 (Wizard) -->
+    <!-- =================================================================== -->
+    <div id="tab-wizard" class="tab-content">
+      <div id="active-procedure-banner" class="company-procedure-status-box">
+        <div>
+          <span>🛡️ <b>目前合規防線：</b></span>
+          <span id="active-procedure-label" style="font-weight: 700; color: var(--purple);">已啟用【貴公司自訂內部作業程序】進行雙軌檢核</span>
+          <span style="font-size: 0.8rem; color: var(--slate-600); margin-left: 0.5rem;" id="active-procedure-summary">(貸與總額 20% / 單一 5% / 董長授權 3,000萬)</span>
+        </div>
+        <div>
+          <button class="btn btn-secondary btn-sm" onclick="switchNavTab('company-procedure')">⚙️ 調整/上傳公司辦法</button>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- 左欄：輸入表單 -->
+        <div>
+          <!-- 財務基準輸入卡片 -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🏢 步驟一：評估主體與財務基準</span>
+              <span id="badge-mode" class="rule-tag tag-action">上市櫃自動帶入</span>
+            </div>
+            <div class="card-body">
+              <div class="toggle-pills">
+                <button type="button" class="toggle-pill-btn active" id="btn-mode-listed" onclick="setBaselineMode('listed')">上市櫃 / 公開發行 (代號快速載入)</button>
+                <button type="button" class="toggle-pill-btn" id="btn-mode-custom" onclick="setBaselineMode('custom')">未上市 / 非公發 / 自結數手動填寫</button>
+              </div>
+
+              <div id="section-listed">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">選擇或輸入股票代號</label>
+                    <select class="form-select" id="select-preset-stock" onchange="onSelectStockPreset()">
+                      <option value="2330">2330 台積電 (半導體業)</option>
+                      <option value="2317">2317 鴻海 (其他電子業)</option>
+                      <option value="2454">2454 聯發科 (半導體業)</option>
+                      <option value="8999">8999 示範中小上櫃公司 (電子零組件)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">公司名稱</label>
+                    <input type="text" class="form-control" id="input-company-name" value="台灣積體電路製造股份有限公司" readonly>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                    <input type="checkbox" id="check-override" onchange="onToggleOverride()">
+                    <b>✏️ 開啟手動覆寫 (Manual Override)</b> — 採用期後增減資或最新月份「內部自結數」先行試算
+                  </label>
+                </div>
+              </div>
+
+              <div id="section-custom" style="display: none;">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">公司自訂名稱</label>
+                    <input type="text" class="form-control" id="custom-company-name" placeholder="例如：某未公開發行生醫科技公司">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">採計財務期別備註</label>
+                    <input type="text" class="form-control" id="custom-period-remark" placeholder="例如：2026年9月內部自結報表">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row-3">
+                <div class="form-group">
+                  <label class="form-label">實收資本額 (NT$)</label>
+                  <input type="number" class="form-control" id="input-capital" value="259303804580" readonly>
+                  <span class="form-sublabel">取處重大門檻基準</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">股東權益淨值 (NT$)</label>
+                  <input type="number" class="form-control" id="input-net-worth" value="3200000000000" readonly>
+                  <span class="form-sublabel">資貸/背保法定門檻基準</span>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">資產總額 (NT$)</label>
+                  <input type="number" class="form-control" id="input-total-assets" value="4800000000000" readonly>
+                  <span class="form-sublabel">關係人10%審批基準</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 交易內容設定卡片 -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📝 步驟二：交易類型與參數設定</span>
+            </div>
+            <div class="card-body">
+              <div class="toggle-pills">
+                <button type="button" class="toggle-pill-btn active" id="btn-type-loan" onclick="setTransactionType('LOAN')">💰 資金貸與他人</button>
+                <button type="button" class="toggle-pill-btn" id="btn-type-guarantee" onclick="setTransactionType('GUARANTEE')">🛡️ 為他人背書保證</button>
+                <button type="button" class="toggle-pill-btn" id="btn-type-asset" onclick="setTransactionType('ASSET')">🏢 取得或處分資產</button>
+              </div>
+
+              <!-- 資金貸與 -->
+              <div id="form-loan-fields">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">借款對象公司名稱</label>
+                    <input type="text" class="form-control" id="loan-borrower-name" value="TSMC Global Ltd (海外100%子公司)">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">借款對象關係</label>
+                    <select class="form-select" id="loan-borrower-rel" onchange="checkLoanRevolvingWarning()">
+                      <option value="OVERSEAS_SUB_100">海外持股 100% 之子公司 (互融豁免法定40%限制)</option>
+                      <option value="SUBSIDIARY_OVER_50">直接及間接持股 >50% 之子公司</option>
+                      <option value="SUBSIDIARY_OVER_90">持股 90%~99% 之子公司</option>
+                      <option value="PARENT_COMPANY">母公司</option>
+                      <option value="BUSINESS_PARTNER">有業務往來之公司 (非母子關係)</option>
+                      <option value="AFFILIATED_COMPANY">關係人 / 關聯企業 (非母子關係)</option>
+                      <option value="OTHER_THIRD_PARTY">無業務無股權之第三人 (違法對象)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">貸與原因與目的</label>
+                    <select class="form-select" id="loan-purpose" onchange="checkLoanRevolvingWarning()">
+                      <option value="SHORT_TERM_FINANCING">有短期融通資金之必要 (償還借款/營業週轉)</option>
+                      <option value="BUSINESS_TRANSACTION">有業務往來 (限額不得超過近一年往來總額)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">短期融通具體資金用途 (格式五之一註6)</label>
+                    <input type="text" class="form-control" id="loan-short-term-reason" value="購置機器設備與充實營運週轉資金">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">本次貸與 / 授權額度 (NT$)</label>
+                    <input type="number" class="form-control" id="loan-amount" value="50000000000">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">近一年雙方業務往來金額 (NT$)</label>
+                    <input type="number" class="form-control" id="loan-business-past-year" value="0">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">貸與約定利率區間 (%)</label>
+                    <input type="text" class="form-control" id="loan-interest-rate" value="1.85% ~ 2.25%">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">擔保品名稱與評估價值</label>
+                    <input type="text" class="form-control" id="loan-collateral-info" value="公司本票 / 500億元">
+                  </div>
+                </div>
+
+                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); padding: 0.85rem; border-radius: var(--radius); margin-bottom: 1rem;">
+                  <label style="font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="check-loan-revolving" checked onchange="checkLoanRevolvingWarning()">
+                    <span>☑️ 董事會授權董事長在一定額度內分次撥貸或循環動用 (Revolving)</span>
+                  </label>
+                  <div id="loan-revolving-warning" style="display: none; margin-top: 0.5rem; color: var(--danger); font-size: 0.8rem; font-weight: 600;">
+                    ⚠️ 防呆警告：依處理準則第14條第2項規定，僅限母子公司間或子公司間始得循環動用！對外部業務往來公司不得授權董事長分次撥貸。
+                  </div>
+                  <div class="form-row" style="margin-top: 0.5rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                      <label class="form-label">授權動用期間 (月)</label>
+                      <input type="number" class="form-control" id="loan-revolving-months" value="12">
+                      <span class="form-sublabel">法定上限不超過 1 年 (12 個月)</span>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                      <label class="form-label">集團現存貸與餘額 (NT$)</label>
+                      <input type="number" class="form-control" id="loan-existing-group" value="10000000000">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 背書保證 -->
+              <div id="form-guarantee-fields" style="display: none;">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">被保證對象公司名稱</label>
+                    <input type="text" class="form-control" id="guarantee-beneficiary-name" value="極智健康科技股份有限公司">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">被保證對象關係代碼 (格式五之二註2)</label>
+                    <select class="form-select" id="guarantee-rel">
+                      <option value="2">關係代碼 (2) - 直接及間接持股超過 50% 之子公司</option>
+                      <option value="4">關係代碼 (4) - 直接及間接持股達 90% 以上之公司間 (限額10%淨值)</option>
+                      <option value="100">關係代碼 (2) - 直接及間接持股 100% 之子公司間 (免受10%限制)</option>
+                      <option value="3">關係代碼 (3) - 直接及間接對公司持股超過 50% 之母公司</option>
+                      <option value="1">關係代碼 (1) - 有業務往來之公司</option>
+                      <option value="5">關係代碼 (5) - 承攬工程同業或共同起造人依約互保</option>
+                      <option value="OTHER_UNRELATED">其他非合格對象 (違規)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">本次保證金額 (NT$)</label>
+                    <input type="number" class="form-control" id="guarantee-amount" value="80000000">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">是否屬對大陸地區背書保證 (格式五之二註7)</label>
+                    <select class="form-select" id="guarantee-is-mainland">
+                      <option value="N">否 (空白)</option>
+                      <option value="Y">是 (填列 Y)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); padding: 0.85rem; border-radius: var(--radius); margin-bottom: 1rem;">
+                  <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--slate-700);">三合一穿透門檻檢核參數 [準則第25條第1項第3款]</div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label">對該對象採權益法投資帳面金額 (NT$)</label>
+                      <input type="number" class="form-control" id="guarantee-equity-book-val" value="10000000">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">對該對象已貸與資金餘額 (NT$)</label>
+                      <input type="number" class="form-control" id="guarantee-loan-bal" value="5000000">
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">集團現存背保總餘額 (NT$)</label>
+                    <input type="number" class="form-control" id="guarantee-existing-group" value="0">
+                  </div>
+                </div>
+              </div>
+
+              <!-- 取得處分資產 -->
+              <div id="form-asset-fields" style="display: none;">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">交易類別</label>
+                    <select class="form-select" id="asset-trans-direction">
+                      <option value="ACQUISITION">取得資產</option>
+                      <option value="DISPOSAL">處分資產</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">資產標的類別</label>
+                    <select class="form-select" id="asset-category">
+                      <option value="ROU_REAL_ESTATE">不動產使用權資產 (IFRS 16 租賃承租)</option>
+                      <option value="REAL_ESTATE">不動產 (土地、廠房、商辦)</option>
+                      <option value="EQUIPMENT_OPERATING">供營業用設備</option>
+                      <option value="SECURITIES_NON_PUBLIC">未上市櫃有價證券 (私募/股權投資)</option>
+                      <option value="SECURITIES_PUBLIC">集中交易市場有價證券</option>
+                      <option value="INTANGIBLE_ASSET">無形資產 (專利、技術授權、軟體)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">交易相對人名稱與身分</label>
+                    <input type="text" class="form-control" id="asset-counterparty-name" value="關係人長宏資產股份有限公司">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">相對人屬性</label>
+                    <select class="form-select" id="asset-counterparty-type">
+                      <option value="RELATED_PARTY">關係人 (包含實質關係人)</option>
+                      <option value="NON_RELATED_PARTY">非關係人 (第三方廠商)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">交易總金額 (NT$)</label>
+                  <input type="number" class="form-control" id="asset-amount" value="1200000000">
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-primary" onclick="runComplianceEvaluation()">
+                🚀 執行雙軌合規診斷（公司辦法 + 法定標準）
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右欄：診斷結果儀表板 -->
+        <div>
+          <!-- 總體診斷 Banner -->
+          <div id="result-banner" class="diagnostic-banner banner-pass">
+            <div class="banner-icon" id="banner-icon">✅</div>
+            <div>
+              <div class="banner-title" id="banner-title">合規診斷通過</div>
+              <div class="banner-desc" id="banner-desc">交易符合法定資格與內部授權規範。</div>
+            </div>
+          </div>
+
+          <!-- 即時公告警示卡片 -->
+          <div id="alert-announcement" class="alert-box" style="display: none;">
+            <div class="alert-header">
+              <span class="alert-title">🚨 觸發法定即時公告申報門檻！</span>
+              <span class="alert-countdown" id="alert-deadline-text">申報倒數: 2 日內</span>
+            </div>
+            <div style="font-size: 0.85rem; color: #9f1239; margin-bottom: 0.35rem;">
+              依法應於<b>事實發生日（董事會決議日/簽約日）即日起算二日內</b>於公開資訊觀測站申報重大訊息：
+            </div>
+            <ul class="alert-list" id="alert-triggers-list"></ul>
+          </div>
+
+          <!-- 關鍵比例指標小卡 -->
+          <div class="metric-grid">
+            <div class="metric-box">
+              <div class="metric-label">交易占淨值比</div>
+              <div class="metric-val" id="metric-net-worth-pct">0.0%</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">交易占資本額比</div>
+              <div class="metric-val" id="metric-capital-pct">0.0%</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">交易占總資產比</div>
+              <div class="metric-val" id="metric-assets-pct">0.0%</div>
+            </div>
+          </div>
+
+          <!-- 詳細檢核清單卡片 -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📋 雙軌檢核明細（公司辦法 vs 主管機關法令）</span>
+            </div>
+            <div class="card-body" style="padding: 0;" id="rule-items-container"></div>
+          </div>
+
+          <!-- 應踐行程序與一鍵產出報告按鈕 -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🏛️ 治理程序與法定產出</span>
+            </div>
+            <div class="card-body">
+              <div style="margin-bottom: 0.75rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--slate-700); margin-bottom: 0.35rem;">應踐行內部治理決策層級：</div>
+                <ul id="approvals-list" style="margin-left: 1.2rem; font-size: 0.85rem; color: var(--slate-800);">
+                  <li>提報董事會事前決議</li>
+                </ul>
+              </div>
+
+              <div id="expert-opinions-section" style="display: none; margin-bottom: 0.75rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--slate-700); margin-bottom: 0.35rem;">外部專家意見書需求：</div>
+                <ul id="expert-opinions-list" style="margin-left: 1.2rem; font-size: 0.85rem; color: #1e3a8a;"></ul>
+              </div>
+
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.85rem; border-radius: var(--radius); margin-top: 1rem;">
+                <div style="font-weight: 700; color: #166534; font-size: 0.9rem; margin-bottom: 0.4rem;">🎯 方向一成果：一鍵生成正式簽核文件與法定附表</div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-success btn-sm" onclick="jumpToReportPack('APPROVAL_DOC')">
+                    📄 預覽/產出《董事會交易合規簽核報告》
+                  </button>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="jumpToReportPack('FORM_5_1')">
+                    📊 產生【格式五之一】資金貸與彙總表
+                  </button>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="jumpToReportPack('FORM_5_2')">
+                    📊 產生【格式五之二】背書保證彙總表
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- TAB 2: 董事會簽核包 & 格式五之一/五之二 (Direction 1 NEW!) -->
+    <!-- =================================================================== -->
+    <div id="tab-board-pack" class="tab-content" style="display: none;">
+      
+      <!-- 子切換頁籤 -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;" class="statutory-action-bar">
+        <div class="toggle-pills" style="margin-bottom: 0;">
+          <button type="button" class="toggle-pill-btn active" id="btn-sub-report" onclick="switchReportSubTab('report')">📑 董事會/審委會議案簽核報告書</button>
+          <button type="button" class="toggle-pill-btn" id="btn-sub-5-1" onclick="switchReportSubTab('form5-1')">📊 金管會【格式五之一】資金貸與他人申報表</button>
+          <button type="button" class="toggle-pill-btn" id="btn-sub-5-2" onclick="switchReportSubTab('form5-2')">📊 金管會【格式五之二】為他人背書保證申報表</button>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-primary btn-sm" id="btn-export-word" onclick="exportReportToWord()">📝 匯出 Word 簽核報告 (.doc)</button>
+          <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ 列印 / 轉存 PDF</button>
+          <button class="btn btn-primary btn-sm" id="btn-export-csv" onclick="exportCurrentTableCsv()" style="display: none;">📥 匯出 Excel (CSV)</button>
+        </div>
+      </div>
+
+      <!-- 子畫面 1: 董事會簽核報告書 -->
+      <div id="subtab-report" class="report-paper">
+        <div class="report-header-title" id="rpt-company-title">台灣積體電路製造股份有限公司</div>
+        <div class="report-header-sub">重大交易適法性審查與內部決策合規簽核報告書</div>
+
+        <table class="report-meta-table">
+          <tr>
+            <th>議案案由</th>
+            <td colspan="3" id="rpt-agenda-subject" style="font-weight: 700; color: var(--slate-900);">
+              本公司擬辦理資金貸與海外100%持股子公司 TSMC Global Ltd 新臺幣 500 億元整案，報請審議。
+            </td>
+          </tr>
+          <tr>
+            <th>提案單位</th>
+            <td>財務部 / 會計處</td>
+            <th>評估日期</th>
+            <td id="rpt-eval-date">2026 年 10 月 17 日</td>
+          </tr>
+          <tr>
+            <th>交易性質</th>
+            <td id="rpt-trans-nature">資金貸與他人 (短期融通資金 / 循環動用)</td>
+            <th>交易相對人</th>
+            <td id="rpt-counterparty-name">TSMC Global Ltd</td>
+          </tr>
+          <tr>
+            <th>契約/交易金額</th>
+            <td id="rpt-trans-amount" style="font-weight: 700; color: var(--primary);">新臺幣 50,000,000,000 元整</td>
+            <th>占最近期淨值比</th>
+            <td id="rpt-net-worth-ratio">1.56% (淨值 3.2 兆元)</td>
+          </tr>
+        </table>
+
+        <!-- 雙軌審查結論 -->
+        <div style="margin-bottom: 1.25rem;">
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.4rem; border-left: 3px solid var(--primary); padding-left: 0.5rem;">
+            一、 雙軌法令與公司章則適法性審查結論
+          </div>
+          <table class="report-meta-table">
+            <tr>
+              <th style="width: 25%;">第一軌：公司內部規章</th>
+              <td id="rpt-company-procedure-conclusion">
+                符合本公司《資金貸與他人作業程序》規範。董事長授權循環動用期間未超過 1 年，額度在內部總額及個別限額控管範圍內。
+              </td>
+            </tr>
+            <tr>
+              <th>第二軌：金管會主管法規</th>
+              <td id="rpt-statutory-conclusion">
+                符合《公開發行公司資金貸與及背書保證處理準則》第3條、第9條及第14條規範。屬海外100%子公司互融，依法得豁免淨值40%總額限制。
+              </td>
+            </tr>
+            <tr>
+              <th>重大訊息即時申報</th>
+              <td id="rpt-announcement-conclusion" style="color: #9f1239; font-weight: 600;">
+                未達事實發生日 2 日內即時申報門檻（僅需於次月 10 日前辦理每月彙總公告申報）。
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- 內部簽核核決欄位 -->
+        <div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--slate-900); margin-bottom: 0.4rem; border-left: 3px solid var(--primary); padding-left: 0.5rem;">
+            二、 內部層級簽核與核決流程
+          </div>
+          <table class="report-sign-table">
+            <tr>
+              <th style="width: 25%;">承辦人員</th>
+              <th style="width: 25%;">會計主管</th>
+              <th style="width: 25%;">法務主管</th>
+              <th style="width: 25%;">財務長 / 總經理</th>
+            </tr>
+            <tr>
+              <td class="sign-box-cell">簽名/蓋章：<br><br><span style="color:#94a3b8;">(已合規檢核)</span></td>
+              <td class="sign-box-cell">簽名/蓋章：</td>
+              <td class="sign-box-cell">簽名/蓋章：</td>
+              <td class="sign-box-cell">簽名/蓋章：</td>
+            </tr>
+          </table>
+
+          <table class="report-sign-table">
+            <tr>
+              <th style="width: 50%;">審計委員會獨立董事審查意見</th>
+              <th style="width: 50%;">董事長核定 / 董事會決議</th>
+            </tr>
+            <tr>
+              <td class="sign-box-cell" style="height: 90px;">
+                審查意見： ☑ 照案通過　☐ 保留意見　☐ 反對意見<br>
+                獨立董事簽署：<br>
+                日期：
+              </td>
+              <td class="sign-box-cell" style="height: 90px;">
+                決議情形： ☑ 經第 ○ 屆第 ○ 次董事會決議全體無異議照案通過。<br>
+                董事長簽署：<br>
+                日期：
+              </td>
+            </tr>
+          </table>
+          <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;" class="statutory-action-bar">
+            <button class="btn btn-primary" onclick="exportReportToWord()">📝 立即匯出 Word 簽核報告 (.doc)</button>
+            <button class="btn btn-secondary" onclick="window.print()">🖨️ 列印 / 轉存 PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 子畫面 2: 金管會【格式五之一】資金貸與他人申報表 (完全對應 R-1140004887-3.pdf 第1頁) -->
+      <div id="subtab-form5-1" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="card-title">（格式五之一）資金貸與他人彙總公告申報暨財報附表</span>
+              <span style="font-size: 0.8rem; color: var(--slate-600);">完全符合金管會證期局官方標準規範 (含註 8 循環動用以核准額計入規定)</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- 整併精簡之綠色醒目操作橫幅 (無重複按鈕) -->
+            <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 0.85rem 1.15rem; border-radius: var(--radius); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+              <div style="font-size: 0.875rem; color: #166534;">
+                📥 <b>歷史台帳批次導入與操作：</b> 支援上傳上期申報或內部 Excel 台帳 (.csv)，自動解析全集團多筆資料並精算合計。
+              </div>
+              <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+                <input type="file" id="input-csv-51" accept=".csv" style="display:none;" onchange="handleCsvUpload51(event)">
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('input-csv-51').click()">📥 匯入歷史台帳 (CSV)</button>
+                <button class="btn btn-secondary btn-sm" onclick="downloadTemplate51()">📄 下載空白範本</button>
+                <button class="btn btn-success btn-sm" onclick="loadDemoHistory51()">⚡ 一鍵載入3筆示範台帳</button>
+                <button class="btn btn-secondary btn-sm" onclick="addForm51Row()">➕ 手動新增一筆</button>
+              </div>
+            </div>
+            <div class="statutory-table-container">
+              <table class="statutory-table" id="table-form-5-1">
+                <thead>
+                  <tr>
+                    <th rowspan="2">編號<br>(註1)</th>
+                    <th rowspan="2">貸出資金<br>之公司</th>
+                    <th rowspan="2">貸與<br>對象</th>
+                    <th rowspan="2">往來<br>項目<br>(註2)</th>
+                    <th rowspan="2">是否<br>為關<br>係人</th>
+                    <th rowspan="2">本期最高餘額<br>(註3)</th>
+                    <th rowspan="2">期末餘額<br>(註8)</th>
+                    <th rowspan="2">實際動支<br>金額</th>
+                    <th rowspan="2">利率<br>區間</th>
+                    <th rowspan="2">資金貸與<br>性質<br>(註4)</th>
+                    <th rowspan="2">業務往來<br>金額<br>(註5)</th>
+                    <th rowspan="2">有短期融通資金<br>必要之原因<br>(註6)</th>
+                    <th rowspan="2">提列備抵<br>呆帳金額</th>
+                    <th colspan="2">擔保品</th>
+                    <th rowspan="2">對個別對象<br>資金貸與限額<br>(註7)</th>
+                    <th rowspan="2">資金貸與<br>總限額<br>(註7)</th>
+                    <th rowspan="2">操作</th>
+                  </tr>
+                  <tr>
+                    <th>名稱</th>
+                    <th>價值</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-form-5-1">
+                  <!-- 動態填入 -->
+                </tbody>
+                <tfoot>
+                  <tr style="font-weight: 700; background-color: var(--slate-50);">
+                    <td colspan="5">合計 (Total)</td>
+                    <td id="f51-sum-max">50,000,000</td>
+                    <td id="f51-sum-end">50,000,000</td>
+                    <td id="f51-sum-actual">50,000,000</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>0</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td id="f51-total-cap-limit">640,000,000</td>
+                    <td>-</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <!-- 官方標準註 1 ~ 註 8 說明文字 (完全引用自 R-1140004887-3.pdf) -->
+            <div class="statutory-footnote">
+              <b>註 1：編號欄之說明如下：</b>(1) 發行人填 0。(2) 被投資公司按公司別由阿拉伯數字 1 開始依序編號。<br>
+              <b>註 2：</b>帳列之應收關係企業款項、應收關係人款項、股東往來、預付款、暫付款…等項目，如屬資金貸與性質者均須填入此欄位。<br>
+              <b>註 3：</b>當年度資金貸與他人之最高餘額。<br>
+              <b>註 4：</b>資金貸與性質應填列屬業務往來者或屬有短期融通資金之必要者。<br>
+              <b>註 5：</b>資金貸與性質屬業務往來者，應填列業務往來金額，業務往來金額係指貸出資金之公司與貸與對象最近一年度之業務往來金額。<br>
+              <b>註 6：</b>資金貸與性質屬有短期融通資金之必要者，應具體說明必要貸與資金之原因及貸與對象之資金用途，例如：償還借款、購置設備、營業週轉...等。<br>
+              <b>註 7：</b>應填列公司依資金貸與他人作業程序，所訂定對個別對象資金貸與之限額及資金貸與總限額，並於備註欄說明資金貸與個別對象及總限額之計算方法。<br>
+              <b style="color: #991b1b;">註 8 (重要法令遵循)：</b>若公開發行公司依據公開發行公司資金貸與及背書保證處理準則第 14 條第 1 項將資金貸與逐筆提董事會決議，雖尚未撥款，仍應將董事會決議金額列入公告餘額，以揭露其承擔風險；惟嗣後資金償還，則應揭露其償還後餘額，以反應風險之調整。<b>若公開發行公司依據處理準則第 14 條第 2 項經董事會決議授權董事長於一定額度及一年期間內分次撥貸或循環動用，仍應以董事會通過之資金貸與額度作為公告申報之餘額</b>，雖嗣後資金償還，惟考量仍可能再次撥貸，故仍應以董事會通過之資金貸與額度作為公告申報之餘額。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 子畫面 3: 金管會【格式五之二】為他人背書保證申報表 (完全對應 R-1140004887-3.pdf 第2頁) -->
+      <div id="subtab-form5-2" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <span class="card-title">（格式五之二）為他人背書保證彙總公告申報暨財報附表</span>
+              <span style="font-size: 0.8rem; color: var(--slate-600);">完全符合金管會證期局官方標準規範 (含關係代碼 1~7 與母子公司/大陸地區 Y 標記)</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- 整併精簡之綠色醒目操作橫幅 (無重複按鈕) -->
+            <div style="background: #f0fdf4; border: 1px solid #86efac; padding: 0.85rem 1.15rem; border-radius: var(--radius); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;">
+              <div style="font-size: 0.875rem; color: #166534;">
+                📥 <b>歷史台帳批次導入與操作：</b> 支援上傳上期申報或內部 Excel 背保台帳 (.csv)，自動解析全集團多筆資料並精算合計。
+              </div>
+              <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+                <input type="file" id="input-csv-52" accept=".csv" style="display:none;" onchange="handleCsvUpload52(event)">
+                <button class="btn btn-primary btn-sm" onclick="document.getElementById('input-csv-52').click()">📥 匯入歷史台帳 (CSV)</button>
+                <button class="btn btn-secondary btn-sm" onclick="downloadTemplate52()">📄 下載空白範本</button>
+                <button class="btn btn-success btn-sm" onclick="loadDemoHistory52()">⚡ 一鍵載入3筆示範台帳</button>
+                <button class="btn btn-secondary btn-sm" onclick="addForm52Row()">➕ 手動新增一筆</button>
+              </div>
+            </div>
+            <div class="statutory-table-container">
+              <table class="statutory-table" id="table-form-5-2">
+                <thead>
+                  <tr>
+                    <th rowspan="2">編號<br>(註1)</th>
+                    <th rowspan="2">背書保證者<br>公司名稱</th>
+                    <th colspan="2">被背書保證對象</th>
+                    <th rowspan="2">對單一企業<br>背書保證限額<br>(註3)</th>
+                    <th rowspan="2">本期最高背<br>書保證餘額<br>(註4)</th>
+                    <th rowspan="2">期末背書<br>保證餘額<br>(註5)</th>
+                    <th rowspan="2">實際動支<br>金額<br>(註6)</th>
+                    <th rowspan="2">背書保證以<br>財產設定擔<br>保金額</th>
+                    <th rowspan="2">累計背書保證金額<br>佔最近期財務報表<br>淨值之比率</th>
+                    <th rowspan="2">背書保證<br>最高限額<br>(註3)</th>
+                    <th rowspan="2">屬母公司對<br>子公司背書<br>保證(註7)</th>
+                    <th rowspan="2">屬子公司對<br>母公司背書<br>保證(註7)</th>
+                    <th rowspan="2">屬對大陸<br>地區背書<br>保證(註7)</th>
+                    <th rowspan="2">操作</th>
+                  </tr>
+                  <tr>
+                    <th>公司名稱</th>
+                    <th>關係<br>(註2)</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-form-5-2">
+                  <!-- 動態填入 -->
+                </tbody>
+                <tfoot>
+                  <tr style="font-weight: 700; background-color: var(--slate-50);">
+                    <td colspan="5">合計 (Total)</td>
+                    <td id="f52-sum-max">80,000,000</td>
+                    <td id="f52-sum-end">80,000,000</td>
+                    <td id="f52-sum-actual">80,000,000</td>
+                    <td>0</td>
+                    <td id="f52-sum-ratio">25.0%</td>
+                    <td id="f52-sum-limit">96,000,000</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <!-- 官方標準註 1 ~ 註 7 說明文字 (完全引用自 R-1140004887-3.pdf) -->
+            <div class="statutory-footnote">
+              <b>註 1：編號欄之說明如下：</b>(1) 發行人填 0。(2) 被投資公司按公司別由阿拉伯數字 1 開始依序編號。<br>
+              <b>註 2：背書保證者與被背書保證對象之關係有下列 7 種，標示種類代碼即可：</b><br>
+              &nbsp;&nbsp;(1) 有業務往來之公司。<br>
+              &nbsp;&nbsp;(2) 公司直接及間接持有表決權之股份超過百分之五十之公司。<br>
+              &nbsp;&nbsp;(3) 直接及間接對公司持有表決權之股份超過百分之五十之公司。<br>
+              &nbsp;&nbsp;(4) 公司直接及間接持有表決權股份達百分之九十以上之公司間。<br>
+              &nbsp;&nbsp;(5) 基於承攬工程需要之同業間或共同起造人間依合約規定互保之公司。<br>
+              &nbsp;&nbsp;(6) 因共同投資關係由全體出資股東依其持股比率對其背書保證之公司。<br>
+              &nbsp;&nbsp;(7) 同業間依消費者保護法規範從事預售屋銷售合約之履約保證連帶擔保。<br>
+              <b>註 3：</b>應填列公司依為他人背書保證作業程序，所訂定對個別對象背書保證之限額及背書保證最高限額，並於備註欄說明背書保證個別對象及總限額之計算方法。<br>
+              <b>註 4：</b>當年度為他人背書保證之最高餘額。<br>
+              <b>註 5：</b>應填列董事會通過之金額。但董事會依公開發行公司資金貸與及背書保證處理準則第十二條第八款授權董事長決行者，係指董事長決行之金額。<br>
+              <b>註 6：</b>應輸入被背書保證公司於使用背書保證餘額範圍內之實際動支金額。<br>
+              <b>註 7：</b>屬上市櫃母公司對子公司背書保證者、屬子公司對上市櫃母公司背書保證者、屬大陸地區背書保證者始須填列 Y。
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- TAB 3: 公司內部辦法上傳與設定 -->
+    <!-- =================================================================== -->
+    <div id="tab-company-procedure" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📑 上傳 / 自訂貴公司內部作業程序 (Company Procedures)</span>
+          <span class="rule-tag tag-company">支援雙軌檢核防線</span>
+        </div>
+        <div class="card-body">
+          <div class="notice-box">
+            💡 <b>如何運作？</b> 上傳或貼上貴公司的《資金貸與他人作業程序》、《背書保證作業程序》或《取得或處分資產處理程序》。系統的智慧辨識引擎將自動解析條文中的「限額比例（占淨值%）」與「董事長授權額度」，並在<b>交易合規導航精靈</b>中自動作為<b>第一道內部防線</b>進行即時防呆！
+          </div>
+
+          <div style="margin-bottom: 1.25rem;">
+            <label class="form-label">快速載入標準企業範本：</label>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="loadProcedureTemplate('strict')">🛡️ 穩健嚴格型範本 (貸與總額20% / 單一5% / 背保30%)</button>
+              <button class="btn btn-secondary btn-sm" onclick="loadProcedureTemplate('standard')">🏛️ 上市櫃標準型範本 (貸與總額40% / 單一10% / 背保50%)</button>
+              <button class="btn btn-secondary btn-sm" onclick="loadProcedureTemplate('clean')">✏️ 清空自訂內容</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">方式一：上傳辦法文件檔案 (.txt / .json) 或 貼上條文內容</label>
+            <input type="file" id="procedure-file-input" class="form-control" accept=".txt,.json,.md" onchange="handleProcedureFileUpload(event)" style="margin-bottom: 0.5rem;">
+            <textarea class="form-textarea" id="procedure-raw-text" placeholder="請將貴公司章則或辦法條文直接貼上於此，例如：
+第三條 本公司資金貸與他人總額不得超過本公司淨值百分之二十，對單一企業資金貸與限額不得超過淨值百分之五...
+第十條 授權董事長在三千萬元之額度內決行..."></textarea>
+          </div>
+
+          <div style="margin-bottom: 1.25rem;">
+            <button type="button" class="btn btn-success" onclick="smartParseProcedureText()">
+              ⚡ 執行智慧條文解析與自動擷取限額參數
+            </button>
+          </div>
+
+          <div style="border-top: 1px solid var(--slate-200); padding-top: 1.25rem;">
+            <h4 style="font-size: 1rem; color: var(--slate-800); margin-bottom: 0.75rem;">🎯 貴公司內部辦法控制參數（解析結果或手動微調）：</h4>
+            
+            <div class="form-row-3">
+              <div class="form-group">
+                <label class="form-label">資金貸與總額上限占淨值 (%)</label>
+                <input type="number" step="0.1" class="form-control" id="custom-loan-total-ratio" value="20.0">
+                <span class="form-sublabel">法定上限為 40%</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">資金貸與單一企業上限占淨值 (%)</label>
+                <input type="number" step="0.1" class="form-control" id="custom-loan-single-ratio" value="5.0">
+                <span class="form-sublabel">法定通常為 10%</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">董事長授權決行額度 (NT$)</label>
+                <input type="number" class="form-control" id="custom-chairman-auth-limit" value="30000000">
+                <span class="form-sublabel">逾越額度須提董事會事前決議</span>
+              </div>
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label class="form-label">背書保證總額上限占淨值 (%)</label>
+                <input type="number" step="0.1" class="form-control" id="custom-guar-total-ratio" value="30.0">
+                <span class="form-sublabel">法定上限通常為 50%</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">背書保證單一企業上限占淨值 (%)</label>
+                <input type="number" step="0.1" class="form-control" id="custom-guar-single-ratio" value="10.0">
+                <span class="form-sublabel">法定上限通常為 20%</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">是否允許母子公司循環動用</label>
+                <select class="form-select" id="custom-allow-revolving">
+                  <option value="true" selected>明文允許（期間不超過1年）</option>
+                  <option value="false">未明文授權（禁止循環動用）</option>
+                </select>
+                <span class="form-sublabel">準則第14條規範</span>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+              <button class="btn btn-primary" style="flex: 2;" onclick="saveAndApplyCustomProcedures()">
+                💾 儲存並套用至「交易合規導航精靈」進行雙軌檢核
+              </button>
+              <button class="btn btn-secondary" style="flex: 1;" onclick="resetToStatutoryDefault()">
+                🔄 重設恢復金管會法定預設值
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- TAB 4: 法規與官方問答集 (全文檢索) -->
+    <!-- =================================================================== -->
+    <div id="tab-faq" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📚 金管會證期局法規條文與官方問答集 (全文檢索)</span>
+          <span id="faq-match-count" class="rule-tag tag-action">共 14 筆法規與問答</span>
+        </div>
+        <div class="card-body">
+          <div class="search-bar-container">
+            <div class="search-input-box">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="faq-search-input" class="search-input" placeholder="依關鍵字即時檢索（例如：循環動用、淨值、三合一、估價、關係人、短期融通、事實發生日、自結數）..." oninput="filterFaqItems()">
+            </div>
+            <button class="btn btn-secondary" onclick="clearFaqSearch()">清空搜尋</button>
+          </div>
+
+          <div class="filter-tags-row">
+            <button class="filter-pill active" onclick="setFaqCategoryFilter('ALL', this)">全部項目</button>
+            <button class="filter-pill" onclick="setFaqCategoryFilter('LOAN', this)">💰 資金貸與規程</button>
+            <button class="filter-pill" onclick="setFaqCategoryFilter('GUARANTEE', this)">🛡️ 背書保證規程</button>
+            <button class="filter-pill" onclick="setFaqCategoryFilter('ASSET', this)">🏢 取得或處分資產</button>
+            <button class="filter-pill" onclick="setFaqCategoryFilter('FAQ_OFFICIAL', this)">📑 證期局官方Q&A問答集</button>
+            <button class="filter-pill" onclick="setFaqCategoryFilter('STATUTE', this)">⚖️ 法定準則條文</button>
+          </div>
+
+          <div id="faq-items-container"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- TAB 5: 典型案例演練庫 (Benchmarks) -->
+    <!-- =================================================================== -->
+    <div id="tab-benchmarks" class="tab-content" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📊 快速演練真實市場重大情境</span>
+        </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+            <div style="border: 1px solid var(--slate-200); padding: 1rem; border-radius: var(--radius);">
+              <h4 style="margin-bottom: 0.5rem; color: var(--primary);">情境 A：海外子公司循環動用 500 億元</h4>
+              <p style="font-size: 0.85rem; color: var(--slate-600); margin-bottom: 0.75rem;">
+                台積電對 100% 海外子公司 TSMC Global 融通，驗證豁免 40% 淨值限制與循環動用授權期間 1 年檢核，連動產出格式五之一。
+              </p>
+              <button class="btn btn-secondary btn-sm" onclick="loadBenchmarkCase('A')">載入演練情境 A</button>
+            </div>
+
+            <div style="border: 1px solid var(--slate-200); padding: 1rem; border-radius: var(--radius);">
+              <h4 style="margin-bottom: 0.5rem; color: var(--danger);">情境 B：90% 子公司背書保證超限阻擋</h4>
+              <p style="font-size: 0.85rem; color: var(--slate-600); margin-bottom: 0.75rem;">
+                未上市生技公司手動填入財務基準，擬為持股 95% 子公司保證 8,000 萬，觸發 10% 淨值超限阻擋，連動產出格式五之二。
+              </p>
+              <button class="btn btn-secondary btn-sm" onclick="loadBenchmarkCase('B')">載入演練情境 B</button>
+            </div>
+
+            <div style="border: 1px solid var(--slate-200); padding: 1rem; border-radius: var(--radius);">
+              <h4 style="margin-bottom: 0.5rem; color: var(--purple);">情境 C：租賃大樓 12 億元 (雙估價機構)</h4>
+              <p style="font-size: 0.85rem; color: var(--slate-600); margin-bottom: 0.75rem;">
+                向關係人承租企業總部大樓，使用權資產 12 億元，驗證觸發二家以上估價師報告與審委會同意。
+              </p>
+              <button class="btn btn-secondary btn-sm" onclick="loadBenchmarkCase('C')">載入演練情境 C</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // 1. 全域資料庫與常數定義
+    // =========================================================================
+    const STOCK_DATABASE = {
+      "2330": { name: "台灣積體電路製造股份有限公司", capital: 259303804580, netWorth: 3200000000000, totalAssets: 4800000000000 },
+      "2317": { name: "鴻海精密工業股份有限公司", capital: 138629906090, netWorth: 1520000000000, totalAssets: 3850000000000 },
+      "2454": { name: "聯發科技股份有限公司", capital: 15995874280, netWorth: 312000000000, totalAssets: 425000000000 },
+      "8999": { name: "示範中小上櫃科技股份有限公司", capital: 80000000, netWorth: 100000000, totalAssets: 250000000 }
+    };
+
+    let customCompanyProcedures = {
+      isActive: true,
+      loanTotalRatio: 20.0,
+      loanSingleRatio: 5.0,
+      guarTotalRatio: 30.0,
+      guarSingleRatio: 10.0,
+      chairmanAuthLimit: 30000000,
+      allowRevolving: true
+    };
+
+    // 格式五之一資料列清單 (預設為當前試算案例)
+    let form51Rows = [];
+    // 格式五之二資料列清單 (預設為當前試算案例)
+    let form52Rows = [];
+
+    const FAQ_DATABASE = [
+      {
+        id: "FAQ-01", category: "LOAN", type: "FAQ_OFFICIAL",
+        title: "問：母子公司間資金貸與之「循環動用」額度與事實發生日如何認定？",
+        legalBasis: "《處理準則》第14條第2項、第3項",
+        tags: ["循環動用", "董事長授權", "事實發生日", "額度計算", "格式五之一註8"],
+        content: "答：依準則第 14 條及格式五之一註8規定，母子公司間授權董事長在一定額度及不超過 1 年之期間內分次撥貸或循環動用者，<b>該授權額度於決議日即視為已貸與餘額</b>！計算全公司貸與總額及檢核第 22 條即時公告標準時，應以「董事會通過之授權額度」全額併入計算，而非以實際撥款金額計算。事實發生日以董事會決議日為準。"
+      },
+      {
+        id: "FAQ-02", category: "GUARANTEE", type: "FAQ_OFFICIAL",
+        title: "問：背書保證第 25 條之「三合一穿透限額」申報標準與最容易漏報之重點為何？",
+        legalBasis: "《處理準則》第25條第1項第3款",
+        tags: ["三合一", "背書保證", "權益法投資", "即時公告", "金檢缺失"],
+        content: "答：公開發行公司及其子公司對單一企業背書保證達 1,000 萬元以上，且對其背書保證、採用權益法之投資帳面金額及資金貸與餘額合計數達淨值 30% 以上者，應於事實發生日 2 日內公告申報。<b>實務常見金檢缺失</b>：財會人員往往僅留意個別背保契約金額，而忽略被保證公司之轉投資帳面價值或借款合計已穿透超標，致漏報遭金管會裁罰。"
+      },
+      {
+        id: "FAQ-03", category: "ASSET", type: "FAQ_OFFICIAL",
+        title: "問：租賃取得不動產使用權資產 (IFRS 16) 是否適用取處準則之估價與公告規範？",
+        legalBasis: "《取處準則》第9條、第14條、第31條",
+        tags: ["使用權資產", "IFRS 16", "不動產租賃", "專業估價", "雙估價機構"],
+        content: "答：完全適用！取得不動產使用權資產達新臺幣 3 億元或實收資本額 20% 者，應於簽約前洽請專業估價師出具估價報告；達 10 億元以上者應有二家以上專業估價機構出具報告。若向關係人承租且達公告門檻，除應提審計委員會與董事會外，達總資產 10% 者應提報股東會決議通過。"
+      },
+      {
+        id: "FAQ-04", category: "LOAN", type: "STATUTE",
+        title: "法規：公開發行公司辦理短期融通資金貸與他人之法定總額上限為何？",
+        legalBasis: "《處理準則》第9條第1項第3款、第3條第2項",
+        tags: ["短期融通", "淨值40%", "法定上限", "海外子公司豁免"],
+        content: "條文規定：有短期融通資金之必要者，融通資金總額不得超過貸與企業最近期財務報表淨值百分之四十。但公開發行公司直接及間接持有表決權股份百分之百之國外公司間從事資金貸與，得不受百分之四十之限制，惟仍應於公司內部辦法訂定限額及期限。"
+      },
+      {
+        id: "FAQ-05", category: "GUARANTEE", type: "STATUTE",
+        title: "法規：公開發行公司直接及間接持股達 90% 以上子公司間互保之法定限額規定？",
+        legalBasis: "《處理準則》第5條第2項",
+        tags: ["90%子公司", "互為保證", "淨值10%", "母公司決議"],
+        content: "條文規定：公開發行公司直接及間接持有表決權股份達百分之九十以上之公司間，得為背書保證，其金額不得超過公開發行公司淨值之百分之十。但公開發行公司直接及間接持有表決權股份百分之百之公司間為背書保證，不在此限。且持股90%互保應提報公開發行母公司董事會決議通過後始得辦理。"
+      },
+      {
+        id: "FAQ-06", category: "ASSET", type: "FAQ_OFFICIAL",
+        title: "問：向關係人取得不動產之「設算成本合理性（準則第16條）」若不合規有何後果？",
+        legalBasis: "《取處準則》第16條、第17條",
+        tags: ["關係人不動產", "設算成本", "特別盈餘公積", "限制股息分派"],
+        content: "答：向關係人取得不動產，若依土地按法定利率加計利息、營建成本推算之設算成本低於實際交易價格時，除應由會計師複核外，該交易價差部分<b>依法應提列為特別盈餘公積，且不得分派股息或轉增資配股</b>！並應將該事項通知簽證會計師查核。"
+      }
+    ];
+
+    let currentMode = "listed";
+    let currentTransType = "LOAN";
+    let currentFaqCategory = "ALL";
+    let currentReportSubTab = "report";
+
+    // =========================================================================
+    // 2. 導航與頁籤切換
+    // =========================================================================
+    function switchNavTab(tabId) {
+      document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      if (tabId === 'wizard') {
+        document.querySelector('.nav-tabs button:nth-child(1)').classList.add('active');
+        document.getElementById('tab-wizard').style.display = 'block';
+      } else if (tabId === 'board-pack') {
+        document.querySelector('.nav-tabs button:nth-child(2)').classList.add('active');
+        document.getElementById('tab-board-pack').style.display = 'block';
+        updateBoardApprovalPack();
+      } else if (tabId === 'company-procedure') {
+        document.querySelector('.nav-tabs button:nth-child(3)').classList.add('active');
+        document.getElementById('tab-company-procedure').style.display = 'block';
+      } else if (tabId === 'faq') {
+        document.querySelector('.nav-tabs button:nth-child(4)').classList.add('active');
+        document.getElementById('tab-faq').style.display = 'block';
+        renderFaqList();
+      } else if (tabId === 'benchmarks') {
+        document.querySelector('.nav-tabs button:nth-child(5)').classList.add('active');
+        document.getElementById('tab-benchmarks').style.display = 'block';
+      }
+    }
+
+    function switchReportSubTab(sub) {
+      currentReportSubTab = sub;
+      document.getElementById('btn-sub-report').classList.toggle('active', sub === 'report');
+      document.getElementById('btn-sub-5-1').classList.toggle('active', sub === 'form5-1');
+      document.getElementById('btn-sub-5-2').classList.toggle('active', sub === 'form5-2');
+
+      document.getElementById('subtab-report').style.display = (sub === 'report') ? 'block' : 'none';
+      document.getElementById('subtab-form5-1').style.display = (sub === 'form5-1') ? 'block' : 'none';
+      document.getElementById('subtab-form5-2').style.display = (sub === 'form5-2') ? 'block' : 'none';
+
+      document.getElementById('btn-export-csv').style.display = (sub === 'report') ? 'none' : 'inline-flex';
+      const wordBtn = document.getElementById('btn-export-word');
+      if (wordBtn) wordBtn.style.display = (sub === 'report') ? 'inline-flex' : 'none';
+    }
+
+    function jumpToReportPack(target) {
+      switchNavTab('board-pack');
+      if (target === 'APPROVAL_DOC') switchReportSubTab('report');
+      else if (target === 'FORM_5_1') switchReportSubTab('form5-1');
+      else if (target === 'FORM_5_2') switchReportSubTab('form5-2');
+    }
+
+    // =========================================================================
+    // 3. 方向一：董事會簽核包 & 格式五之一、五之二演算邏輯 (Direction 1)
+    // =========================================================================
+    function updateBoardApprovalPack() {
+      const compName = (currentMode === 'listed')
+        ? (document.getElementById('input-company-name').value || "本公司")
+        : (document.getElementById('custom-company-name').value || "本公司");
+      const capital = parseFloat(document.getElementById('input-capital').value) || 0;
+      const netWorth = parseFloat(document.getElementById('input-net-worth').value) || 0;
+      const totalAssets = parseFloat(document.getElementById('input-total-assets').value) || 0;
+
+      document.getElementById('rpt-company-title').innerText = compName;
+      document.getElementById('rpt-eval-date').innerText = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      let transName = "";
+      let transAmount = 0;
+      let counterparty = "";
+      let nature = "";
+
+      if (currentTransType === 'LOAN') {
+        transAmount = parseFloat(document.getElementById('loan-amount').value) || 0;
+        counterparty = document.getElementById('loan-borrower-name').value;
+        const purpose = document.getElementById('loan-purpose').value;
+        const isRevolving = document.getElementById('check-loan-revolving').checked;
+        nature = `資金貸與他人 (${purpose === 'SHORT_TERM_FINANCING' ? '短期融通' : '業務往來'}${isRevolving ? ' / 循環動用' : ''})`;
+        transName = `本公司擬辦理資金貸與 ${counterparty} 新臺幣 ${transAmount.toLocaleString()} 元整案，報請審議。`;
+
+        // 重新同步 Form 5-1
+        refreshForm51Data(compName, counterparty, transAmount, netWorth, isRevolving);
+      } else if (currentTransType === 'GUARANTEE') {
+        transAmount = parseFloat(document.getElementById('guarantee-amount').value) || 0;
+        counterparty = document.getElementById('guarantee-beneficiary-name').value;
+        nature = `為他人背書保證`;
+        transName = `本公司擬為子公司 ${counterparty} 背書保證新臺幣 ${transAmount.toLocaleString()} 元整案，報請審議。`;
+
+        // 重新同步 Form 5-2
+        refreshForm52Data(compName, counterparty, transAmount, netWorth);
+      } else {
+        transAmount = parseFloat(document.getElementById('asset-amount').value) || 0;
+        counterparty = document.getElementById('asset-counterparty-name').value;
+        nature = `取得或處分資產 (${document.getElementById('asset-category').value})`;
+        transName = `本公司擬與 ${counterparty} 辦理資產交易新臺幣 ${transAmount.toLocaleString()} 元整案，報請審議。`;
+      }
+
+      document.getElementById('rpt-agenda-subject').innerText = transName;
+      document.getElementById('rpt-trans-nature').innerText = nature;
+      document.getElementById('rpt-counterparty-name').innerText = counterparty;
+      document.getElementById('rpt-trans-amount').innerText = `新臺幣 ${transAmount.toLocaleString()} 元整`;
+      document.getElementById('rpt-net-worth-ratio').innerText = `${((transAmount / (netWorth || 1)) * 100).toFixed(2)}% (淨值 NT$${(netWorth/100000000).toFixed(1)}億元)`;
+
+      // 同步雙軌結論
+      document.getElementById('rpt-company-procedure-conclusion').innerText =
+        customCompanyProcedures.isActive
+          ? `符合貴公司內部作業程序規範。設定貸與總額上限 ${customCompanyProcedures.loanTotalRatio}%、單一對象限額 ${customCompanyProcedures.loanSingleRatio}%，本案在內部授權額度內控範圍。`
+          : `採用金管會主管法規標準。`;
+
+      document.getElementById('rpt-statutory-conclusion').innerText =
+        `符合金管會《公開發行公司資金貸與及背書保證處理準則》或《取處準則》之法定對象與法定額度規範。`;
+
+      // 檢查是否觸發重訊
+      const isAnnounce = document.getElementById('alert-announcement').style.display !== 'none';
+      const annElem = document.getElementById('rpt-announcement-conclusion');
+      if (isAnnounce) {
+        annElem.innerText = `🚨 觸發法定即時公告門檻！依法應於事實發生日起算 2 日內完成 MOPS 重大訊息申報。`;
+        annElem.style.color = '#9f1239';
+      } else {
+        annElem.innerText = `未達事實發生日 2 日內即時公告申報標準（僅需於次月 10 日前辦理每月定期彙總申報）。`;
+        annElem.style.color = '#15803d';
+      }
+    }
+
+    // 格式五之一數據載入與渲染 (Form 5-1)
+    function refreshForm51Data(compName, counterparty, transAmount, netWorth, isRevolving) {
+      const isRelated = document.getElementById('loan-borrower-rel').value !== 'OTHER_THIRD_PARTY' && document.getElementById('loan-borrower-rel').value !== 'BUSINESS_PARTNER';
+      const purpose = document.getElementById('loan-purpose').value;
+      const purposeText = (purpose === 'SHORT_TERM_FINANCING') ? '有短期融通資金之必要者' : '業務往來者';
+      const shortTermReason = document.getElementById('loan-short-term-reason').value || "營運週轉";
+      const pastYearBusAmount = parseFloat(document.getElementById('loan-business-past-year').value) || 0;
+      const rate = document.getElementById('loan-interest-rate').value || "2.0%";
+      const collateral = document.getElementById('loan-collateral-info').value || "公司本票";
+
+      const singleLimit = customCompanyProcedures.isActive ? (netWorth * customCompanyProcedures.loanSingleRatio / 100) : (netWorth * 0.10);
+      const totalLimit = customCompanyProcedures.isActive ? (netWorth * customCompanyProcedures.loanTotalRatio / 100) : (netWorth * 0.40);
+
+      // 若為循環動用，依格式五之一註8，期末餘額應以董事會通過之授權額度全額計入
+      const endingBalance = transAmount;
+      const actualDrawn = transAmount;
+
+      form51Rows = [
+        {
+          no: "0",
+          lenderName: compName,
+          borrowerName: counterparty,
+          item: isRelated ? "應收關係人款項" : "其他應收款",
+          isRelated: isRelated ? "是" : "否",
+          maxBalance: transAmount,
+          endingBalance: endingBalance,
+          actualDrawn: actualDrawn,
+          interestRate: rate,
+          nature: purposeText,
+          businessAmount: pastYearBusAmount,
+          reason: (purpose === 'SHORT_TERM_FINANCING') ? shortTermReason : "-",
+          allowance: 0,
+          collateralName: collateral.split("/")[0] || "本票",
+          collateralValue: transAmount,
+          singleLimit: singleLimit,
+          totalLimit: totalLimit
+        }
+      ];
+      renderForm51Table();
+    }
+
+    function renderForm51Table() {
+      const tbody = document.getElementById('tbody-form-5-1');
+      let sumMax = 0, sumEnd = 0, sumActual = 0, maxTotalLimit = 0;
+
+      tbody.innerHTML = form51Rows.map((r, idx) => {
+        sumMax += r.maxBalance;
+        sumEnd += r.endingBalance;
+        sumActual += r.actualDrawn;
+        maxTotalLimit = Math.max(maxTotalLimit, r.totalLimit);
+
+        return `
+          <tr>
+            <td>${r.no}</td>
+            <td style="text-align: left;">${r.lenderName}</td>
+            <td style="text-align: left;">${r.borrowerName}</td>
+            <td>${r.item}</td>
+            <td>${r.isRelated}</td>
+            <td style="text-align: right;">${r.maxBalance.toLocaleString()}</td>
+            <td style="text-align: right; font-weight: 700; color: var(--primary);">${r.endingBalance.toLocaleString()}</td>
+            <td style="text-align: right;">${r.actualDrawn.toLocaleString()}</td>
+            <td>${r.interestRate}</td>
+            <td>${r.nature}</td>
+            <td style="text-align: right;">${r.businessAmount ? r.businessAmount.toLocaleString() : '-'}</td>
+            <td style="text-align: left;">${r.reason}</td>
+            <td>${r.allowance.toLocaleString()}</td>
+            <td>${r.collateralName}</td>
+            <td style="text-align: right;">${r.collateralValue.toLocaleString()}</td>
+            <td style="text-align: right;">${r.singleLimit.toLocaleString()}</td>
+            <td style="text-align: right;">${r.totalLimit.toLocaleString()}</td>
+            <td>
+              <button class="btn btn-secondary btn-sm" style="padding: 0.1rem 0.3rem;" onclick="removeForm51Row(${idx})">刪除</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('f51-sum-max').innerText = sumMax.toLocaleString();
+      document.getElementById('f51-sum-end').innerText = sumEnd.toLocaleString();
+      document.getElementById('f51-sum-actual').innerText = sumActual.toLocaleString();
+      document.getElementById('f51-total-cap-limit').innerText = maxTotalLimit.toLocaleString();
+    }
+
+    function addForm51Row() {
+      const netWorth = parseFloat(document.getElementById('input-net-worth').value) || 100000000;
+      const compName = document.getElementById('input-company-name').value || "本公司";
+      form51Rows.push({
+        no: String(form51Rows.length),
+        lenderName: compName,
+        borrowerName: "新增子公司 / 關係企業",
+        item: "應收關係人款項",
+        isRelated: "是",
+        maxBalance: 10000000,
+        endingBalance: 10000000,
+        actualDrawn: 5000000,
+        interestRate: "2.15%",
+        nature: "有短期融通資金之必要者",
+        businessAmount: 0,
+        reason: "營運資金需求",
+        allowance: 0,
+        collateralName: "本票",
+        collateralValue: 10000000,
+        singleLimit: netWorth * 0.05,
+        totalLimit: netWorth * 0.20
+      });
+      renderForm51Table();
+    }
+
+    function removeForm51Row(idx) {
+      form51Rows.splice(idx, 1);
+      renderForm51Table();
+    }
+
+    // 格式五之二數據載入與渲染 (Form 5-2)
+    function refreshForm52Data(compName, counterparty, transAmount, netWorth) {
+      const relCode = document.getElementById('guarantee-rel').value;
+      const isMainland = document.getElementById('guarantee-is-mainland').value;
+
+      const singleLimit = customCompanyProcedures.isActive ? (netWorth * customCompanyProcedures.guarSingleRatio / 100) : (netWorth * 0.20);
+      const totalLimit = customCompanyProcedures.isActive ? (netWorth * customCompanyProcedures.guarTotalRatio / 100) : (netWorth * 0.50);
+
+      const ratio = ((transAmount / netWorth) * 100).toFixed(2) + "%";
+
+      form52Rows = [
+        {
+          no: "0",
+          endorserName: compName,
+          beneficiaryName: counterparty,
+          relCode: `(${relCode === '100' ? '2' : relCode})`,
+          singleLimit: singleLimit,
+          maxBalance: transAmount,
+          endingBalance: transAmount,
+          actualDrawn: transAmount,
+          propertyPledge: 0,
+          ratioToNetWorth: ratio,
+          totalLimit: totalLimit,
+          isParentToSub: (['2', '4', '100'].includes(relCode)) ? "Y" : "",
+          isSubToParent: (relCode === '3') ? "Y" : "",
+          isMainland: isMainland === 'Y' ? "Y" : ""
+        }
+      ];
+      renderForm52Table();
+    }
+
+    function renderForm52Table() {
+      const tbody = document.getElementById('tbody-form-5-2');
+      let sumMax = 0, sumEnd = 0, sumActual = 0, maxTotalLimit = 0;
+
+      tbody.innerHTML = form52Rows.map((r, idx) => {
+        sumMax += r.maxBalance;
+        sumEnd += r.endingBalance;
+        sumActual += r.actualDrawn;
+        maxTotalLimit = Math.max(maxTotalLimit, r.totalLimit);
+
+        return `
+          <tr>
+            <td>${r.no}</td>
+            <td style="text-align: left;">${r.endorserName}</td>
+            <td style="text-align: left;">${r.beneficiaryName}</td>
+            <td>${r.relCode}</td>
+            <td style="text-align: right;">${r.singleLimit.toLocaleString()}</td>
+            <td style="text-align: right;">${r.maxBalance.toLocaleString()}</td>
+            <td style="text-align: right; font-weight: 700; color: var(--primary);">${r.endingBalance.toLocaleString()}</td>
+            <td style="text-align: right;">${r.actualDrawn.toLocaleString()}</td>
+            <td style="text-align: right;">${r.propertyPledge.toLocaleString()}</td>
+            <td style="font-weight: 700;">${r.ratioToNetWorth}</td>
+            <td style="text-align: right;">${r.totalLimit.toLocaleString()}</td>
+            <td style="font-weight: 700; color: var(--success);">${r.isParentToSub}</td>
+            <td style="font-weight: 700; color: var(--primary);">${r.isSubToParent}</td>
+            <td style="font-weight: 700; color: var(--danger);">${r.isMainland}</td>
+            <td>
+              <button class="btn btn-secondary btn-sm" style="padding: 0.1rem 0.3rem;" onclick="removeForm52Row(${idx})">刪除</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('f52-sum-max').innerText = sumMax.toLocaleString();
+      document.getElementById('f52-sum-end').innerText = sumEnd.toLocaleString();
+      document.getElementById('f52-sum-actual').innerText = sumActual.toLocaleString();
+      document.getElementById('f52-sum-limit').innerText = maxTotalLimit.toLocaleString();
+    }
+
+    function addForm52Row() {
+      const netWorth = parseFloat(document.getElementById('input-net-worth').value) || 100000000;
+      const compName = document.getElementById('input-company-name').value || "本公司";
+      form52Rows.push({
+        no: String(form52Rows.length),
+        endorserName: compName,
+        beneficiaryName: "新增海外子公司 B Corp",
+        relCode: "(2)",
+        singleLimit: netWorth * 0.10,
+        maxBalance: 20000000,
+        endingBalance: 20000000,
+        actualDrawn: 10000000,
+        propertyPledge: 0,
+        ratioToNetWorth: ((20000000 / netWorth) * 100).toFixed(2) + "%",
+        totalLimit: netWorth * 0.30,
+        isParentToSub: "Y",
+        isSubToParent: "",
+        isMainland: ""
+      });
+      renderForm52Table();
+    }
+
+    function removeForm52Row(idx) {
+      form52Rows.splice(idx, 1);
+      renderForm52Table();
+    }
+
+    // 匯出表格為 CSV
+    
+    function triggerCurrentSubTabImport() {
+      if (currentReportSubTab === 'form5-1') {
+        document.getElementById('input-csv-51').click();
+      } else if (currentReportSubTab === 'form5-2') {
+        document.getElementById('input-csv-52').click();
+      } else {
+        alert("請先切換至【格式五之一】或【格式五之二】頁籤以匯入相應的歷史台帳！");
+      }
+    }
+
+    function exportCurrentTableCsv() {
+      if (currentReportSubTab === 'form5-1') {
+        let csv = "\uFEFF編號,貸出資金之公司,貸與對象,往來項目,是否為關係人,本期最高餘額,期末餘額,實際動支金額,利率區間,資金貸與性質,業務往來金額,有短期融通資金必要之原因,提列備抵呆帳金額,擔保品名稱,擔保品價值,對個別對象資金貸與限額,資金貸與總限額\n";
+        form51Rows.forEach(r => {
+          csv += `"${r.no}","${r.lenderName}","${r.borrowerName}","${r.item}","${r.isRelated}",${r.maxBalance},${r.endingBalance},${r.actualDrawn},"${r.interestRate}","${r.nature}",${r.businessAmount},"${r.reason}",${r.allowance},"${r.collateralName}",${r.collateralValue},${r.singleLimit},${r.totalLimit}\n`;
+        });
+        downloadCsvBlob(csv, "金管會格式五之一_資金貸與他人彙總表.csv");
+      } else if (currentReportSubTab === 'form5-2') {
+        let csv = "\uFEFF編號,背書保證者公司名稱,被背書保證對象-公司名稱,被背書保證對象-關係,對單一企業背書保證限額,本期最高背書保證餘額,期末背書保證餘額,實際動支金額,背書保證以財產設定擔保金額,累計背書保證金額佔最近期財務報表淨值之比率,背書保證最高限額,屬母公司對子公司背書保證,屬子公司對母公司背書保證,屬對大陸地區背書保證\n";
+        form52Rows.forEach(r => {
+          csv += `"${r.no}","${r.endorserName}","${r.beneficiaryName}","${r.relCode}",${r.singleLimit},${r.maxBalance},${r.endingBalance},${r.actualDrawn},${r.propertyPledge},"${r.ratioToNetWorth}",${r.totalLimit},"${r.isParentToSub}","${r.isSubToParent}","${r.isMainland}"\n`;
+        });
+        downloadCsvBlob(csv, "金管會格式五之二_為他人背書保證彙總表.csv");
+      }
+    }
+
+    function downloadCsvBlob(csvContent, filename) {
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // =========================================================================
+    // 4. 公司內部作業程序上傳與解析模組 (Tab 3 功能)
+    // =========================================================================
+    function handleProcedureFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('procedure-raw-text').value = e.target.result;
+        smartParseProcedureText();
+      };
+      reader.readAsText(file);
+    }
+
+    function loadProcedureTemplate(tpl) {
+      if (tpl === 'strict') {
+        document.getElementById('custom-loan-total-ratio').value = "20.0";
+        document.getElementById('custom-loan-single-ratio').value = "5.0";
+        document.getElementById('custom-guar-total-ratio').value = "30.0";
+        document.getElementById('custom-guar-single-ratio').value = "10.0";
+        document.getElementById('custom-chairman-auth-limit').value = "30000000";
+        document.getElementById('custom-allow-revolving').value = "true";
+        document.getElementById('procedure-raw-text').value = `【穩健嚴格型作業程序範本】
+第三條 本公司資金貸與總額不得超過本公司最近期財務報表淨值百分之二十，對單一企業資金貸與限額不得超過淨值百分之五。
+第四條 本公司為他人背書保證總額不得超過淨值百分之三十，對單一企業背書保證不得超過淨值百分之十。
+第十條 授權董事長在三千萬元之額度內決行，並於事後報最近期董事會追認。
+第十四條 本公司與母公司或子公司間資金貸與，得授權董事長在一定額度內分次撥貸或循環動用，期間不超過一年。`;
+      } else if (tpl === 'standard') {
+        document.getElementById('custom-loan-total-ratio').value = "40.0";
+        document.getElementById('custom-loan-single-ratio').value = "10.0";
+        document.getElementById('custom-guar-total-ratio').value = "50.0";
+        document.getElementById('custom-guar-single-ratio').value = "20.0";
+        document.getElementById('custom-chairman-auth-limit').value = "50000000";
+        document.getElementById('custom-allow-revolving').value = "true";
+        document.getElementById('procedure-raw-text').value = `【上市櫃標準型作業程序範本】
+第三條 本公司短期融通資金貸與總額不得超過本公司最近期財務報表淨值百分之四十，對單一企業貸與限額不得超過淨值百分之十。
+第四條 本公司背書保證總額不得超過本公司淨值百分之五十，對單一企業背書保證不得超過淨值百分之二十。
+第十條 授權董事長在五千萬元之額度內決行。`;
+      } else {
+        document.getElementById('procedure-raw-text').value = "";
+      }
+    }
+
+    function smartParseProcedureText() {
+      const text = document.getElementById('procedure-raw-text').value;
+      if (!text.trim()) {
+        alert("請先貼上或上傳規章條文內容！");
+        return;
+      }
+      let parsedCount = 0;
+      const loanTotalMatch = text.match(/貸與(?:他人)?總額(?:合計)?不得超過(?:本公司)?(?:最近期)?(?:財務報表)?淨值百分之([一二三四五六七八九十百\d]+)/);
+      if (loanTotalMatch) {
+        const val = convertChineseNumber(loanTotalMatch[1]);
+        if (val) { document.getElementById('custom-loan-total-ratio').value = val.toFixed(1); parsedCount++; }
+      }
+      const loanSingleMatch = text.match(/(?:對單一企業|個別對象)(?:資金貸與)?(?:限額)?不得超過(?:本公司)?(?:最近期)?(?:財務報表)?淨值百分之([一二三四五六七八九十\d]+)/);
+      if (loanSingleMatch) {
+        const val = convertChineseNumber(loanSingleMatch[1]);
+        if (val) { document.getElementById('custom-loan-single-ratio').value = val.toFixed(1); parsedCount++; }
+      }
+      const guarTotalMatch = text.match(/背書保證總額(?:合計)?不得超過(?:本公司)?(?:最近期)?(?:財務報表)?淨值百分之([一二三四五六七八九十百\d]+)/);
+      if (guarTotalMatch) {
+        const val = convertChineseNumber(guarTotalMatch[1]);
+        if (val) { document.getElementById('custom-guar-total-ratio').value = val.toFixed(1); parsedCount++; }
+      }
+      const guarSingleMatch = text.match(/(?:對單一企業|單一對象)背書保證(?:限額)?不得超過(?:本公司)?(?:最近期)?(?:財務報表)?淨值百分之([一二三四五六七八九十\d]+)/);
+      if (guarSingleMatch) {
+        const val = convertChineseNumber(guarSingleMatch[1]);
+        if (val) { document.getElementById('custom-guar-single-ratio').value = val.toFixed(1); parsedCount++; }
+      }
+      const authMatch = text.match(/授權董事長在(?:新臺幣|新台幣)?([一二三四五六七八九十百千萬\d]+)元(?:之額度)?內決行/);
+      if (authMatch) {
+        const num = parseChineseMoney(authMatch[1]);
+        if (num) { document.getElementById('custom-chairman-auth-limit').value = num; parsedCount++; }
+      }
+      if (text.includes("循環動用") || text.includes("分次撥貸")) {
+        document.getElementById('custom-allow-revolving').value = "true";
+      }
+      alert(`✅ 智慧解析完成！成功辨識並更新了 ${parsedCount} 項規章控制參數。請檢視下方欄位並點擊「儲存並套用」。`);
+    }
+
+    function convertChineseNumber(str) {
+      if (!isNaN(str)) return parseFloat(str);
+      const dict = { "五": 5, "十": 10, "十五": 15, "二十": 20, "二十五": 25, "三十": 30, "三十五": 35, "四十": 40, "五十": 50 };
+      return dict[str] || null;
+    }
+
+    function parseChineseMoney(str) {
+      if (!isNaN(str)) return parseFloat(str);
+      if (str.includes("億")) {
+        const parts = str.split("億");
+        const yi = convertChineseNumber(parts[0]) || 1;
+        return yi * 100000000;
+      }
+      if (str.includes("萬")) {
+        const parts = str.split("萬");
+        const wan = convertChineseNumber(parts[0]) || 1;
+        return wan * 10000;
+      }
+      return 30000000;
+    }
+
+    function saveAndApplyCustomProcedures() {
+      customCompanyProcedures.isActive = true;
+      customCompanyProcedures.loanTotalRatio = parseFloat(document.getElementById('custom-loan-total-ratio').value) || 20.0;
+      customCompanyProcedures.loanSingleRatio = parseFloat(document.getElementById('custom-loan-single-ratio').value) || 5.0;
+      customCompanyProcedures.guarTotalRatio = parseFloat(document.getElementById('custom-guar-total-ratio').value) || 30.0;
+      customCompanyProcedures.guarSingleRatio = parseFloat(document.getElementById('custom-guar-single-ratio').value) || 10.0;
+      customCompanyProcedures.chairmanAuthLimit = parseFloat(document.getElementById('custom-chairman-auth-limit').value) || 30000000;
+      customCompanyProcedures.allowRevolving = (document.getElementById('custom-allow-revolving').value === 'true');
+
+      document.getElementById('active-procedure-label').innerText = "已啟用【貴公司自訂內部作業程序】進行雙軌檢核";
+      document.getElementById('active-procedure-summary').innerText = `(貸與總額 ${customCompanyProcedures.loanTotalRatio}% / 單一 ${customCompanyProcedures.loanSingleRatio}% / 背保總額 ${customCompanyProcedures.guarTotalRatio}% / 董長授權 NT$${(customCompanyProcedures.chairmanAuthLimit/10000).toLocaleString()}萬)`;
+
+      alert("🎉 儲存成功！自訂內部辦法已正式生效，系統將在導航精靈中同步檢核貴公司辦法與主管機關法規！");
+      switchNavTab('wizard');
+      runComplianceEvaluation();
+    }
+
+    function resetToStatutoryDefault() {
+      customCompanyProcedures.isActive = false;
+      document.getElementById('custom-loan-total-ratio').value = "40.0";
+      document.getElementById('custom-loan-single-ratio').value = "10.0";
+      document.getElementById('custom-guar-total-ratio').value = "50.0";
+      document.getElementById('custom-guar-single-ratio').value = "20.0";
+      document.getElementById('custom-chairman-auth-limit').value = "50000000";
+
+      document.getElementById('active-procedure-label').innerText = "採用金管會主管法規標準（未設定更嚴格之內部規章）";
+      document.getElementById('active-procedure-summary').innerText = "(貸與法定40% / 背保法定50%)";
+
+      alert("已重設恢復金管會處理準則之法定基準！");
+      runComplianceEvaluation();
+    }
+
+    // =========================================================================
+    // 5. 法規與官方問答集全文搜尋 (Tab 4 功能)
+    // =========================================================================
+    function setFaqCategoryFilter(cat, btnElem) {
+      currentFaqCategory = cat;
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      btnElem.classList.add('active');
+      filterFaqItems();
+    }
+
+    function clearFaqSearch() {
+      document.getElementById('faq-search-input').value = "";
+      filterFaqItems();
+    }
+
+    function filterFaqItems() {
+      const keyword = document.getElementById('faq-search-input').value.trim().toLowerCase();
+      const container = document.getElementById('faq-items-container');
+
+      const filtered = FAQ_DATABASE.filter(item => {
+        if (currentFaqCategory !== 'ALL') {
+          if (currentFaqCategory === 'FAQ_OFFICIAL' && item.type !== 'FAQ_OFFICIAL') return false;
+          if (currentFaqCategory === 'STATUTE' && item.type !== 'STATUTE') return false;
+          if (['LOAN', 'GUARANTEE', 'ASSET'].includes(currentFaqCategory) && item.category !== currentFaqCategory) return false;
+        }
+        if (!keyword) return true;
+        const textToSearch = (item.title + " " + item.content + " " + item.legalBasis + " " + item.tags.join(" ")).toLowerCase();
+        return textToSearch.includes(keyword);
+      });
+
+      document.getElementById('faq-match-count').innerText = `共 ${filtered.length} 筆符合項目`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2.5rem; color: var(--slate-600);">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+            <div style="font-weight: 600;">未找到與「${keyword}」相符之法規或問答條文</div>
+            <div style="font-size: 0.85rem; margin-top: 0.3rem;">請嘗試使用更通用的關鍵詞（如「淨值」、「貸與」、「背保」、「估價」等）。</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const typeBadge = (item.type === 'FAQ_OFFICIAL')
+          ? `<span class="rule-tag tag-action">證期局官方Q&A</span>`
+          : `<span class="rule-tag tag-pass">準則條文</span>`;
+        const catBadge = `<span class="rule-tag tag-company">${getCategoryLabel(item.category)}</span>`;
+
+        let displayTitle = item.title;
+        let displayContent = item.content;
+        if (keyword) {
+          const reg = new RegExp(`(${keyword})`, 'gi');
+          displayTitle = displayTitle.replace(reg, '<mark>$1</mark>');
+          displayContent = displayContent.replace(reg, '<mark>$1</mark>');
+        }
+
+        return `
+          <div class="faq-card">
+            <div class="faq-card-header">
+              <div>
+                <div style="display: flex; gap: 0.4rem; align-items: center; margin-bottom: 0.35rem;">
+                  ${catBadge} ${typeBadge}
+                  <span style="font-size: 0.75rem; color: var(--slate-600);">依據：${item.legalBasis}</span>
+                </div>
+                <div class="faq-card-title">${displayTitle}</div>
+              </div>
+            </div>
+            <div class="faq-card-body">${displayContent}</div>
+            <div style="margin-top: 0.6rem; display: flex; gap: 0.3rem; flex-wrap: wrap;">
+              ${item.tags.map(t => `<span style="font-size: 0.7rem; background: var(--slate-100); color: var(--slate-600); padding: 0.1rem 0.4rem; border-radius: 4px;">#${t}</span>`).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getCategoryLabel(cat) {
+      if (cat === 'LOAN') return '資金貸與';
+      if (cat === 'GUARANTEE') return '背書保證';
+      if (cat === 'ASSET') return '取得處分資產';
+      return cat;
+    }
+
+    function renderFaqList() {
+      filterFaqItems();
+    }
+
+    // =========================================================================
+    // 6. 導航精靈雙軌核心運算
+    // =========================================================================
+    function setBaselineMode(mode) {
+      currentMode = mode;
+      document.getElementById('btn-mode-listed').classList.toggle('active', mode === 'listed');
+      document.getElementById('btn-mode-custom').classList.toggle('active', mode === 'custom');
+
+      if (mode === 'listed') {
+        document.getElementById('section-listed').style.display = 'block';
+        document.getElementById('section-custom').style.display = 'none';
+        document.getElementById('badge-mode').innerText = "上市櫃自動帶入";
+        document.getElementById('badge-mode').className = "rule-tag tag-action";
+        onSelectStockPreset();
+      } else {
+        document.getElementById('section-listed').style.display = 'none';
+        document.getElementById('section-custom').style.display = 'block';
+        document.getElementById('badge-mode').innerText = "未公發手動輸入";
+        document.getElementById('badge-mode').className = "rule-tag tag-warn";
+
+        document.getElementById('input-capital').readOnly = false;
+        document.getElementById('input-net-worth').readOnly = false;
+        document.getElementById('input-total-assets').readOnly = false;
+        document.getElementById('input-capital').value = "150000000";
+        document.getElementById('input-net-worth').value = "320000000";
+        document.getElementById('input-total-assets').value = "680000000";
+      }
+      runComplianceEvaluation();
+    }
+
+    function onSelectStockPreset() {
+      const code = document.getElementById('select-preset-stock').value;
+      const data = STOCK_DATABASE[code];
+      if (data) {
+        document.getElementById('input-company-name').value = data.name;
+        document.getElementById('input-capital').value = data.capital;
+        document.getElementById('input-net-worth').value = data.netWorth;
+        document.getElementById('input-total-assets').value = data.totalAssets;
+        document.getElementById('check-override').checked = false;
+        onToggleOverride();
+      }
+      runComplianceEvaluation();
+    }
+
+    function onToggleOverride() {
+      const override = document.getElementById('check-override').checked;
+      document.getElementById('input-capital').readOnly = !override;
+      document.getElementById('input-net-worth').readOnly = !override;
+      document.getElementById('input-total-assets').readOnly = !override;
+      if (override) {
+        document.getElementById('badge-mode').innerText = "人工覆寫自結數";
+        document.getElementById('badge-mode').className = "rule-tag tag-warn";
+      } else {
+        document.getElementById('badge-mode').innerText = "上市櫃自動帶入";
+        document.getElementById('badge-mode').className = "rule-tag tag-action";
+      }
+    }
+
+    function setTransactionType(type) {
+      currentTransType = type;
+      document.getElementById('btn-type-loan').classList.toggle('active', type === 'LOAN');
+      document.getElementById('btn-type-guarantee').classList.toggle('active', type === 'GUARANTEE');
+      document.getElementById('btn-type-asset').classList.toggle('active', type === 'ASSET');
+
+      document.getElementById('form-loan-fields').style.display = (type === 'LOAN') ? 'block' : 'none';
+      document.getElementById('form-guarantee-fields').style.display = (type === 'GUARANTEE') ? 'block' : 'none';
+      document.getElementById('form-asset-fields').style.display = (type === 'ASSET') ? 'block' : 'none';
+
+      runComplianceEvaluation();
+    }
+
+    function checkLoanRevolvingWarning() {
+      const isRevolving = document.getElementById('check-loan-revolving').checked;
+      const rel = document.getElementById('loan-borrower-rel').value;
+      const isParentSub = ['PARENT_COMPANY', 'SUBSIDIARY_OVER_50', 'SUBSIDIARY_OVER_90', 'OVERSEAS_SUB_100'].includes(rel);
+      const warnElem = document.getElementById('loan-revolving-warning');
+      warnElem.style.display = (isRevolving && !isParentSub) ? 'block' : 'none';
+    }
+
+    function runComplianceEvaluation() {
+      const capital = parseFloat(document.getElementById('input-capital').value) || 0;
+      const netWorth = parseFloat(document.getElementById('input-net-worth').value) || 0;
+      const totalAssets = parseFloat(document.getElementById('input-total-assets').value) || 0;
+
+      let isOverallCompliant = true;
+      let hasCompanyProcedureViolation = false;
+      let requiresAnnouncement = false;
+      const announcementTriggers = [];
+      const ruleItems = [];
+      const approvals = ['提報董事會決議（獨立董事意見應詳實載明）'];
+      const expertOpinions = [];
+
+      let transAmount = 0;
+
+      if (netWorth <= 0) {
+        renderResults({
+          isCompliant: false,
+          hasCompanyViolation: false,
+          requiresAnnouncement: false,
+          triggers: [],
+          ruleItems: [{ id: 'RULE-00', name: '淨值有效性', tag: 'tag-fail', text: '有效淨值 ≦ 0，依法不得辦理！' }],
+          approvals: [],
+          expertOpinions: [],
+          capitalPct: 0, netWorthPct: 0, assetsPct: 0
+        });
+        return;
+      }
+
+      // 資金貸與
+      if (currentTransType === 'LOAN') {
+        transAmount = parseFloat(document.getElementById('loan-amount').value) || 0;
+        const borrowerRel = document.getElementById('loan-borrower-rel').value;
+        const purpose = document.getElementById('loan-purpose').value;
+        const isRevolving = document.getElementById('check-loan-revolving').checked;
+        const tenorMonths = parseInt(document.getElementById('loan-revolving-months').value) || 12;
+        const pastYearBusAmount = parseFloat(document.getElementById('loan-business-past-year').value) || 0;
+        const existingGroupBal = parseFloat(document.getElementById('loan-existing-group').value) || 0;
+
+        // 公司內部規章檢核
+        if (customCompanyProcedures.isActive && purpose === 'SHORT_TERM_FINANCING') {
+          const customTotalLimit = netWorth * (customCompanyProcedures.loanTotalRatio / 100);
+          const customSingleLimit = netWorth * (customCompanyProcedures.loanSingleRatio / 100);
+          const projectedTotal = existingGroupBal + transAmount;
+
+          if (projectedTotal > customTotalLimit) {
+            hasCompanyProcedureViolation = true;
+            ruleItems.push({
+              id: 'RULE-CP-L01',
+              name: '【公司辦法】貸與總額上限',
+              tag: 'tag-warn',
+              text: `⚠️ 逾越貴公司辦法：累計貸與占淨值 ${((projectedTotal/netWorth)*100).toFixed(1)}%，已超過貴公司內部訂定之 ${customCompanyProcedures.loanTotalRatio}% 總額上限 (NT$${customTotalLimit.toLocaleString()})！(金管會法定上限為 40%)`
+            });
+          } else {
+            ruleItems.push({
+              id: 'RULE-CP-L01',
+              name: '【公司辦法】貸與總額上限',
+              tag: 'tag-pass',
+              text: `符合貴公司內部程序自訂之 ${customCompanyProcedures.loanTotalRatio}% 淨值限額標準。`
+            });
+          }
+
+          if (transAmount > customSingleLimit) {
+            hasCompanyProcedureViolation = true;
+            ruleItems.push({
+              id: 'RULE-CP-L02',
+              name: '【公司辦法】單一企業貸與限額',
+              tag: 'tag-warn',
+              text: `⚠️ 逾越貴公司辦法：單一對象貸與占淨值 ${((transAmount/netWorth)*100).toFixed(1)}%，已超過貴公司內部訂定之 ${customCompanyProcedures.loanSingleRatio}% 上限 (NT$${customSingleLimit.toLocaleString()})！`
+            });
+          }
+        }
+
+        if (transAmount > customCompanyProcedures.chairmanAuthLimit) {
+          ruleItems.push({
+            id: 'RULE-CP-AUTH',
+            name: '【公司辦法】董事長決行授權額度',
+            tag: 'tag-action',
+            text: `本次金額 (NT$${transAmount.toLocaleString()}) 超過貴公司董事長授權額度 (NT$${customCompanyProcedures.chairmanAuthLimit.toLocaleString()})，必須提報董事會決議，不得由董事長逕行決行。`
+          });
+        }
+
+        // 主管機關法令檢核
+        const isEligible = (purpose === 'BUSINESS_TRANSACTION')
+          ? ['BUSINESS_PARTNER', 'PARENT_COMPANY', 'SUBSIDIARY_OVER_50', 'SUBSIDIARY_OVER_90', 'OVERSEAS_SUB_100'].includes(borrowerRel)
+          : (borrowerRel !== 'OTHER_THIRD_PARTY');
+
+        if (!isEligible) {
+          isOverallCompliant = false;
+          ruleItems.push({ id: 'RULE-L01', name: '【法定資格】貸與對象資格', tag: 'tag-fail', text: '🔴 法令禁止：借款對象不具法定合格資格，依法不得貸與資金！[準則§3]' });
+        } else {
+          ruleItems.push({ id: 'RULE-L01', name: '【法定資格】貸與對象資格', tag: 'tag-pass', text: '借款對象符合主管機關法定合格對象標準。[準則§3]' });
+        }
+
+        if (purpose === 'BUSINESS_TRANSACTION') {
+          if (transAmount > pastYearBusAmount) {
+            isOverallCompliant = false;
+            ruleItems.push({ id: 'RULE-L02', name: '【法定限額】業務往來限額', tag: 'tag-fail', text: `🔴 法令禁止：貸與金額超過雙方近一年業務往來總額 (NT$${pastYearBusAmount.toLocaleString()})！[準則§9-I-(2)]` });
+          }
+        } else {
+          const is100Overseas = (borrowerRel === 'OVERSEAS_SUB_100');
+          if (!is100Overseas) {
+            const statMaxAllowed = netWorth * 0.40;
+            const projected = existingGroupBal + transAmount;
+            if (projected > statMaxAllowed) {
+              isOverallCompliant = false;
+              ruleItems.push({ id: 'RULE-L03', name: '【法定限額】短期融通40%上限', tag: 'tag-fail', text: `🔴 法令禁止：累計融通總額已超過主管機關淨值 40% (NT$${statMaxAllowed.toLocaleString()}) 法定底線！[準則§9-I-(3)]` });
+            }
+          }
+        }
+
+        if (isRevolving) {
+          const isParentSub = ['PARENT_COMPANY', 'SUBSIDIARY_OVER_50', 'SUBSIDIARY_OVER_90', 'OVERSEAS_SUB_100'].includes(borrowerRel);
+          if (!isParentSub) {
+            isOverallCompliant = false;
+            ruleItems.push({ id: 'RULE-L04', name: '【法定防呆】循環動用對象', tag: 'tag-fail', text: '🔴 法令阻擋：僅限母子公司間得循環動用，對外不得授權董事長分次撥貸！[準則§14-II]' });
+          }
+          if (tenorMonths > 12) {
+            isOverallCompliant = false;
+            ruleItems.push({ id: 'RULE-L05A', name: '【法定限制】循環動用期限', tag: 'tag-fail', text: `授權動用期間 (${tenorMonths}月) 超過法定 1 年上限！[準則§14-II]` });
+          }
+          approvals.push('董事會授權董事長在一定額度與 1 年內分次撥貸或循環動用');
+        }
+
+        const evalBal = transAmount;
+        if ((existingGroupBal + evalBal) / netWorth >= 0.20) announcementTriggers.push(`集團貸與餘額達淨值 20% [準則§22-I-(1)]`);
+        if (evalBal / netWorth >= 0.10) announcementTriggers.push(`對單一企業貸與額度達淨值 10% [準則§22-I-(2)]`);
+        if (evalBal >= 10000000 && (evalBal / netWorth) >= 0.02) announcementTriggers.push(`新增貸與達 1,000 萬元且達淨值 2% [準則§22-I-(3)]`);
+      }
+
+      // 背書保證
+      else if (currentTransType === 'GUARANTEE') {
+        transAmount = parseFloat(document.getElementById('guarantee-amount').value) || 0;
+        const beneficiaryRel = document.getElementById('guarantee-rel').value;
+        const equityBookVal = parseFloat(document.getElementById('guarantee-equity-book-val').value) || 0;
+        const loanBal = parseFloat(document.getElementById('guarantee-loan-bal').value) || 0;
+        const existingGroupGuar = parseFloat(document.getElementById('guarantee-existing-group').value) || 0;
+
+        if (customCompanyProcedures.isActive) {
+          const customTotalLimit = netWorth * (customCompanyProcedures.guarTotalRatio / 100);
+          const customSingleLimit = netWorth * (customCompanyProcedures.guarSingleRatio / 100);
+          const projectedGuar = existingGroupGuar + transAmount;
+
+          if (projectedGuar > customTotalLimit) {
+            hasCompanyProcedureViolation = true;
+            ruleItems.push({
+              id: 'RULE-CP-E01',
+              name: '【公司辦法】背保總額上限',
+              tag: 'tag-warn',
+              text: `⚠️ 逾越貴公司辦法：背保累計達淨值 ${((projectedGuar/netWorth)*100).toFixed(1)}%，已超過貴公司訂定之 ${customCompanyProcedures.guarTotalRatio}% 上限 (NT$${customTotalLimit.toLocaleString()})！(法定通常為 50%)`
+            });
+          }
+          if (transAmount > customSingleLimit) {
+            hasCompanyProcedureViolation = true;
+            ruleItems.push({
+              id: 'RULE-CP-E02',
+              name: '【公司辦法】背保單一對象限額',
+              tag: 'tag-warn',
+              text: `⚠️ 逾越貴公司辦法：對單一對象背保占淨值 ${((transAmount/netWorth)*100).toFixed(1)}%，超過貴公司訂定之 ${customCompanyProcedures.guarSingleRatio}% 限額！`
+            });
+          }
+        }
+
+        if (beneficiaryRel === 'OTHER_UNRELATED') {
+          isOverallCompliant = false;
+          ruleItems.push({ id: 'RULE-E01', name: '【法定資格】被保證對象', tag: 'tag-fail', text: '🔴 法令禁止：非屬法定合格公司或專案互保對象，不得為其背保！[準則§5-I]' });
+        }
+        if (beneficiaryRel === '4') {
+          const max90 = netWorth * 0.10;
+          if (transAmount > max90) {
+            isOverallCompliant = false;
+            ruleItems.push({ id: 'RULE-E02', name: '【法定限額】90%子公司互保', tag: 'tag-fail', text: `🔴 法令禁止：持股90%互保金額超過法定淨值 10% (NT$${max90.toLocaleString()}) 上限！[準則§5-II]` });
+          }
+          approvals.push('提報公開發行母公司董事會決議通過');
+        }
+
+        if ((existingGroupGuar + transAmount) / netWorth >= 0.50) announcementTriggers.push(`集團背保總餘額達淨值 50% [準則§25-I-(1)]`);
+        if (transAmount / netWorth >= 0.20) announcementTriggers.push(`對單一企業背保達淨值 20% [準則§25-I-(2)]`);
+        const threeSum = transAmount + equityBookVal + loanBal;
+        if (transAmount >= 10000000 && (threeSum / netWorth) >= 0.30) {
+          announcementTriggers.push(`三合一穿透門檻達標：單一背保≧1,000萬且【背保+權益法投資+資貸】達淨值 30% [準則§25-I-(3)]`);
+        }
+        if (transAmount >= 30000000 && (transAmount / netWorth) >= 0.05) announcementTriggers.push(`單次新增背保達 3,000 萬元且達淨值 5% [準則§25-I-(4)]`);
+      }
+
+      // 取得處分資產
+      else if (currentTransType === 'ASSET') {
+        transAmount = parseFloat(document.getElementById('asset-amount').value) || 0;
+        const category = document.getElementById('asset-category').value;
+        const counterparty = document.getElementById('asset-counterparty-type').value;
+
+        if (['REAL_ESTATE', 'ROU_REAL_ESTATE'].includes(category)) {
+          const isAppraisal = (transAmount >= 300000000) || (capital > 0 && (transAmount / capital) >= 0.20);
+          if (isAppraisal) {
+            if (transAmount >= 1000000000) {
+              expertOpinions.push('洽請『二家以上』專業估價機構出具估價報告 [準則§9-I-(1)]');
+              ruleItems.push({ id: 'RULE-A02', name: '雙估價報告', tag: 'tag-action', text: '交易金額達 10 億元以上，應洽請二家以上專業估價機構出具估價報告。' });
+            } else {
+              expertOpinions.push('洽請專業估價機構出具估價報告 [準則§9-I]');
+              ruleItems.push({ id: 'RULE-A01', name: '估價報告', tag: 'tag-action', text: '交易金額達 3 億元或資本額 20%，簽約前應取得估價報告。' });
+            }
+          }
+        }
+
+        if (['SECURITIES_NON_PUBLIC', 'INTANGIBLE_ASSET'].includes(category)) {
+          if (transAmount >= 300000000 || (capital > 0 && (transAmount / capital) >= 0.20)) {
+            expertOpinions.push('洽請會計師就交易價格合理性出具意見書 [準則§10/§11]');
+            ruleItems.push({ id: 'RULE-A03', name: '會計師意見書', tag: 'tag-action', text: '非公開市場證券或無形資產達 3 億或資本額 20%，應取具會計師合理性意見書。' });
+          }
+        }
+
+        if (counterparty === 'RELATED_PARTY') {
+          approvals.push('審計委員會全體成員二分之一以上同意');
+          if (totalAssets > 0 && (transAmount / totalAssets) >= 0.10) {
+            approvals.push('提報「股東會」決議通過後始得簽約與付款 [準則§15-I]');
+            ruleItems.push({ id: 'RULE-A04', name: '關係人重大審批', tag: 'tag-action', text: '向關係人取得/處分資產達總資產 10%，依法應提報股東會決議通過！' });
+          }
+          if (['REAL_ESTATE', 'ROU_REAL_ESTATE'].includes(category)) {
+            announcementTriggers.push('向關係人取得或處分不動產或其使用權資產 [準則§31-I-(1)]');
+          } else if (transAmount >= 300000000 || (capital > 0 && (transAmount / capital) >= 0.20) || (totalAssets > 0 && (transAmount / totalAssets) >= 0.10)) {
+            announcementTriggers.push('向關係人取得或處分其他資產達法定重大門檻 [準則§31-I-(1)]');
+          }
+        } else {
+          if (category === 'EQUIPMENT_OPERATING') {
+            if (transAmount >= 500000000) announcementTriggers.push('取得供營業用設備達新臺幣 5 億元以上 [準則§31-I-(2)]');
+          } else {
+            if (transAmount >= 300000000 || (capital > 0 && (transAmount / capital) >= 0.20)) {
+              announcementTriggers.push('一般資產交易達新臺幣 3 億元或實收資本額 20% [準則§31-I-(5)]');
+            }
+          }
+        }
+      }
+
+      if (announcementTriggers.length > 0) requiresAnnouncement = true;
+
+      const capitalPct = (capital > 0) ? ((transAmount / capital) * 100).toFixed(1) : "0.0";
+      const netWorthPct = (netWorth > 0) ? ((transAmount / netWorth) * 100).toFixed(1) : "0.0";
+      const assetsPct = (totalAssets > 0) ? ((transAmount / totalAssets) * 100).toFixed(1) : "0.0";
+
+      renderResults({
+        isCompliant: isOverallCompliant,
+        hasCompanyViolation: hasCompanyProcedureViolation,
+        requiresAnnouncement,
+        triggers: announcementTriggers,
+        ruleItems,
+        approvals,
+        expertOpinions,
+        capitalPct,
+        netWorthPct,
+        assetsPct
+      });
+    }
+
+    function renderResults(res) {
+      const banner = document.getElementById('result-banner');
+      const icon = document.getElementById('banner-icon');
+      const title = document.getElementById('banner-title');
+      const desc = document.getElementById('banner-desc');
+
+      if (!res.isCompliant) {
+        banner.className = "diagnostic-banner banner-danger";
+        icon.innerText = "🔴";
+        title.innerText = "合規診斷不合格：違反主管機關法令強制規定！";
+        desc.innerText = "存在法定違法阻擋項目（如非合格借貸對象、超限等），證券法令所不許，此架構不得執行。";
+      } else if (res.hasCompanyViolation) {
+        banner.className = "diagnostic-banner banner-warn";
+        icon.innerText = "⚠️";
+        title.innerText = "注意：符合主管機關法令，但逾越貴公司內部作業程序！";
+        desc.innerText = "交易未違反金管會法定底線，但已超過貴公司內部自訂之更嚴格限額。建議先辦理修改作業程序或報請董事會專案特別決議。";
+      } else if (res.requiresAnnouncement || res.expertOpinions.length > 0) {
+        banner.className = "diagnostic-banner banner-warn";
+        icon.innerText = "⚠️";
+        title.innerText = "雙軌合規通過，但依法需履行即時公告或外部專家意見！";
+        desc.innerText = "額度在限額內，但依法需取得估價/會計師意見書或於 2 日內公告重大訊息。";
+      } else {
+        banner.className = "diagnostic-banner banner-pass";
+        icon.innerText = "✅";
+        title.innerText = "雙軌合規完全通過";
+        desc.innerText = "交易完全符合貴公司內部辦法規範與金管會法定標準，未達即時公告標準（次月申報即可）。";
+      }
+
+      const alertBox = document.getElementById('alert-announcement');
+      const triggerList = document.getElementById('alert-triggers-list');
+      if (res.requiresAnnouncement) {
+        alertBox.style.display = 'block';
+        triggerList.innerHTML = res.triggers.map(t => `<li>${t}</li>`).join('');
+      } else {
+        alertBox.style.display = 'none';
+      }
+
+      document.getElementById('metric-capital-pct').innerText = res.capitalPct + "%";
+      document.getElementById('metric-net-worth-pct').innerText = res.netWorthPct + "%";
+      document.getElementById('metric-assets-pct').innerText = res.assetsPct + "%";
+
+      const itemsContainer = document.getElementById('rule-items-container');
+      itemsContainer.innerHTML = res.ruleItems.map(r => `
+        <div class="rule-item">
+          <span class="rule-tag ${r.tag}">${r.id}</span>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--slate-800);">${r.name}</div>
+            <div style="font-size: 0.8rem; color: var(--slate-600);">${r.text}</div>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('approvals-list').innerHTML = res.approvals.map(a => `<li>${a}</li>`).join('');
+      const expertSec = document.getElementById('expert-opinions-section');
+      if (res.expertOpinions && res.expertOpinions.length > 0) {
+        expertSec.style.display = 'block';
+        document.getElementById('expert-opinions-list').innerHTML = res.expertOpinions.map(e => `<li>${e}</li>`).join('');
+      } else {
+        expertSec.style.display = 'none';
+      }
+    }
+
+    function loadBenchmarkCase(caseId) {
+      switchNavTab('wizard');
+      if (caseId === 'A') {
+        setBaselineMode('listed');
+        document.getElementById('select-preset-stock').value = "2330";
+        onSelectStockPreset();
+        setTransactionType('LOAN');
+        document.getElementById('loan-borrower-name').value = "TSMC Global Ltd (海外100%子公司)";
+        document.getElementById('loan-borrower-rel').value = "OVERSEAS_SUB_100";
+        document.getElementById('loan-purpose').value = "SHORT_TERM_FINANCING";
+        document.getElementById('loan-amount').value = "50000000000";
+        document.getElementById('check-loan-revolving').checked = true;
+        document.getElementById('loan-revolving-months').value = "12";
+      } else if (caseId === 'B') {
+        setBaselineMode('custom');
+        document.getElementById('custom-company-name').value = "極智生醫科技股份有限公司 (未公發)";
+        document.getElementById('input-capital').value = "150000000";
+        document.getElementById('input-net-worth').value = "320000000";
+        document.getElementById('input-total-assets').value = "680000000";
+        setTransactionType('GUARANTEE');
+        document.getElementById('guarantee-beneficiary-name').value = "極智健康科技 (持股95%子公司)";
+        document.getElementById('guarantee-rel').value = "4";
+        document.getElementById('guarantee-amount').value = "80000000";
+      } else if (caseId === 'C') {
+        setBaselineMode('listed');
+        document.getElementById('select-preset-stock').value = "2330";
+        onSelectStockPreset();
+        setTransactionType('ASSET');
+        document.getElementById('asset-category').value = "ROU_REAL_ESTATE";
+        document.getElementById('asset-counterparty-name').value = "關係人長宏資產股份有限公司";
+        document.getElementById('asset-counterparty-type').value = "RELATED_PARTY";
+        document.getElementById('asset-amount').value = "1200000000";
+      }
+      runComplianceEvaluation();
+    }
+
+    function copyDiagnosisDraft() {
+      const compName = document.getElementById('input-company-name').value || "本公司";
+      const draft = `【重大訊息主旨參考】公告${compName}董事會決議辦理相關交易事宜依規定申報`;
+      navigator.clipboard.writeText(draft).then(() => {
+        alert("已成功複製重大訊息主旨草稿至剪貼簿！");
+      });
+    }
+
+    // 初始化載入
+    
+    // =========================================================================
+    // 8. 董事會簽核報告書 一鍵匯出 Word 檔模組 (Export to Word Engine)
+    // =========================================================================
+    function exportReportToWord() {
+      const rptElement = document.getElementById('subtab-report');
+      const compName = document.getElementById('rpt-company-title').innerText || "本公司";
+
+      // 複製一份並移除網頁上的按鈕列
+      const clone = rptElement.cloneNode(true);
+      const actionBars = clone.querySelectorAll('.statutory-action-bar');
+      actionBars.forEach(el => el.remove());
+
+      const content = clone.innerHTML;
+
+      const htmlDocument = `<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' 
+      xmlns:w='urn:schemas-microsoft-com:office:word' 
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+  <meta charset='utf-8'>
+  <title>${compName} 重大交易適法性審查與內部決策合規簽核報告書</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
+    </w:WordDocument>
+  </xml>
+  <![endif]-->
+  <style>
+    body {
+      font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+      font-size: 11pt;
+      line-height: 1.5;
+      color: #1e293b;
+    }
+    .report-header-title {
+      font-size: 18pt;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 6pt;
+    }
+    .report-header-sub {
+      font-size: 13pt;
+      font-weight: bold;
+      text-align: center;
+      color: #1e40af;
+      border-bottom: 2pt solid #1e40af;
+      padding-bottom: 8pt;
+      margin-bottom: 16pt;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14pt;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 6pt 8pt;
+      font-size: 10pt;
+    }
+    th {
+      background-color: #f1f5f9;
+      font-weight: bold;
+      color: #1e293b;
+      text-align: left;
+    }
+    .sign-box-cell {
+      height: 75pt;
+      vertical-align: top;
+      font-size: 9.5pt;
+      color: #475569;
+    }
+  </style>
+</head>
+<body>
+${content}
+</body>
+</html>`;
+
+      const blob = new Blob(['\ufeff', htmlDocument], { type: 'application/msword;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${compName}_重大交易適法性審查與內部合規簽核報告書.doc`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      onSelectStockPreset();
+      loadProcedureTemplate('strict');
+      runComplianceEvaluation();
+    });
+  
+    // =========================================================================
+    // 7. 格式五之一與五之二 歷史台帳 CSV 匯入與範本下載模組 (Batch Import Engine)
+    // =========================================================================
+    function parseCsvLine(text) {
+      let result = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        let c = text[i];
+        if (c === '"') {
+          inQuotes = !inQuotes;
+        } else if (c === ',' && !inQuotes) {
+          result.push(cur.trim());
+          cur = '';
+        } else {
+          cur += c;
+        }
+      }
+      result.push(cur.trim());
+      return result;
+    }
+
+    // 格式五之一範本與匯入
+    function downloadTemplate51() {
+      const compName = document.getElementById('input-company-name').value || "本公司";
+      const netWorth = parseFloat(document.getElementById('input-net-worth').value) || 100000000;
+      const csv = "\uFEFF編號,貸出資金之公司,貸與對象,往來項目,是否為關係人,本期最高餘額,期末餘額,實際動支金額,利率區間,資金貸與性質,業務往來金額,有短期融通資金必要之原因,提列備抵呆帳金額,擔保品名稱,擔保品價值,對個別對象資金貸與限額,資金貸與總限額\n" +
+                  `0,${compName},TSMC Global Ltd.,應收關係人款項,是,50000000000,50000000000,50000000000,1.85%~2.25%,有短期融通資金之必要者,0,營運週轉與充實營運資金,0,公司本票,50000000000,${netWorth*0.1},${netWorth*0.4}\n` +
+                  `0,${compName},TSMC North America,應收關係人款項,是,10000000000,10000000000,8500000000,1.95%,業務往來者,45000000000,-,0,無,0,45000000000,${netWorth*0.4}\n` +
+                  `1,台積晶圓製造(海外子公司),TSMC Japan 3DIC R&D,應收關係人款項,是,5000000000,5000000000,5000000000,2.10%,有短期融通資金之必要者,0,研發設備購置,0,本票,5000000000,${netWorth*0.05},${netWorth*0.2}\n`;
+      downloadCsvBlob(csv, "格式五之一_資金貸與歷史台帳_匯入範本.csv");
+    }
+
+    function handleCsvUpload51(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        parseCsv51(e.target.result);
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    function parseCsv51(text) {
+      const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+      if (lines.length <= 1) {
+        alert("CSV 內容為空或僅有表頭！");
+        return;
+      }
+      const newRows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const parts = parseCsvLine(lines[i]);
+        if (parts.length >= 8) {
+          newRows.push({
+            no: parts[0] || String(i - 1),
+            lenderName: parts[1] || "",
+            borrowerName: parts[2] || "",
+            item: parts[3] || "應收關係人款項",
+            isRelated: parts[4] || "是",
+            maxBalance: parseFloat(parts[5]) || 0,
+            endingBalance: parseFloat(parts[6]) || 0,
+            actualDrawn: parseFloat(parts[7]) || 0,
+            interestRate: parts[8] || "2.0%",
+            nature: parts[9] || "有短期融通資金之必要者",
+            businessAmount: parseFloat(parts[10]) || 0,
+            reason: parts[11] || "-",
+            allowance: parseFloat(parts[12]) || 0,
+            collateralName: parts[13] || "無",
+            collateralValue: parseFloat(parts[14]) || 0,
+            singleLimit: parseFloat(parts[15]) || 0,
+            totalLimit: parseFloat(parts[16]) || 0
+          });
+        }
+      }
+      if (newRows.length > 0) {
+        form51Rows = newRows;
+        renderForm51Table();
+        alert(`🎉 成功匯入 ${newRows.length} 筆資金貸與歷史台帳！期末餘額已自動計入並更新合計列。`);
+      }
+    }
+
+    function loadDemoHistory51() {
+      const netWorth = parseFloat(document.getElementById('input-net-worth').value) || 100000000000;
+      const compName = document.getElementById('input-company-name').value || "本公司";
+      form51Rows = [
+        {
+          no: "0", lenderName: compName, borrowerName: "TSMC Global Ltd. (海外100%子公司)",
+          item: "應收關係人款項", isRelated: "是", maxBalance: 50000000000, endingBalance: 50000000000, actualDrawn: 50000000000,
+          interestRate: "1.85%~2.25%", nature: "有短期融通資金之必要者", businessAmount: 0, reason: "購置機器設備與營運週轉",
+          allowance: 0, collateralName: "公司本票", collateralValue: 50000000000, singleLimit: netWorth*0.1, totalLimit: netWorth*0.4
+        },
+        {
+          no: "0", lenderName: compName, borrowerName: "TSMC North America",
+          item: "應收關係人款項", isRelated: "是", maxBalance: 15000000000, endingBalance: 15000000000, actualDrawn: 12000000000,
+          interestRate: "1.95%", nature: "業務往來者", businessAmount: 60000000000, reason: "-",
+          allowance: 0, collateralName: "無", collateralValue: 0, singleLimit: 60000000000, totalLimit: netWorth*0.4
+        },
+        {
+          no: "1", lenderName: "台積晶圓製造(海外子公司)", borrowerName: "TSMC Japan 3DIC R&D Center",
+          item: "應收關係人款項", isRelated: "是", maxBalance: 8000000000, endingBalance: 8000000000, actualDrawn: 7500000000,
+          interestRate: "2.10%", nature: "有短期融通資金之必要者", businessAmount: 0, reason: "研發設備購置",
+          allowance: 0, collateralName: "本票", collateralValue: 8000000000, singleLimit: netWorth*0.05, totalLimit: netWorth*0.2
+        }
+      ];
+      renderForm51Table();
+      alert("✅ 已成功載入 3 筆示範集團資金貸與歷史台帳！");
+    }
+
+    // 格式五之二範本與匯入
+    function downloadTemplate52() {
+      const compName = document.getElementById('input-company-name').value || "本公司";
+      const netWorth = parseFloat(document.getElementById('input-net-worth').value) || 100000000;
+      const csv = "\uFEFF編號,背書保證者公司名稱,被背書保證對象-公司名稱,被背書保證對象-關係,對單一企業背書保證限額,本期最高背書保證餘額,期末背書保證餘額,實際動支金額,背書保證以財產設定擔保金額,累計背書保證金額佔最近期財務報表淨值之比率,背書保證最高限額,屬母公司對子公司背書保證,屬子公司對母公司背書保證,屬對大陸地區背書保證\n" +
+                  `0,${compName},TSMC Global Ltd.,(2),${netWorth*0.2},80000000000,80000000000,65000000000,0,2.50%,${netWorth*0.5},Y,,\n` +
+                  `0,${compName},JASM (日本熊本子公司),(2),${netWorth*0.1},35000000000,35000000000,30000000000,0,1.09%,${netWorth*0.5},Y,,\n` +
+                  `1,TSMC Global Ltd.,TSMC Arizona Corporation,(4),${netWorth*0.05},20000000000,20000000000,18000000000,0,0.63%,${netWorth*0.1},Y,,\n`;
+      downloadCsvBlob(csv, "格式五之二_為他人背書保證歷史台帳_匯入範本.csv");
+    }
+
+    function handleCsvUpload52(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        parseCsv52(e.target.result);
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    function parseCsv52(text) {
+      const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+      if (lines.length <= 1) {
+        alert("CSV 內容為空或僅有表頭！");
+        return;
+      }
+      const newRows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const parts = parseCsvLine(lines[i]);
+        if (parts.length >= 8) {
+          newRows.push({
+            no: parts[0] || String(i - 1),
+            endorserName: parts[1] || "",
+            beneficiaryName: parts[2] || "",
+            relCode: parts[3] || "(2)",
+            singleLimit: parseFloat(parts[4]) || 0,
+            maxBalance: parseFloat(parts[5]) || 0,
+            endingBalance: parseFloat(parts[6]) || 0,
+            actualDrawn: parseFloat(parts[7]) || 0,
+            propertyPledge: parseFloat(parts[8]) || 0,
+            ratioToNetWorth: parts[9] || "0.0%",
+            totalLimit: parseFloat(parts[10]) || 0,
+            isParentToSub: parts[11] || "",
+            isSubToParent: parts[12] || "",
+            isMainland: parts[13] || ""
+          });
+        }
+      }
+      if (newRows.length > 0) {
+        form52Rows = newRows;
+        renderForm52Table();
+        alert(`🎉 成功匯入 ${newRows.length} 筆背書保證歷史台帳！已自動計算累計比率與更新合計列。`);
+      }
+    }
+
+    function loadDemoHistory52() {
+      const netWorth = parseFloat(document.getElementById('input-net-worth').value) || 100000000000;
+      const compName = document.getElementById('input-company-name').value || "本公司";
+      form52Rows = [
+        {
+          no: "0", endorserName: compName, beneficiaryName: "TSMC Global Ltd.",
+          relCode: "(2)", singleLimit: netWorth*0.2, maxBalance: 80000000000, endingBalance: 80000000000, actualDrawn: 65000000000,
+          propertyPledge: 0, ratioToNetWorth: ((80000000000/netWorth)*100).toFixed(2) + "%", totalLimit: netWorth*0.5,
+          isParentToSub: "Y", isSubToParent: "", isMainland: ""
+        },
+        {
+          no: "0", endorserName: compName, beneficiaryName: "JASM (日本熊本子公司)",
+          relCode: "(2)", singleLimit: netWorth*0.1, maxBalance: 35000000000, endingBalance: 35000000000, actualDrawn: 30000000000,
+          propertyPledge: 0, ratioToNetWorth: ((35000000000/netWorth)*100).toFixed(2) + "%", totalLimit: netWorth*0.5,
+          isParentToSub: "Y", isSubToParent: "", isMainland: ""
+        },
+        {
+          no: "1", endorserName: "TSMC Global Ltd.", beneficiaryName: "TSMC Arizona Corporation",
+          relCode: "(4)", singleLimit: netWorth*0.05, maxBalance: 20000000000, endingBalance: 20000000000, actualDrawn: 18000000000,
+          propertyPledge: 0, ratioToNetWorth: ((20000000000/netWorth)*100).toFixed(2) + "%", totalLimit: netWorth*0.1,
+          isParentToSub: "Y", isSubToParent: "", isMainland: ""
+        }
+      ];
+      renderForm52Table();
+      alert("✅ 已成功載入 3 筆示範集團背書保證歷史台帳！");
+    }
+
+  </script>
+</body>
+</html>
