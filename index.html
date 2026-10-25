@@ -1792,15 +1792,25 @@
         return new TextDecoder("utf-16be").decode(uint8);
       }
       // Try strict UTF-8 first; if invalid byte sequences exist (e.g. Windows Notepad ANSI/Big5), fallback to Big5
+      let decoded = "";
       try {
-        return new TextDecoder("utf-8", { fatal: true }).decode(uint8);
+        decoded = new TextDecoder("utf-8", { fatal: true }).decode(uint8);
       } catch (e) {
         try {
-          return new TextDecoder("big5").decode(uint8);
+          decoded = new TextDecoder("big5").decode(uint8);
         } catch (e2) {
-          return new TextDecoder("utf-8").decode(uint8);
+          decoded = new TextDecoder("utf-8").decode(uint8);
         }
       }
+      return normalizeUnicodeCjk(decoded);
+    }
+
+    function normalizeUnicodeCjk(str) {
+      if (!str) return "";
+      // 將 PDF 常見之 CJK Compatibility Ideographs (U+F900~U+FAFF，如 金->金、不->不、度->度、理->理) 與康熙部首轉為標準 UTF-8 國字
+      let s = typeof str.normalize === "function" ? str.normalize("NFC") : str;
+      s = s.replace(/[\u2F00-\u2FDF\uF900-\uFAFF]/g, ch => ch.normalize("NFKC"));
+      return s;
     }
 
     function processUploadedProcedureFile(file) {
@@ -1936,6 +1946,7 @@
     }
 
     function normalizePdfLineBreaks(text) {
+      text = normalizeUnicodeCjk(text);
       const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l && !/^Page\s+\d+$/i.test(l) && !/^\d+$/.test(l));
       let merged = "";
       for (let i = 0; i < lines.length; i++) {
