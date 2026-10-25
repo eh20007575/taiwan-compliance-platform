@@ -1204,44 +1204,127 @@
           <div id="procedure-parse-feedback" style="display: none; margin-bottom: 1.25rem; padding: 1rem 1.25rem; border-radius: 8px; border: 1px solid #10b981; background-color: #ecfdf5; color: #065f46;"></div>
 
           <div style="border-top: 1px solid var(--slate-200); padding-top: 1.25rem;">
-            <h4 style="font-size: 1rem; color: var(--slate-800); margin-bottom: 0.75rem;">🎯 貴公司內部辦法控制參數（解析結果或手動微調）：</h4>
-            
-            <div class="form-row-3">
-              <div class="form-group">
-                <label class="form-label">資金貸與總額上限占淨值 (%)</label>
-                <input type="number" step="0.1" class="form-control" id="custom-loan-total-ratio" value="20.0">
-                <span class="form-sublabel">法定上限為 40%</span>
+            <h4 style="font-size: 1rem; color: var(--slate-800); margin-bottom: 0.75rem;">🎯 貴公司內部辦法控制參數（支援「四層式資金貸與分類限額」解析與手動微調）：</h4>
+
+            <!-- 第一層：全公司總體貸與限額 -->
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #1e40af; padding: 0.9rem 1rem; border-radius: 6px; margin-bottom: 0.85rem;">
+              <div style="font-size: 0.88rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.5rem;">
+                ① 【全公司總體限額】業務往來 ＋ 短期融通合計上限（如 1907 永豐餘第 5 條第 1 項：總額 80% / 個別 80%）
               </div>
-              <div class="form-group">
-                <label class="form-label">資金貸與單一企業上限占淨值 (%)</label>
-                <input type="number" step="0.1" class="form-control" id="custom-loan-single-ratio" value="5.0">
-                <span class="form-sublabel">法定通常為 10%</span>
-              </div>
-              <div class="form-group">
-                <label class="form-label">董事長授權決行額度 (NT$)</label>
-                <input type="number" class="form-control" id="custom-chairman-auth-limit" value="30000000">
-                <span class="form-sublabel">逾越額度須提董事會事前決議</span>
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">全公司資金貸與總額上限占淨值 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-overall-loan-total-ratio" value="40.0">
+                  <span class="form-sublabel">業務往來＋短期融通合計上限（公版 40% / 永豐餘 80%）</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">全公司對單一對象總限額占淨值 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-overall-loan-single-ratio" value="10.0">
+                  <span class="form-sublabel">單一對象合計上限（公版 10% / 永豐餘 80%）</span>
+                </div>
               </div>
             </div>
 
-            <div class="form-row-3">
-              <div class="form-group">
-                <label class="form-label">背書保證總額上限占淨值 (%)</label>
-                <input type="number" step="0.1" class="form-control" id="custom-guar-total-ratio" value="30.0">
-                <span class="form-sublabel">法定上限通常為 50%</span>
+            <!-- 第二層 & 第三層：依貸與種類區分（業務往來 vs 短期融通） -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0.85rem; margin-bottom: 0.85rem;">
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #15803d; padding: 0.9rem 1rem; border-radius: 6px;">
+                <div style="font-size: 0.88rem; font-weight: 700; color: #166534; margin-bottom: 0.5rem;">
+                  ② 【種類一：因業務往來關係】（如第 3 條）
+                </div>
+                <div class="form-row">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">業務往來貸與總額占淨值 (%)</label>
+                    <input type="number" step="0.1" class="form-control" id="custom-bus-loan-total-ratio" value="40.0">
+                    <span class="form-sublabel">如永豐餘第 3 條為淨值 40%</span>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">業務往來個別對象占淨值 (%)</label>
+                    <input type="number" step="0.1" class="form-control" id="custom-bus-loan-single-ratio" value="40.0">
+                    <span class="form-sublabel">同時受「近一年進銷貨金額」孰低限制</span>
+                  </div>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label">背書保證單一企業上限占淨值 (%)</label>
-                <input type="number" step="0.1" class="form-control" id="custom-guar-single-ratio" value="10.0">
-                <span class="form-sublabel">法定上限通常為 20%</span>
+
+              <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #2563eb; padding: 0.9rem 1rem; border-radius: 6px;">
+                <div style="font-size: 0.88rem; font-weight: 700; color: #1e40af; margin-bottom: 0.5rem;">
+                  ③ 【種類二：因短期融通資金必要】（如第 4 條）
+                </div>
+                <div class="form-row">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">短期融通貸與總額占淨值 (%)</label>
+                    <input type="number" step="0.1" class="form-control" id="custom-loan-total-ratio" value="20.0">
+                    <span class="form-sublabel">法定上限為淨值 40%</span>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">短期融通個別對象占淨值 (%)</label>
+                    <input type="number" step="0.1" class="form-control" id="custom-loan-single-ratio" value="5.0">
+                    <span class="form-sublabel">公版通常 10% / 永豐餘第 4 條為 40%</span>
+                  </div>
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label">是否允許母子公司循環動用</label>
-                <select class="form-select" id="custom-allow-revolving">
-                  <option value="true" selected>明文允許（期間不超過1年）</option>
-                  <option value="false">未明文授權（禁止循環動用）</option>
-                </select>
-                <span class="form-sublabel">準則第14條規範</span>
+            </div>
+
+            <!-- 第四層：100% 持股國外公司間特例 -->
+            <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-left: 4px solid #7e22ce; padding: 0.9rem 1rem; border-radius: 6px; margin-bottom: 0.85rem;">
+              <div style="font-size: 0.88rem; font-weight: 700; color: #6b21a8; margin-bottom: 0.5rem;">
+                ④ 【持股 100% 國外公司間特例】豁免法定 40% 限制，依公司辦法自訂倍數與期限（如 1907 永豐餘第 5 條第 2 項：淨值 2 倍 = 200%、3 年）
+              </div>
+              <div class="form-row-3">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">100% 國外公司間總額占淨值 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-sub100-loan-total-ratio" value="100.0">
+                  <span class="form-sublabel">公版 100% / 永豐餘 2 倍 (200%)</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">100% 國外公司間個別占淨值 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-sub100-loan-single-ratio" value="100.0">
+                  <span class="form-sublabel">公版 100% / 永豐餘 2 倍 (200%)</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">100% 國外公司最長期限 (年)</label>
+                  <input type="number" step="1" class="form-control" id="custom-sub100-max-years" value="1">
+                  <span class="form-sublabel">一般為 1 年 / 永豐餘為 3 年</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 第五層：背書保證與董事長決行授權 -->
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #d97706; padding: 0.9rem 1rem; border-radius: 6px;">
+              <div style="font-size: 0.88rem; font-weight: 700; color: #92400e; margin-bottom: 0.5rem;">
+                ⑤ 【背書保證限額與董事長循環動用／決行授權】
+              </div>
+              <div class="form-row-3">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">背書保證總額上限占淨值 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-guar-total-ratio" value="30.0">
+                  <span class="form-sublabel">法定上限通常為 50%</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">背書保證單一企業上限占淨值 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-guar-single-ratio" value="10.0">
+                  <span class="form-sublabel">法定上限通常為 20%</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">董事長授權決行/分次撥貸額度 (NT$)</label>
+                  <input type="number" class="form-control" id="custom-chairman-auth-limit" value="30000000">
+                  <span class="form-sublabel">如永豐餘第 6 條為單一企業淨值 10%</span>
+                </div>
+              </div>
+              <div class="form-row" style="margin-top: 0.65rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">是否允許母子公司間分次撥貸或循環動用</label>
+                  <select class="form-select" id="custom-allow-revolving">
+                    <option value="true" selected>明文允許（董事會授權一定額度及不超過1年期間內分次撥貸或循環動用）</option>
+                    <option value="false">未明文授權（禁止循環動用，須逐筆提董事會）</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">業務往來個別限額是否併計「近一年進銷貨金額」</label>
+                  <select class="form-select" id="custom-bus-by-trade-amount">
+                    <option value="true" selected>是（不得超過前一年度雙方進貨或銷貨金額）</option>
+                    <option value="false">否（僅按淨值百分比計算）</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -1346,8 +1429,16 @@
 
     let customCompanyProcedures = {
       isActive: true,
+      overallLoanTotalRatio: 20.0,
+      overallLoanSingleRatio: 5.0,
+      busLoanTotalRatio: 20.0,
+      busLoanSingleRatio: 5.0,
+      busByTradeAmount: true,
       loanTotalRatio: 20.0,
       loanSingleRatio: 5.0,
+      sub100LoanTotalRatio: 100.0,
+      sub100LoanSingleRatio: 100.0,
+      sub100MaxYears: 1,
       guarTotalRatio: 30.0,
       guarSingleRatio: 10.0,
       chairmanAuthLimit: 30000000,
@@ -1538,8 +1629,22 @@
       const rate = document.getElementById('loan-interest-rate').value || "2.0%";
       const collateral = document.getElementById('loan-collateral-info').value || "公司本票";
 
-      const singleLimit = customCompanyProcedures.isActive ? (netWorth * customCompanyProcedures.loanSingleRatio / 100) : (netWorth * 0.10);
-      const totalLimit = customCompanyProcedures.isActive ? (netWorth * customCompanyProcedures.loanTotalRatio / 100) : (netWorth * 0.40);
+      const borrowerRel = document.getElementById('loan-borrower-rel').value;
+      let singleLimit = netWorth * 0.10;
+      let totalLimit = netWorth * 0.40;
+      if (customCompanyProcedures.isActive) {
+        if (borrowerRel === 'OVERSEAS_SUB_100') {
+          singleLimit = netWorth * (customCompanyProcedures.sub100LoanSingleRatio / 100);
+          totalLimit = netWorth * (customCompanyProcedures.sub100LoanTotalRatio / 100);
+        } else if (purpose === 'BUSINESS_TRANSACTION') {
+          const pctSingle = netWorth * (customCompanyProcedures.busLoanSingleRatio / 100);
+          singleLimit = (customCompanyProcedures.busByTradeAmount && pastYearBusAmount > 0) ? Math.min(pctSingle, pastYearBusAmount) : pctSingle;
+          totalLimit = netWorth * (customCompanyProcedures.busLoanTotalRatio / 100);
+        } else {
+          singleLimit = netWorth * (customCompanyProcedures.loanSingleRatio / 100);
+          totalLimit = netWorth * (customCompanyProcedures.loanTotalRatio / 100);
+        }
+      }
 
       // 若為循環動用，依格式五之一註8，期末餘額應以董事會通過之授權額度全額計入
       const endingBalance = transAmount;
@@ -2047,6 +2152,12 @@
       if (m1) return convertChineseNumber(m1[1]);
       const m2 = clause.match(/(\d+(?:\.\d+)?)\s*[％%]/);
       if (m2) return parseFloat(m2[1]);
+      // 支援「淨值之 2 倍」或「淨值二倍」自動換算為 200%
+      const m3 = clause.match(/淨值(?:之)?\s*([零〇一二兩三四五六七八九十百壹貳參叁肆伍陸柒捌玖拾佰點\d.]+)\s*倍/);
+      if (m3) {
+        const mult = convertChineseNumber(m3[1]);
+        if (mult !== null) return mult * 100;
+      }
       return null;
     }
 
@@ -2091,8 +2202,16 @@
       const currentNetWorth = parseFloat(document.getElementById('input-net-worth').value) || 3200000000000;
 
       const result = {
+        overallTotal: null,
+        overallSingle: null,
+        busTotal: null,
+        busSingle: null,
+        busByTradeAmount: null,
         loanTotal: null,
         loanSingle: null,
+        sub100Total: null,
+        sub100Single: null,
+        sub100MaxYears: null,
         guarTotal: null,
         guarSingle: null,
         chairmanAuth: null,
@@ -2100,148 +2219,256 @@
         matchedClauses: []
       };
 
+      const upsertClause = (fieldId, label, value, snippet) => {
+        result.matchedClauses = result.matchedClauses.filter(c => c.fieldId !== fieldId);
+        result.matchedClauses.push({ fieldId, label, value, snippet });
+      };
+
       // 支援 JSON 格式規章檔直接解析
       if (rawText.trim().startsWith("{")) {
         try {
           const obj = JSON.parse(rawText.trim());
-          if (obj.loanTotalRatio !== undefined) { result.loanTotal = parseFloat(obj.loanTotalRatio); result.matchedClauses.push({ fieldId: "custom-loan-total-ratio", label: "資金貸與總額上限", value: result.loanTotal + "%", snippet: "JSON 欄位: loanTotalRatio" }); }
-          if (obj.loanSingleRatio !== undefined) { result.loanSingle = parseFloat(obj.loanSingleRatio); result.matchedClauses.push({ fieldId: "custom-loan-single-ratio", label: "資金貸與單一企業限額", value: result.loanSingle + "%", snippet: "JSON 欄位: loanSingleRatio" }); }
-          if (obj.guarTotalRatio !== undefined) { result.guarTotal = parseFloat(obj.guarTotalRatio); result.matchedClauses.push({ fieldId: "custom-guar-total-ratio", label: "背書保證總額上限", value: result.guarTotal + "%", snippet: "JSON 欄位: guarTotalRatio" }); }
-          if (obj.guarSingleRatio !== undefined) { result.guarSingle = parseFloat(obj.guarSingleRatio); result.matchedClauses.push({ fieldId: "custom-guar-single-ratio", label: "背書保證單一企業限額", value: result.guarSingle + "%", snippet: "JSON 欄位: guarSingleRatio" }); }
-          if (obj.chairmanAuthLimit !== undefined) { result.chairmanAuth = parseFloat(obj.chairmanAuthLimit); result.matchedClauses.push({ fieldId: "custom-chairman-auth-limit", label: "董事長授權決行額度", value: "NT$ " + result.chairmanAuth.toLocaleString(), snippet: "JSON 欄位: chairmanAuthLimit" }); }
-          if (obj.allowRevolving !== undefined) { result.allowRevolving = Boolean(obj.allowRevolving); result.matchedClauses.push({ fieldId: "custom-allow-revolving", label: "母子公司循環動用", value: result.allowRevolving ? "明文允許" : "禁止循環動用", snippet: "JSON 欄位: allowRevolving" }); }
+          if (obj.overallLoanTotalRatio !== undefined) { result.overallTotal = parseFloat(obj.overallLoanTotalRatio); upsertClause("custom-overall-loan-total-ratio", "① 全公司資金貸與總額上限", result.overallTotal + "%", "JSON: overallLoanTotalRatio"); }
+          if (obj.overallLoanSingleRatio !== undefined) { result.overallSingle = parseFloat(obj.overallLoanSingleRatio); upsertClause("custom-overall-loan-single-ratio", "① 全公司單一對象總限額", result.overallSingle + "%", "JSON: overallLoanSingleRatio"); }
+          if (obj.busLoanTotalRatio !== undefined) { result.busTotal = parseFloat(obj.busLoanTotalRatio); upsertClause("custom-bus-loan-total-ratio", "② 業務往來貸與總額上限", result.busTotal + "%", "JSON: busLoanTotalRatio"); }
+          if (obj.busLoanSingleRatio !== undefined) { result.busSingle = parseFloat(obj.busLoanSingleRatio); upsertClause("custom-bus-loan-single-ratio", "② 業務往來個別對象限額", result.busSingle + "%", "JSON: busLoanSingleRatio"); }
+          if (obj.loanTotalRatio !== undefined) { result.loanTotal = parseFloat(obj.loanTotalRatio); upsertClause("custom-loan-total-ratio", "③ 短期融通貸與總額上限", result.loanTotal + "%", "JSON: loanTotalRatio"); }
+          if (obj.loanSingleRatio !== undefined) { result.loanSingle = parseFloat(obj.loanSingleRatio); upsertClause("custom-loan-single-ratio", "③ 短期融通個別對象限額", result.loanSingle + "%", "JSON: loanSingleRatio"); }
+          if (obj.sub100LoanTotalRatio !== undefined) { result.sub100Total = parseFloat(obj.sub100LoanTotalRatio); upsertClause("custom-sub100-loan-total-ratio", "④ 100%國外公司間貸與總額上限", result.sub100Total + "%", "JSON: sub100LoanTotalRatio"); }
+          if (obj.sub100LoanSingleRatio !== undefined) { result.sub100Single = parseFloat(obj.sub100LoanSingleRatio); upsertClause("custom-sub100-loan-single-ratio", "④ 100%國外公司間個別限額", result.sub100Single + "%", "JSON: sub100LoanSingleRatio"); }
+          if (obj.guarTotalRatio !== undefined) { result.guarTotal = parseFloat(obj.guarTotalRatio); upsertClause("custom-guar-total-ratio", "⑤ 背書保證總額上限", result.guarTotal + "%", "JSON: guarTotalRatio"); }
+          if (obj.guarSingleRatio !== undefined) { result.guarSingle = parseFloat(obj.guarSingleRatio); upsertClause("custom-guar-single-ratio", "⑤ 背書保證單一企業限額", result.guarSingle + "%", "JSON: guarSingleRatio"); }
+          if (obj.chairmanAuthLimit !== undefined) { result.chairmanAuth = parseFloat(obj.chairmanAuthLimit); upsertClause("custom-chairman-auth-limit", "⑤ 董事長授權決行額度", "NT$ " + result.chairmanAuth.toLocaleString(), "JSON: chairmanAuthLimit"); }
+          if (obj.allowRevolving !== undefined) { result.allowRevolving = Boolean(obj.allowRevolving); upsertClause("custom-allow-revolving", "⑤ 母子公司循環動用", result.allowRevolving ? "明文允許" : "禁止循環動用", "JSON: allowRevolving"); }
         } catch (e) {}
       }
 
-      // 長文與多句型自然語言條文穿透解析
-      const rawClauses = text.split(/[。；;\n]+/).map(s => s.trim()).filter(Boolean);
+      // 依句號與換行切分條文段落（保留分號於同句中，以便完整辨識如「第五條 本公司資金貸與總額以不超過...80%為限;個別對象則以不超過80%為限」）
+      const rawClauses = text.split(/[。\n]+/).map(s => s.trim()).filter(Boolean);
 
       for (const clause of rawClauses) {
-        // 排除 100% 國外子公司間特例條款，避免覆蓋母公司一般限額
         const isForeign100 = /百分之百之國外公司|100\s*[%％]之國外公司/.test(clause);
-        // 區分「授權額度」條款，避免將董事長循環動用授權額度誤判為一般單一企業限額
         const isAuthClause = /授權董事長|授權額度/.test(clause);
-        const subParts = clause.split(/[，,]+/).map(s => s.trim()).filter(Boolean);
+        const isGuarClause = /背書保證/.test(clause) && !/資金貸與及背書保證處理準則/.test(clause);
+        const isBusClause = !isForeign100 && /業務往來/.test(clause);
+        const isShortClause = !isForeign100 && /短期融通/.test(clause);
 
-        for (let i = 0; i < subParts.length; i++) {
-          const part = subParts[i];
-          const hasPct = extractPctFromClause(part) !== null;
-          const nextPart = subParts[i + 1] || "";
-          const nextHasNewSubject = /(單一|個別|總額|總金額|背書保證|資金貸與|授權額度)/.test(nextPart);
-          const targetStr = (!hasPct && !nextHasNewSubject && nextPart) ? (part + "，" + nextPart) : part;
+        // -------------------------------------------------------------------
+        // A. 第四層：100% 持股國外公司間特例 (如永豐餘第 5 條第 2 項 / 證交所公版第 3 條第 4 款)
+        // -------------------------------------------------------------------
+        if (isForeign100) {
+          const subParts = clause.split(/[，,；;]+/).map(s => s.trim()).filter(Boolean);
+          for (const part of subParts) {
+            if (/總額|總金額|最高限額/.test(part) && !/個別|單一/.test(part)) {
+              const val = extractPctFromClause(part);
+              if (val !== null) {
+                result.sub100Total = val;
+                upsertClause("custom-sub100-loan-total-ratio", "④ 100%國外公司間貸與總額上限", `${val.toFixed(1)}%${val >= 100 && val % 100 === 0 ? ' (淨值 ' + (val/100) + ' 倍)' : ''}`, part);
+              }
+            }
+            if (/個別|單一/.test(part)) {
+              const val = extractPctFromClause(part);
+              if (val !== null) {
+                result.sub100Single = val;
+                upsertClause("custom-sub100-loan-single-ratio", "④ 100%國外公司間個別對象限額", `${val.toFixed(1)}%${val >= 100 && val % 100 === 0 ? ' (淨值 ' + (val/100) + ' 倍)' : ''}`, part);
+              }
+            }
+            const mYear = part.match(/期限不得超過\s*([零〇一二兩三四五六七八九十\d]+)\s*年/);
+            if (mYear) {
+              const yrs = convertChineseNumber(mYear[1]);
+              if (yrs !== null) {
+                result.sub100MaxYears = yrs;
+                upsertClause("custom-sub100-max-years", "④ 100%國外公司最長貸與期限", `${yrs} 年 (${yrs * 12} 個月)`, part);
+              }
+            }
+          }
+          continue;
+        }
 
-          // 1. 資金貸與總額上限 (優先採計短期融通或一般資金貸與總額)
-          if (!isForeign100 && !isAuthClause && (result.loanTotal === null || /短期融通/.test(clause))) {
-            if ((/(資金貸與|貸與他人|短期融通|對外貸與|其貸與).*?(總額|總金額|最高限額|累計餘額)|(總額|總金額).*?(資金貸與|貸與)/.test(targetStr)) && !/背書保證|單一|個別|授權/.test(targetStr)) {
-              const val = extractPctFromClause(targetStr);
+        // -------------------------------------------------------------------
+        // B. 第二層：因業務往來關係從事資金貸與 (如永豐餘第 3 條 / 證交所公版第 3 條第 2 款)
+        // -------------------------------------------------------------------
+        if (isBusClause && !isGuarClause && !isAuthClause) {
+          const subParts = clause.split(/[，,；;]+/).map(s => s.trim()).filter(Boolean);
+          for (const part of subParts) {
+            if (/總額|總金額/.test(part) && !/個別|單一/.test(part)) {
+              const val = extractPctFromClause(part);
+              if (val !== null) {
+                result.busTotal = val;
+                upsertClause("custom-bus-loan-total-ratio", "② 業務往來資金貸與總額上限", `${val.toFixed(1)}%`, part);
+              }
+            }
+            if (/個別|單一/.test(part)) {
+              const val = extractPctFromClause(part);
+              if (val !== null) {
+                result.busSingle = val;
+                upsertClause("custom-bus-loan-single-ratio", "② 業務往來個別對象淨值限額", `${val.toFixed(1)}%`, part);
+              }
+              if (/進貨|銷貨|業務往來金額/.test(part)) {
+                result.busByTradeAmount = true;
+                upsertClause("custom-bus-by-trade-amount", "② 業務往來個別金額雙重限制", "以不超過近一年度進銷貨/業務往來金額為限", part);
+              }
+            } else if (/進貨|銷貨|業務往來金額/.test(part) && /不超過|為限/.test(part)) {
+              result.busByTradeAmount = true;
+              upsertClause("custom-bus-by-trade-amount", "② 業務往來個別金額雙重限制", "以不超過近一年度進銷貨/業務往來金額為限", part);
+            }
+          }
+          continue;
+        }
+
+        // -------------------------------------------------------------------
+        // C. 第三層：因短期融通資金必要從事資金貸與 (如永豐餘第 4 條 / 證交所公版第 3 條第 3 款)
+        // -------------------------------------------------------------------
+        if (isShortClause && !isGuarClause && !isAuthClause) {
+          const subParts = clause.split(/[，,；;]+/).map(s => s.trim()).filter(Boolean);
+          for (const part of subParts) {
+            if (/總額|總金額/.test(part) && !/個別|單一/.test(part)) {
+              const val = extractPctFromClause(part);
               if (val !== null) {
                 result.loanTotal = val;
-                result.matchedClauses = result.matchedClauses.filter(c => c.fieldId !== "custom-loan-total-ratio");
-                result.matchedClauses.push({ fieldId: "custom-loan-total-ratio", label: "資金貸與總額上限", value: val.toFixed(1) + "%", snippet: targetStr });
+                upsertClause("custom-loan-total-ratio", "③ 短期融通資金貸與總額上限", `${val.toFixed(1)}%`, part);
               }
             }
-          }
-
-          // 2. 資金貸與單一企業限額
-          if (!isForeign100 && !isAuthClause && result.loanSingle === null) {
-            if (/(單一企業|個別對象|單一對象|個別貸與|個別企業|每一借款人)/.test(targetStr) && (/(貸與|融通)/.test(targetStr) || /(資金貸與|短期融通|業務往來)/.test(clause)) && !/背書保證|授權/.test(targetStr)) {
-              const val = extractPctFromClause(targetStr);
+            if (/個別|單一/.test(part)) {
+              const val = extractPctFromClause(part);
               if (val !== null) {
                 result.loanSingle = val;
-                result.matchedClauses.push({ fieldId: "custom-loan-single-ratio", label: "資金貸與單一企業限額", value: val.toFixed(1) + "%", snippet: targetStr });
+                upsertClause("custom-loan-single-ratio", "③ 短期融通個別對象貸與限額", `${val.toFixed(1)}%`, part);
               }
             }
           }
+          continue;
+        }
 
-          // 3. 背書保證總額上限
-          if (result.guarTotal === null) {
-            if (/背書保證.*?(總額|總金額|最高限額)|(總額|總金額).*?背書保證/.test(targetStr) && !/(單一|個別|百分之九十|90%)/.test(targetStr)) {
-              const val = extractPctFromClause(targetStr);
+        // -------------------------------------------------------------------
+        // D. 第一層：全公司資金貸與總體限額 (如永豐餘第 5 條第 1 項：總額 80% / 個別 80%；或公版第 3 條第 1 款：總額 40%)
+        // -------------------------------------------------------------------
+        if (!isGuarClause && !isAuthClause && /(資金貸與|貸與他人)/.test(clause) && !/二十以上|十以上|二以上/.test(clause)) {
+          const subParts = clause.split(/[，,；;]+/).map(s => s.trim()).filter(Boolean);
+          for (const part of subParts) {
+            if (/(總額|總金額|最高限額)/.test(part) && !/個別|單一/.test(part)) {
+              const val = extractPctFromClause(part);
               if (val !== null) {
-                result.guarTotal = val;
-                result.matchedClauses.push({ fieldId: "custom-guar-total-ratio", label: "背書保證總額上限", value: val.toFixed(1) + "%", snippet: targetStr });
+                result.overallTotal = val;
+                upsertClause("custom-overall-loan-total-ratio", "① 全公司資金貸與總體上限", `${val.toFixed(1)}%`, part);
               }
             }
-          }
-
-          // 4. 背書保證單一企業限額
-          if (result.guarSingle === null) {
-            if (/(單一企業|單一對象|個別對象|個別企業)/.test(targetStr) && (/背書保證/.test(targetStr) || /背書保證/.test(clause)) && !/(百分之九十|90%)/.test(targetStr)) {
-              const val = extractPctFromClause(targetStr);
+            if (/(個別對象|單一企業|單一對象|個別貸與)/.test(part)) {
+              const val = extractPctFromClause(part);
               if (val !== null) {
-                result.guarSingle = val;
-                result.matchedClauses.push({ fieldId: "custom-guar-single-ratio", label: "背書保證單一企業限額", value: val.toFixed(1) + "%", snippet: targetStr });
+                result.overallSingle = val;
+                upsertClause("custom-overall-loan-single-ratio", "① 全公司對單一對象總限額", `${val.toFixed(1)}%`, part);
               }
             }
           }
         }
 
-        // 5. 授權董事長決行額度 (支援固定金額如「三千萬元」及淨值百分比如「授權額度不得超過淨值百分之十」兩種寫法)
+        // -------------------------------------------------------------------
+        // E. 第五層：背書保證限額、董事長授權額度、循環動用
+        // -------------------------------------------------------------------
+        if (isGuarClause && !isAuthClause) {
+          const subParts = clause.split(/[，,；;]+/).map(s => s.trim()).filter(Boolean);
+          for (const part of subParts) {
+            if (/背書保證.*?(總額|總金額|最高限額)|(總額|總金額).*?背書保證/.test(part) && !/(單一|個別|百分之九十|90%)/.test(part)) {
+              const val = extractPctFromClause(part);
+              if (val !== null && result.guarTotal === null) {
+                result.guarTotal = val;
+                upsertClause("custom-guar-total-ratio", "⑤ 背書保證總額上限", `${val.toFixed(1)}%`, part);
+              }
+            }
+            if (/(單一企業|單一對象|個別對象|個別企業)/.test(part) && !/(百分之九十|90%)/.test(part)) {
+              const val = extractPctFromClause(part);
+              if (val !== null && result.guarSingle === null) {
+                result.guarSingle = val;
+                upsertClause("custom-guar-single-ratio", "⑤ 背書保證單一企業限額", `${val.toFixed(1)}%`, part);
+              }
+            }
+          }
+        }
+
         if (result.chairmanAuth === null && isAuthClause) {
           const mAuthMoney = clause.match(/授權董事長[\s\S]{0,45}?(?:新[臺台]幣|NT\$|\$)?\s*([零〇一二兩三四五六七八九十百千萬億壹貳參叁肆伍陸柒捌玖拾佰仟\d,.]+\s*(?:億元|億|萬元|萬|元))/);
           if (mAuthMoney) {
             const moneyVal = parseChineseMoney(mAuthMoney[1]);
             if (moneyVal !== null && moneyVal >= 10000) {
               result.chairmanAuth = moneyVal;
-              result.matchedClauses.push({ fieldId: "custom-chairman-auth-limit", label: "董事長授權決行額度", value: "NT$ " + moneyVal.toLocaleString(), snippet: clause });
+              upsertClause("custom-chairman-auth-limit", "⑤ 董事長授權決行額度", "NT$ " + moneyVal.toLocaleString(), clause);
             }
           } else if (/授權額度/.test(clause) && /淨值/.test(clause)) {
             const authPct = extractPctFromClause(clause);
             if (authPct !== null) {
               const calcAuthMoney = Math.round(currentNetWorth * (authPct / 100));
               result.chairmanAuth = calcAuthMoney;
-              result.matchedClauses.push({
-                fieldId: "custom-chairman-auth-limit",
-                label: "董事長授權決行額度",
-                value: `淨值之 ${authPct.toFixed(1)}% (依目前淨值折算 NT$ ${calcAuthMoney.toLocaleString()})`,
-                snippet: clause
-              });
+              upsertClause("custom-chairman-auth-limit", "⑤ 董事長授權分次撥貸額度", `淨值之 ${authPct.toFixed(1)}% (依目前淨值折算 NT$ ${calcAuthMoney.toLocaleString()})`, clause);
             }
           }
         }
 
-        // 6. 母子公司循環動用
         if (result.allowRevolving === null) {
           if (/(不得|禁止|不允許).*?(循環動用|分次撥貸)/.test(clause)) {
             result.allowRevolving = false;
-            result.matchedClauses.push({ fieldId: "custom-allow-revolving", label: "母子公司循環動用", value: "禁止循環動用", snippet: clause });
+            upsertClause("custom-allow-revolving", "⑤ 母子公司循環動用", "禁止循環動用", clause);
           } else if (/(循環動用|分次撥貸)/.test(clause)) {
             result.allowRevolving = true;
-            result.matchedClauses.push({ fieldId: "custom-allow-revolving", label: "母子公司循環動用", value: "明文允許（期間不超過1年）", snippet: clause });
+            upsertClause("custom-allow-revolving", "⑤ 母子公司循環動用", "明文允許（期間不超過1年）", clause);
           }
         }
       }
 
-      // 將擷取到的參數寫入下方輸入框並觸發視覺高亮
-      if (result.loanTotal !== null) {
-        document.getElementById('custom-loan-total-ratio').value = result.loanTotal.toFixed(1);
-        flashFieldHighlight('custom-loan-total-ratio');
+      // -------------------------------------------------------------------
+      // 智慧聯動補齊：若辦法僅定義「全公司總額 (如證交所公版第3條第1款 40%)」而未單獨拆分短期融通/業務往來總額，自動同步填入
+      // -------------------------------------------------------------------
+      if (result.overallTotal !== null && result.loanTotal === null) {
+        result.loanTotal = Math.min(result.overallTotal, 40.0);
+        upsertClause("custom-loan-total-ratio", "③ 短期融通資金貸與總額上限 (連動總體上限)", `${result.loanTotal.toFixed(1)}%`, "依全公司總額上限與法定40%連動");
       }
-      if (result.loanSingle !== null) {
-        document.getElementById('custom-loan-single-ratio').value = result.loanSingle.toFixed(1);
-        flashFieldHighlight('custom-loan-single-ratio');
+      if (result.overallTotal !== null && result.busTotal === null) {
+        result.busTotal = result.overallTotal;
       }
-      if (result.guarTotal !== null) {
-        document.getElementById('custom-guar-total-ratio').value = result.guarTotal.toFixed(1);
-        flashFieldHighlight('custom-guar-total-ratio');
+      if (result.loanTotal !== null && result.overallTotal === null) {
+        result.overallTotal = result.loanTotal;
+        upsertClause("custom-overall-loan-total-ratio", "① 全公司資金貸與總體上限 (連動短期融通上限)", `${result.overallTotal.toFixed(1)}%`, "依短期融通貸與總額連動");
       }
-      if (result.guarSingle !== null) {
-        document.getElementById('custom-guar-single-ratio').value = result.guarSingle.toFixed(1);
-        flashFieldHighlight('custom-guar-single-ratio');
+      if (result.overallSingle !== null && result.loanSingle === null) {
+        result.loanSingle = result.overallSingle;
+        upsertClause("custom-loan-single-ratio", "③ 短期融通個別對象貸與限額 (連動單一限額)", `${result.loanSingle.toFixed(1)}%`, "依全公司單一企業限額連動");
       }
-      if (result.chairmanAuth !== null) {
-        document.getElementById('custom-chairman-auth-limit').value = result.chairmanAuth;
-        flashFieldHighlight('custom-chairman-auth-limit');
+      if (result.loanSingle !== null && result.overallSingle === null) {
+        result.overallSingle = result.loanSingle;
       }
-      if (result.allowRevolving !== null) {
-        document.getElementById('custom-allow-revolving').value = result.allowRevolving ? "true" : "false";
-        flashFieldHighlight('custom-allow-revolving');
+      if (result.busTotal !== null && result.busSingle === null) {
+        // 如永豐餘第 3 條：業務往來總額 40%，個別對象以近一年進銷貨金額為限（未另訂淨值百分比，故淨值上限同業務往來總額 40%）
+        result.busSingle = result.busTotal;
       }
+
+      // 寫入 DOM 欄位並觸發高亮動畫
+      const setField = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val !== null && val !== undefined) {
+          el.value = val;
+          flashFieldHighlight(id);
+        }
+      };
+
+      if (result.overallTotal !== null) setField('custom-overall-loan-total-ratio', result.overallTotal.toFixed(1));
+      if (result.overallSingle !== null) setField('custom-overall-loan-single-ratio', result.overallSingle.toFixed(1));
+      if (result.busTotal !== null) setField('custom-bus-loan-total-ratio', result.busTotal.toFixed(1));
+      if (result.busSingle !== null) setField('custom-bus-loan-single-ratio', result.busSingle.toFixed(1));
+      if (result.busByTradeAmount !== null) setField('custom-bus-by-trade-amount', result.busByTradeAmount ? "true" : "false");
+      if (result.loanTotal !== null) setField('custom-loan-total-ratio', result.loanTotal.toFixed(1));
+      if (result.loanSingle !== null) setField('custom-loan-single-ratio', result.loanSingle.toFixed(1));
+      if (result.sub100Total !== null) setField('custom-sub100-loan-total-ratio', result.sub100Total.toFixed(1));
+      if (result.sub100Single !== null) setField('custom-sub100-loan-single-ratio', result.sub100Single.toFixed(1));
+      if (result.sub100MaxYears !== null) setField('custom-sub100-max-years', result.sub100MaxYears);
+      if (result.guarTotal !== null) setField('custom-guar-total-ratio', result.guarTotal.toFixed(1));
+      if (result.guarSingle !== null) setField('custom-guar-single-ratio', result.guarSingle.toFixed(1));
+      if (result.chairmanAuth !== null) setField('custom-chairman-auth-limit', result.chairmanAuth);
+      if (result.allowRevolving !== null) setField('custom-allow-revolving', result.allowRevolving ? "true" : "false");
 
       // 自動同步至全域雙軌合規引擎狀態
       syncCustomProceduresState();
 
-      // 渲染內嵌式解析命中明細報告 (不依賴瀏覽器 alert 彈窗)
+      // 渲染內嵌式解析命中明細報告
       if (feedbackBox) {
         feedbackBox.style.display = "block";
         if (result.matchedClauses.length > 0) {
@@ -2251,7 +2478,7 @@
           const titlePrefix = sourceLabel ? `【${sourceLabel}】` : "";
           const rowsHtml = result.matchedClauses.map(item => `
             <div style="padding: 0.45rem 0; border-bottom: 1px dashed rgba(16, 185, 129, 0.3); font-size: 0.88rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: baseline;">
-              <span style="font-weight: 700; min-width: 165px; color: #047857;">✔ ${item.label}：</span>
+              <span style="font-weight: 700; min-width: 225px; color: #047857;">✔ ${item.label}：</span>
               <span style="font-weight: 800; background: #d1fae5; color: #065f46; padding: 0.1rem 0.5rem; border-radius: 4px;">${item.value}</span>
               <span style="color: #064e3b; font-size: 0.8rem; opacity: 0.9;">（命中條文：「${item.snippet}」）</span>
             </div>
@@ -2259,10 +2486,10 @@
 
           feedbackBox.innerHTML = `
             <div style="font-weight: 700; font-size: 0.96rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-              <span>✅ ${titlePrefix}智慧條文解析完成！共自動擷取並更新 ${result.matchedClauses.length} 項控制參數（已自動同步至雙軌檢核引擎）</span>
+              <span>✅ ${titlePrefix}智慧條文解析完成！共自動擷取並更新 ${result.matchedClauses.length} 項分層控制參數（已自動同步至雙軌檢核引擎）</span>
               <span style="font-size: 0.78rem; font-weight: normal; color: #047857;">解析時間：${new Date().toLocaleTimeString()}</span>
             </div>
-            <div style="background: rgba(255,255,255,0.7); padding: 0.5rem 0.75rem; border-radius: 6px;">
+            <div style="background: rgba(255,255,255,0.75); padding: 0.5rem 0.75rem; border-radius: 6px;">
               ${rowsHtml}
             </div>
           `;
@@ -2277,8 +2504,16 @@
 
     function syncCustomProceduresState() {
       customCompanyProcedures.isActive = true;
+      customCompanyProcedures.overallLoanTotalRatio = parseFloat(document.getElementById('custom-overall-loan-total-ratio').value) || 40.0;
+      customCompanyProcedures.overallLoanSingleRatio = parseFloat(document.getElementById('custom-overall-loan-single-ratio').value) || 10.0;
+      customCompanyProcedures.busLoanTotalRatio = parseFloat(document.getElementById('custom-bus-loan-total-ratio').value) || 40.0;
+      customCompanyProcedures.busLoanSingleRatio = parseFloat(document.getElementById('custom-bus-loan-single-ratio').value) || 40.0;
+      customCompanyProcedures.busByTradeAmount = (document.getElementById('custom-bus-by-trade-amount').value === 'true');
       customCompanyProcedures.loanTotalRatio = parseFloat(document.getElementById('custom-loan-total-ratio').value) || 20.0;
       customCompanyProcedures.loanSingleRatio = parseFloat(document.getElementById('custom-loan-single-ratio').value) || 5.0;
+      customCompanyProcedures.sub100LoanTotalRatio = parseFloat(document.getElementById('custom-sub100-loan-total-ratio').value) || 100.0;
+      customCompanyProcedures.sub100LoanSingleRatio = parseFloat(document.getElementById('custom-sub100-loan-single-ratio').value) || 100.0;
+      customCompanyProcedures.sub100MaxYears = parseInt(document.getElementById('custom-sub100-max-years').value) || 1;
       customCompanyProcedures.guarTotalRatio = parseFloat(document.getElementById('custom-guar-total-ratio').value) || 30.0;
       customCompanyProcedures.guarSingleRatio = parseFloat(document.getElementById('custom-guar-single-ratio').value) || 10.0;
       customCompanyProcedures.chairmanAuthLimit = parseFloat(document.getElementById('custom-chairman-auth-limit').value) || 30000000;
@@ -2286,8 +2521,8 @@
 
       const labelEl = document.getElementById('active-procedure-label');
       const summaryEl = document.getElementById('active-procedure-summary');
-      if (labelEl) labelEl.innerText = "已啟用【貴公司自訂內部作業程序】進行雙軌檢核";
-      if (summaryEl) summaryEl.innerText = `(貸與總額 ${customCompanyProcedures.loanTotalRatio}% / 單一 ${customCompanyProcedures.loanSingleRatio}% / 背保總額 ${customCompanyProcedures.guarTotalRatio}% / 單一 ${customCompanyProcedures.guarSingleRatio}% / 董長授權 NT$${(customCompanyProcedures.chairmanAuthLimit/10000).toLocaleString()}萬)`;
+      if (labelEl) labelEl.innerText = "已啟用【貴公司自訂內部作業程序（四層分類限額）】進行雙軌檢核";
+      if (summaryEl) summaryEl.innerText = `(全公司總額 ${customCompanyProcedures.overallLoanTotalRatio}% / 業務往來 ${customCompanyProcedures.busLoanTotalRatio}% / 短期融通 ${customCompanyProcedures.loanTotalRatio}%[單一${customCompanyProcedures.loanSingleRatio}%] / 100%國外子公司 ${customCompanyProcedures.sub100LoanTotalRatio}% / 背保 ${customCompanyProcedures.guarTotalRatio}%)`;
     }
 
     function saveAndApplyCustomProcedures() {
@@ -2298,7 +2533,7 @@
         feedbackBox.style.backgroundColor = "#ecfdf5";
         feedbackBox.style.borderColor = "#10b981";
         feedbackBox.style.color = "#065f46";
-        feedbackBox.innerHTML = `🎉 <b>已儲存並套用貴公司內部辦法參數！</b>正在為您切換至「交易合規導航精靈」執行雙軌檢核...`;
+        feedbackBox.innerHTML = `🎉 <b>已儲存並套用貴公司內部辦法「四層分類限額」參數！</b>正在為您切換至「交易合規導航精靈」執行雙軌檢核...`;
       }
       switchNavTab('wizard');
       runComplianceEvaluation();
@@ -2306,8 +2541,16 @@
 
     function resetToStatutoryDefault() {
       customCompanyProcedures.isActive = false;
+      document.getElementById('custom-overall-loan-total-ratio').value = "40.0";
+      document.getElementById('custom-overall-loan-single-ratio').value = "10.0";
+      document.getElementById('custom-bus-loan-total-ratio').value = "40.0";
+      document.getElementById('custom-bus-loan-single-ratio').value = "10.0";
+      document.getElementById('custom-bus-by-trade-amount').value = "true";
       document.getElementById('custom-loan-total-ratio').value = "40.0";
       document.getElementById('custom-loan-single-ratio').value = "10.0";
+      document.getElementById('custom-sub100-loan-total-ratio').value = "100.0";
+      document.getElementById('custom-sub100-loan-single-ratio').value = "100.0";
+      document.getElementById('custom-sub100-max-years').value = "1";
       document.getElementById('custom-guar-total-ratio').value = "50.0";
       document.getElementById('custom-guar-single-ratio').value = "20.0";
       document.getElementById('custom-chairman-auth-limit').value = "50000000";
@@ -2525,37 +2768,124 @@
         const pastYearBusAmount = parseFloat(document.getElementById('loan-business-past-year').value) || 0;
         const existingGroupBal = parseFloat(document.getElementById('loan-existing-group').value) || 0;
 
-        // 公司內部規章檢核
-        if (customCompanyProcedures.isActive && purpose === 'SHORT_TERM_FINANCING') {
-          const customTotalLimit = netWorth * (customCompanyProcedures.loanTotalRatio / 100);
-          const customSingleLimit = netWorth * (customCompanyProcedures.loanSingleRatio / 100);
+        // 公司內部規章檢核（四層分類限額：100%國外子公司特例 vs 業務往來 vs 短期融通 ＋ 全公司總體合計上限）
+        if (customCompanyProcedures.isActive) {
           const projectedTotal = existingGroupBal + transAmount;
+          const is100Overseas = (borrowerRel === 'OVERSEAS_SUB_100');
 
-          if (projectedTotal > customTotalLimit) {
-            hasCompanyProcedureViolation = true;
-            ruleItems.push({
-              id: 'RULE-CP-L01',
-              name: '【公司辦法】貸與總額上限',
-              tag: 'tag-warn',
-              text: `⚠️ 逾越貴公司辦法：累計貸與占淨值 ${((projectedTotal/netWorth)*100).toFixed(1)}%，已超過貴公司內部訂定之 ${customCompanyProcedures.loanTotalRatio}% 總額上限 (NT$${customTotalLimit.toLocaleString()})！(金管會法定上限為 40%)`
-            });
+          if (is100Overseas) {
+            // 第四層：持股 100% 國外公司間特例 (如永豐餘第 5 條第 2 項：淨值 2 倍 = 200%)
+            const sub100TotalLimit = netWorth * (customCompanyProcedures.sub100LoanTotalRatio / 100);
+            const sub100SingleLimit = netWorth * (customCompanyProcedures.sub100LoanSingleRatio / 100);
+
+            if (projectedTotal > sub100TotalLimit) {
+              hasCompanyProcedureViolation = true;
+              ruleItems.push({
+                id: 'RULE-CP-SUB100-T',
+                name: '【公司辦法】100%國外子公司貸與總額上限',
+                tag: 'tag-warn',
+                text: `⚠️ 逾越貴公司辦法：累計貸與占淨值 ${((projectedTotal/netWorth)*100).toFixed(1)}%，超過貴公司對 100% 國外公司訂定之 ${customCompanyProcedures.sub100LoanTotalRatio}% 總額上限 (NT$${sub100TotalLimit.toLocaleString()})！`
+              });
+            } else {
+              ruleItems.push({
+                id: 'RULE-CP-SUB100-T',
+                name: '【公司辦法】100%國外子公司貸與總額上限',
+                tag: 'tag-pass',
+                text: `符合貴公司辦法對 100% 國外公司自訂之 ${customCompanyProcedures.sub100LoanTotalRatio}% 總額上限 (NT$${sub100TotalLimit.toLocaleString()})，且依法豁免短期融通 40% 法定限制。`
+              });
+            }
+
+            if (transAmount > sub100SingleLimit) {
+              hasCompanyProcedureViolation = true;
+              ruleItems.push({
+                id: 'RULE-CP-SUB100-S',
+                name: '【公司辦法】100%國外子公司個別對象限額',
+                tag: 'tag-warn',
+                text: `⚠️ 逾越貴公司辦法：單一對象貸與占淨值 ${((transAmount/netWorth)*100).toFixed(1)}%，超過貴公司對 100% 國外公司訂定之 ${customCompanyProcedures.sub100LoanSingleRatio}% 個別上限 (NT$${sub100SingleLimit.toLocaleString()})！`
+              });
+            } else {
+              ruleItems.push({
+                id: 'RULE-CP-SUB100-S',
+                name: '【公司辦法】100%國外子公司個別對象限額',
+                tag: 'tag-pass',
+                text: `符合貴公司辦法對 100% 國外公司自訂之 ${customCompanyProcedures.sub100LoanSingleRatio}% 個別對象限額 (NT$${sub100SingleLimit.toLocaleString()})。`
+              });
+            }
+          } else if (purpose === 'BUSINESS_TRANSACTION') {
+            // 第二層：因業務往來關係從事資金貸與 (如永豐餘第 3 條：總額 40%，個別不超過近一年進銷貨金額) + 第一層：全公司總體限額
+            const busTotalLimit = netWorth * (customCompanyProcedures.busLoanTotalRatio / 100);
+            const busSingleLimit = netWorth * (customCompanyProcedures.busLoanSingleRatio / 100);
+            const overallTotalLimit = netWorth * (customCompanyProcedures.overallLoanTotalRatio / 100);
+
+            if (projectedTotal > busTotalLimit || projectedTotal > overallTotalLimit) {
+              hasCompanyProcedureViolation = true;
+              const effLimit = Math.min(busTotalLimit, overallTotalLimit);
+              ruleItems.push({
+                id: 'RULE-CP-BUS-T',
+                name: '【公司辦法】業務往來貸與總額上限',
+                tag: 'tag-warn',
+                text: `⚠️ 逾越貴公司辦法：累計貸與占淨值 ${((projectedTotal/netWorth)*100).toFixed(1)}%，超過貴公司業務往來總額上限 ${customCompanyProcedures.busLoanTotalRatio}% 或全公司總限額 ${customCompanyProcedures.overallLoanTotalRatio}% (NT$${effLimit.toLocaleString()})！`
+              });
+            } else {
+              ruleItems.push({
+                id: 'RULE-CP-BUS-T',
+                name: '【公司辦法】業務往來貸與總額上限',
+                tag: 'tag-pass',
+                text: `符合貴公司辦法之業務往來貸與總額上限 (${customCompanyProcedures.busLoanTotalRatio}%) 及全公司總體上限 (${customCompanyProcedures.overallLoanTotalRatio}%)。`
+              });
+            }
+
+            if (transAmount > busSingleLimit) {
+              hasCompanyProcedureViolation = true;
+              ruleItems.push({
+                id: 'RULE-CP-BUS-S',
+                name: '【公司辦法】業務往來個別對象淨值限額',
+                tag: 'tag-warn',
+                text: `⚠️ 逾越貴公司辦法：對單一業務往來對象貸與占淨值 ${((transAmount/netWorth)*100).toFixed(1)}%，超過內部訂定之 ${customCompanyProcedures.busLoanSingleRatio}% 上限 (NT$${busSingleLimit.toLocaleString()})！`
+              });
+            }
           } else {
-            ruleItems.push({
-              id: 'RULE-CP-L01',
-              name: '【公司辦法】貸與總額上限',
-              tag: 'tag-pass',
-              text: `符合貴公司內部程序自訂之 ${customCompanyProcedures.loanTotalRatio}% 淨值限額標準。`
-            });
-          }
+            // 第三層：因短期融通資金必要從事資金貸與 (如永豐餘第 4 條：總額 40%、個別 40%) + 第一層：全公司總體限額 (如永豐餘第 5 條第 1 項：80%)
+            const shortTotalLimit = netWorth * (customCompanyProcedures.loanTotalRatio / 100);
+            const shortSingleLimit = netWorth * (customCompanyProcedures.loanSingleRatio / 100);
+            const overallTotalLimit = netWorth * (customCompanyProcedures.overallLoanTotalRatio / 100);
+            const overallSingleLimit = netWorth * (customCompanyProcedures.overallLoanSingleRatio / 100);
 
-          if (transAmount > customSingleLimit) {
-            hasCompanyProcedureViolation = true;
-            ruleItems.push({
-              id: 'RULE-CP-L02',
-              name: '【公司辦法】單一企業貸與限額',
-              tag: 'tag-warn',
-              text: `⚠️ 逾越貴公司辦法：單一對象貸與占淨值 ${((transAmount/netWorth)*100).toFixed(1)}%，已超過貴公司內部訂定之 ${customCompanyProcedures.loanSingleRatio}% 上限 (NT$${customSingleLimit.toLocaleString()})！`
-            });
+            if (projectedTotal > shortTotalLimit) {
+              hasCompanyProcedureViolation = true;
+              ruleItems.push({
+                id: 'RULE-CP-L01',
+                name: '【公司辦法】短期融通貸與總額上限',
+                tag: 'tag-warn',
+                text: `⚠️ 逾越貴公司辦法：累計貸與占淨值 ${((projectedTotal/netWorth)*100).toFixed(1)}%，已超過貴公司短期融通訂定之 ${customCompanyProcedures.loanTotalRatio}% 總額上限 (NT$${shortTotalLimit.toLocaleString()})！(全公司總體上限為 ${customCompanyProcedures.overallLoanTotalRatio}%、金管會短期融通法定上限為 40%)`
+              });
+            } else {
+              ruleItems.push({
+                id: 'RULE-CP-L01',
+                name: '【公司辦法】短期融通＆全公司總額上限',
+                tag: 'tag-pass',
+                text: `符合貴公司內部程序之短期融通總額上限 (${customCompanyProcedures.loanTotalRatio}%) 及全公司總體貸與上限 (${customCompanyProcedures.overallLoanTotalRatio}%)。`
+              });
+            }
+
+            const effectiveSingleRatio = Math.min(customCompanyProcedures.loanSingleRatio, customCompanyProcedures.overallLoanSingleRatio);
+            const effectiveSingleLimit = Math.min(shortSingleLimit, overallSingleLimit);
+            if (transAmount > effectiveSingleLimit) {
+              hasCompanyProcedureViolation = true;
+              ruleItems.push({
+                id: 'RULE-CP-L02',
+                name: '【公司辦法】短期融通單一企業限額',
+                tag: 'tag-warn',
+                text: `⚠️ 逾越貴公司辦法：單一對象貸與占淨值 ${((transAmount/netWorth)*100).toFixed(1)}%，已超過貴公司內部訂定之 ${effectiveSingleRatio}% 個別上限 (NT$${effectiveSingleLimit.toLocaleString()})！`
+              });
+            } else {
+              ruleItems.push({
+                id: 'RULE-CP-L02',
+                name: '【公司辦法】短期融通單一企業限額',
+                tag: 'tag-pass',
+                text: `符合貴公司內部程序之短期融通單一企業限額 (${effectiveSingleRatio}%，即 NT$${effectiveSingleLimit.toLocaleString()})。`
+              });
+            }
           }
         }
 
