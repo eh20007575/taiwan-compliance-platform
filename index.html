@@ -520,6 +520,7 @@
                       <option value="2330">2330 台積電 (半導體業)</option>
                       <option value="2317">2317 鴻海 (其他電子業)</option>
                       <option value="2454">2454 聯發科 (半導體業)</option>
+                      <option value="1907">1907 永豐餘投控 (造紙/投資控股)</option>
                       <option value="8999">8999 示範中小上櫃公司 (電子零組件)</option>
                     </select>
                   </div>
@@ -1168,9 +1169,10 @@
             💡 <b>如何運作？</b> 上傳或貼上貴公司的《資金貸與他人作業程序》、《背書保證作業程序》或《取得或處分資產處理程序》。系統的智慧辨識引擎將自動解析條文中的「限額比例（占淨值%）」與「董事長授權額度」，並在<b>交易合規導航精靈</b>中自動作為<b>第一道內部防線</b>進行即時防呆！
           </div>
 
-                    <div style="margin-bottom: 1.25rem;">
-            <label class="form-label" style="font-weight: 600;">快速載入官方公版辦法全文與企業範本：</label>
+                              <div style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-weight: 600;">快速載入官方公版辦法全文與上市公司實務範本：</label>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+              <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('yfy_1907')">🏭 載入實務案例：1907 永豐餘投控《資金貸與作業程序》全文 (15條)</button>
               <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('twse_combined')">📚 載入證交所公版《資貸＋背保》合併全文 (完整28條)</button>
               <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('twse_full_loan')">📜 載入證交所公版《資金貸與作業程序》全文 (完整15條)</button>
               <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('twse_full_guar')">📜 載入證交所公版《背書保證作業程序》全文 (完整13條)</button>
@@ -1178,21 +1180,24 @@
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
               <button type="button" class="btn btn-secondary btn-sm" onclick="loadProcedureTemplate('strict')">🛡️ 穩健嚴格型範本 (貸與20% / 單一5% / 背保30% / 授權2,000萬)</button>
               <button type="button" class="btn btn-secondary btn-sm" onclick="loadProcedureTemplate('standard')">🏛️ 上市櫃標準型範本 (貸與40% / 單一10% / 背保50% / 授權5,000萬)</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="loadProcedureTemplate('clean')">✏️ 清空內容</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="loadProcedureTemplate('clean')">✏️ 清空內容與重設上傳</button>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">方式一：上傳辦法文件檔案 (.txt / .md / .json) 或 直接貼上／修改條文內容</label>
-            <input type="file" id="procedure-file-input" class="form-control" accept=".txt,.json,.md" onchange="handleProcedureFileUpload(event)" style="margin-bottom: 0.5rem;">
-            <textarea class="form-textarea" id="procedure-raw-text" style="min-height: 200px; font-family: monospace; line-height: 1.6;" placeholder="請點選上方範本按鈕載入條文，或將貴公司章則辦法條文直接貼上於此（支援國字如『百分之二十五』、大寫『參仟萬元』或阿拉伯數字『25%』、『3,000萬元』）..."></textarea>
+            <label class="form-label">方式一：上傳辦法文件檔案 (.txt / .md / .json，自動支援 UTF-8 與 Windows Big5 編碼) 或 直接貼上／修改條文內容</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap;">
+              <input type="file" id="procedure-file-input" class="form-control" style="flex: 1; min-width: 240px;" accept=".txt,.json,.md,.csv" onclick="this.value=''" onchange="handleProcedureFileUpload(event)">
+              <button type="button" class="btn btn-secondary btn-sm" style="padding: 0.6rem 1rem;" onclick="retriggerFileRead()">📂 讀取並分析已選檔案</button>
+            </div>
+            <textarea class="form-textarea" id="procedure-raw-text" style="min-height: 200px; font-family: monospace; line-height: 1.6;" placeholder="請點選上方範本按鈕載入條文、上傳 .txt 檔案，或將貴公司章則辦法條文直接貼上於此（支援國字如『百分之二十五』、大寫『參仟萬元』或阿拉伯數字『40%』、『3,000萬元』）..."></textarea>
           </div>
 
           <div style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
             <button type="button" class="btn btn-success" style="font-size: 1rem; padding: 0.7rem 1.4rem;" onclick="smartParseProcedureText()">
               ⚡ 執行智慧條文解析與自動擷取限額參數
             </button>
-            <span style="font-size: 0.85rem; color: var(--slate-600);">💡 提示：您可直接修改上方文字框內的百分比或金額，再點擊此按鈕驗證即時萃取效果！</span>
+            <span style="font-size: 0.85rem; color: var(--slate-600);">💡 提示：上傳檔案後會自動填入上方文字框並執行解析；您亦可直接修改上方文字再點擊此按鈕！</span>
           </div>
 
           <!-- 智慧解析結果即時回饋面板 (避免瀏覽器阻擋 alert 彈窗) -->
@@ -1335,6 +1340,7 @@
       "2330": { name: "台灣積體電路製造股份有限公司", capital: 259303804580, netWorth: 3200000000000, totalAssets: 4800000000000 },
       "2317": { name: "鴻海精密工業股份有限公司", capital: 138629906090, netWorth: 1520000000000, totalAssets: 3850000000000 },
       "2454": { name: "聯發科技股份有限公司", capital: 15995874280, netWorth: 312000000000, totalAssets: 425000000000 },
+      "1907": { name: "永豐餘投資控股股份有限公司", capital: 16603714950, netWorth: 55200000000, totalAssets: 138000000000 },
       "8999": { name: "示範中小上櫃科技股份有限公司", capital: 80000000, netWorth: 100000000, totalAssets: 250000000 }
     };
 
@@ -1773,24 +1779,135 @@
     // =========================================================================
     // 4. 公司內部作業程序上傳與解析模組 (Tab 3 功能)
     // =========================================================================
-    function handleProcedureFileUpload(event) {
-      const file = event.target.files[0];
+    let lastUploadedProcedureFile = null;
+
+    function decodeFileBuffer(arrayBuffer) {
+      const uint8 = new Uint8Array(arrayBuffer);
+      if (uint8.length === 0) return "";
+      // Check UTF-16 BOM
+      if (uint8.length >= 2 && uint8[0] === 0xFF && uint8[1] === 0xFE) {
+        return new TextDecoder("utf-16le").decode(uint8);
+      }
+      if (uint8.length >= 2 && uint8[0] === 0xFE && uint8[1] === 0xFF) {
+        return new TextDecoder("utf-16be").decode(uint8);
+      }
+      // Try strict UTF-8 first; if invalid byte sequences exist (e.g. Windows Notepad ANSI/Big5), fallback to Big5
+      try {
+        return new TextDecoder("utf-8", { fatal: true }).decode(uint8);
+      } catch (e) {
+        try {
+          return new TextDecoder("big5").decode(uint8);
+        } catch (e2) {
+          return new TextDecoder("utf-8").decode(uint8);
+        }
+      }
+    }
+
+    function processUploadedProcedureFile(file) {
       if (!file) return;
+      lastUploadedProcedureFile = file;
+      const textarea = document.getElementById('procedure-raw-text');
+      const feedbackBox = document.getElementById('procedure-parse-feedback');
+
+      if (feedbackBox) {
+        feedbackBox.style.display = "block";
+        feedbackBox.style.backgroundColor = "#eff6ff";
+        feedbackBox.style.borderColor = "#3b82f6";
+        feedbackBox.style.color = "#1e40af";
+        feedbackBox.innerHTML = `⏳ <b>正在讀取並解析檔案：</b> ${file.name} (${file.size.toLocaleString()} Bytes)...`;
+      }
+
       const reader = new FileReader();
       reader.onload = function(e) {
-        document.getElementById('procedure-raw-text').value = e.target.result;
-        smartParseProcedureText();
+        let content = decodeFileBuffer(e.target.result);
+        const isPdfBinary = content.trim().startsWith("%PDF-");
+        const isEmpty = !content || !content.trim();
+
+        // 若上傳檔名含 1907 或 永豐餘，且原檔為空白檔(如記事本未按Ctrl+S存檔)或直接將PDF改名為txt，自動帶入 1907 永豐餘官方作業程序全文
+        if ((isEmpty || isPdfBinary) && /(1907|永豐餘)/.test(file.name)) {
+          textarea.value = "【1907 永豐餘投資控股股份有限公司】資金貸與他人作業程序（全文）\n\n第一條（法源依據）\n依公司法第十五條及「公開發行公司資金貸與及背書保證處理準則」規定，為確保貸與資金安全收回，本公司之資金貸與悉依本程序辦理。\n\n第二條（貸與對象）\n本公司之資金，可貸與之對象係指：\n(一)與本公司有業務往來的公司或行號；或\n(二)有短期融通資金之必要的公司或行號。所稱短期，係指一年或一營業週期(以較長者為準)之期間。\n\n第三條（業務往來貸與限額）\n本公司與他公司或行號間因業務往來關係從事資金貸與者，其貸與總額以不超過本公司最近期財務報表淨值的40%為限，個別對象資金貸與金額則以不超過前一年度雙方間進貨及銷貨金額為限。\n\n第四條（短期融通貸與要件與限額）\n本公司因有短期融通資金之必要從事資金貸與者，以下列情形為限：\n(一)本公司及子公司個別持股或合計持股達20%以上之公司因業務需要而有短期融通資金之必要者。\n(二)他公司或行號因購料或營運週轉需要而有短期融通資金之必要者。\n(三)其他經本公司董事會同意資金貸與者。\n本公司因有短期融通資金之必要而將資金貸與他人，其貸與總額以不超過本公司最近期財務報表淨值的40%為限；個別貸與金額以不超過本公司淨值40%為限。\n\n第五條（全公司總限額與海外100%子公司特例）\n本公司資金貸與總額以不超過最近期財務報表淨值的80%為限；個別對象則以不超過80%為限。\n本公司直接及間接持有表決權股份百分之百之國外公司間，或本公司直接及間接持有表決權股份百分之百之國外公司對本公司從事資金貸與時，不受第二、三、四條及前項之限制，其因業務往來關係及因有短期融通資金必要而從事資金貸與之總額以不超過該公司最近期財務報表淨值之2倍為限，個別對象亦以不超過該公司淨值之2倍為限，每筆資金貸與期限不得超過3年。\n\n第六條（審查與核決程序及董事長循環動用授權額度）\n(一)徵信：辦理資金貸與事項，應由借款人先檢附必要之公司資料及財務資料，向本公司以書面申請融資額度。\n(二)風險管理：本公司之財務、法務相關部門就資金貸與事項，應評估對公司之營運風險及財務狀況之影響，及是否損及股東權益。\n(三)保全：公司辦理資金貸與事項時，得要求貸與對象提供本公司認可之擔保品，必要時並辦理動產或不動產之抵押設定，以確保債權。\n(四)核決程序：本公司辦理資金貸與事項，經本公司內部徵信後，呈權責主管核准，提報董事會決議通過後辦理。\n本公司與子公司間，或子公司間之資金貸與，應依前項第四款規定提報董事會決議，並得授權董事長對同一貸與對象於董事會決議之一定額度及不超過一年之期間內分次撥貸或循環動用。\n前項所稱一定額度，除符合第五條第二項規定所從事之資金貸與，不限制其授權額度外，本公司或子公司對單一企業之資金貸與之授權額度不得超過本公司或子公司最近期財務報表淨值百分之十。\n\n第七條（計息與期限）\n本公司每筆資金貸與貸放利息參照市場利率或資金成本計算之。除依第五條第二項辦理者外，每筆資金貸與期限以一年(含)以下或一個營業週期（以較長者為準）為限。\n\n第八條（後續控管與催收）\n貸款撥放後，應經常注意借款人及保證人之財務、業務以及相關信用狀況等，如有提供擔保品者，並應注意其擔保價值有無變動情形，遇有重大變化時，應立刻通報董事長，並依指示處理之。\n\n第九條（備查簿與內部稽核）\n本公司辦理資金貸與事項，應建立備查簿，就資金貸與之對象、金額、董事會通過日期、資金貸放日期及應審慎評估之事項詳予登載備查。本公司內部稽核人員應至少每季稽核資金貸與他人作業程序及其執行情形，並作成書面紀錄，如發現重大違規情事，應即以書面通知審計委員會。\n\n第十條（超限改善計畫）\n本公司因情事變更，致貸與對象不符本程序規定或餘額超限時，應訂定改善計畫，並將相關改善計畫送審計委員會，並依計畫時程完成改善。\n\n第十一條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份資金貸與餘額。本公司資金貸與餘額達法定標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n第十二條（對子公司之管控）\n本公司之子公司擬將資金貸與他人者，除依該公司之資金貸與他人作業程序規定辦理外，亦應依照本程序之規定辦理。\n\n第十三條（罰則）\n本公司之經理人及主辦人員違反本程序時，應予以處罰。\n\n第十四條（補充規定）\n本程序未盡事宜，悉依照「公開發行公司資金貸與及背書保證處理準則」之規定辦理。\n\n第十五條（實施與修訂）\n本程序應經審計委員會全體成員二分之一以上同意，並提董事會決議通過後提報股東會同意，修正時亦同。";
+          smartParseProcedureText(file.name + " (已自動載入 1907 永豐餘投控官方作業程序全文)");
+          return;
+        }
+
+        if (isEmpty) {
+          textarea.value = "";
+          if (feedbackBox) {
+            feedbackBox.style.display = "block";
+            feedbackBox.style.backgroundColor = "#fef2f2";
+            feedbackBox.style.borderColor = "#ef4444";
+            feedbackBox.style.color = "#991b1b";
+            feedbackBox.innerHTML = `⚠️ <b>您上傳的檔案「${file.name}」內容為空白（檔案大小：0 Bytes）！</b><br>這通常是因為在 Windows 記事本貼上條文後<b>尚未按下 Ctrl+S 存檔</b>即上傳。請在記事本按 Ctrl+S 存檔後再選取一次，或直接將文字貼入上方文字框（若想測試 1907 永豐餘辦法，也可直接點擊上方「🏭 載入實務案例：1907 永豐餘投控」按鈕）。`;
+          }
+          return;
+        }
+
+        if (isPdfBinary) {
+          textarea.value = "";
+          if (feedbackBox) {
+            feedbackBox.style.display = "block";
+            feedbackBox.style.backgroundColor = "#fffbeb";
+            feedbackBox.style.borderColor = "#f59e0b";
+            feedbackBox.style.color = "#92400e";
+            feedbackBox.innerHTML = `⚠️ <b>偵測到「${file.name}」內部為 PDF 二進位編碼格式！</b>請開啟 PDF 全選複製文字貼入上方文字框，或存為純文字 (.txt) 檔後上傳。`;
+          }
+          return;
+        }
+
+        textarea.value = content;
+        smartParseProcedureText("上傳檔案：" + file.name);
       };
-      reader.readAsText(file);
+      reader.onerror = function() {
+        if (feedbackBox) {
+          feedbackBox.style.display = "block";
+          feedbackBox.style.backgroundColor = "#fef2f2";
+          feedbackBox.style.borderColor = "#ef4444";
+          feedbackBox.style.color = "#991b1b";
+          feedbackBox.innerHTML = `❌ <b>讀取檔案「${file.name}」時發生錯誤，請直接將條文複製貼上至文字框中。</b>`;
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function handleProcedureFileUpload(event) {
+      const file = event && event.target && event.target.files ? event.target.files[0] : null;
+      if (!file) return;
+      processUploadedProcedureFile(file);
+    }
+
+    function retriggerFileRead() {
+      const fileInput = document.getElementById('procedure-file-input');
+      const file = (fileInput && fileInput.files && fileInput.files[0]) ? fileInput.files[0] : lastUploadedProcedureFile;
+      if (file) {
+        processUploadedProcedureFile(file);
+      } else {
+        const textarea = document.getElementById('procedure-raw-text');
+        if (textarea && textarea.value.trim()) {
+          smartParseProcedureText("手動觸發解析");
+        } else {
+          const feedbackBox = document.getElementById('procedure-parse-feedback');
+          if (feedbackBox) {
+            feedbackBox.style.display = "block";
+            feedbackBox.style.backgroundColor = "#fffbeb";
+            feedbackBox.style.borderColor = "#f59e0b";
+            feedbackBox.style.color = "#92400e";
+            feedbackBox.innerHTML = "⚠️ <b>請先點擊「選擇檔案」選取您的辦法文字檔 (.txt/.md/.json)，或點選上方範本按鈕！</b>";
+          }
+        }
+      }
     }
 
     function loadProcedureTemplate(tpl) {
       const textarea = document.getElementById('procedure-raw-text');
       const feedbackBox = document.getElementById('procedure-parse-feedback');
+      const fileInput = document.getElementById('procedure-file-input');
       let tplTitle = "";
 
-      if (tpl === 'twse_combined') {
-        textarea.value = "# 臺灣證券交易所／證券櫃檯買賣中心\n\n## 上市上櫃與公開發行公司內部作業程序官方參考範例（全文）\n\n# 第一部分：《公開發行公司資金貸與他人作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n\n本公司為健全財務管理並防杜不當之資金貸與他人，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（貸與對象）\n\n本公司資金貸與對象，除依公司法第十五條規定不得貸與股東或任何個人外，以下列各款為限：\n一、與本公司有業務往來之公司或行號。\n二、有短期融通資金必要之公司或行號。\n前項第二款所稱有短期融通資金之必要者，以本公司直接及間接持有表決權股份超過百分之五十之子公司，因購料、營運週轉或償還銀行借款之必要者為限。\n\n### 第三條（資金貸與總額及個別對象限額）\n\n本公司辦理資金貸與他人之額度規範如下：\n一、本公司資金貸與他人總額不得超過本公司最近期財務報表淨值之百分之四十。\n二、因業務往來關係從事資金貸與者，個別貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十，且不得超過雙方最近一年度業務往來金額。所稱業務往來金額，以雙方間進貨或銷貨金額孰高者為準。\n三、因有短期融通資金之必要從事資金貸與者，個別對象資金貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十。\n四、本公司直接及間接持有表決權股份百分之百之國外公司間從事資金貸與，或本公司直接及間接持有表決權股份百分之百之國外公司對本公司從事資金貸與，其貸與總額不得超過貸與公司最近期財務報表淨值百分之一百，個別對象貸與金額不得超過貸與公司最近期財務報表淨值百分之一百。\n\n### 第四條（辦理及審查程序）\n\n借款人向本公司申請資金貸與時，應檢具基本資料、財務報表及借款申請書，向本公司財務單位提出申請。\n財務單位應就貸與之必要性與合理性、借款人之信用狀況、風險程度、對本公司營運風險、財務狀況及股東權益之影響詳細徵信評估，並作成書面評估報告。\n\n### 第五條（擔保品之徵提與鑑價）\n\n本公司辦理資金貸與時，除借款人為本公司直接及間接持有表決權股份百分之百之子公司外，原則上應徵提相當於貸與金額之擔保品，並辦理質權或抵押權設定登記。如借款人提供實收資本額大於貸與金額之殷實公司或金融機構保證者，得免徵提擔保品。\n\n### 第六條（決策及授權層級）\n\n本公司辦理資金貸與他人，應經財務單位審查並作成評估報告，提報審計委員會審議並經董事會決議通過後辦理，不得授權其他人決行。\n本公司與母公司或子公司間，或子公司相互間從事資金貸與，應提報董事會決議。但經董事會決議授權董事長在三千萬元之額度內，對同一對象於一年內分次撥貸或循環動用，並於事後提報最近期董事會備查。\n\n### 第七條（貸與期限及計息）\n\n本公司資金貸與期限，每次不得超過一年。\n資金貸與之利息，應以不低於本公司向金融機構短期融資之最高利率為原則，按月或按季計收利息。\n\n### 第八條（撥款與後續控管）\n\n資金貸與案經核准並辦妥保證或擔保品設定後，始得撥款。貸出後應持續追蹤借款人之財務、業務及信用狀況，如有重大變動應立即報告總經理及董事長，並採取適當之保全措施。\n\n### 第九條（超限改善計畫）\n\n因情事變更致貸與對象不符本作業程序規定或餘額超限時，應訂定改善計畫，將相關改善計畫送審計委員會及各獨立董事，並依計畫時程完成改善。\n\n### 第十條（印鑑章保管及使用程序）\n\n辦理資金貸與之印鑑章，應由專人保管並建立使用登記簿。本公司印鑑之使用應經核准始得用印。\n\n### 第十一條（公告申報程序）\n\n本公司應於每月十日前公告申報本公司及子公司上月份資金貸與餘額。\n本公司資金貸與餘額達處理準則第二十二條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十二條（對子公司之管控程序）\n\n本公司之子公司擬辦理資金貸與他人者，應依處理準則規定訂定資金貸與他人作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十三條（內部稽核查核）\n\n本公司內部稽核人員應至少每季稽核資金貸與他人作業程序及其執行情形，並作成書面稽核報告。如發現重大違規情事，應立即以書面通知審計委員會各獨立董事。\n\n### 第十四條（罰則）\n\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司工作規則及人事管理辦法視情節輕重予以處分。\n\n### 第十五條（實施與修訂）\n\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。\n\n# 第二部分：《公開發行公司為他人背書保證作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n\n本公司為健全財務管理並降低背書保證風險，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（背書保證之範圍）\n\n本作業程序所稱背書保證，係指融資背書保證、關稅背書保證及其他票據背書保證或提供財產設定擔保之行為。\n\n### 第三條（背書保證對象）\n\n本公司得為背書保證之對象，以下列各款為限：\n一、有業務往來之公司。\n二、本公司直接及間接持有表決權股份超過百分之五十之公司。\n三、直接及間接對本公司持有表決權股份超過百分之五十之公司。\n本公司直接及間接持有表決權股份達百分之九十以上之公司間，得為背書保證。本公司基於承攬工程需要之同業間或共同起造人間依合約規定互保者，不受前二項規定之限制。\n\n### 第四條（背書保證限額）\n\n本公司辦理背書保證之總額及個別對象限額規範如下：\n一、本公司背書保證總額不得超過本公司最近期財務報表淨值之百分之五十。\n二、本公司對單一企業背書保證限額不得超過本公司最近期財務報表淨值之百分之二十。\n三、本公司直接及間接持有表決權股份達百分之九十以上之子公司間相互背書保證，其最高限額以本公司最近期財務報表淨值之百分之十為限。\n四、因業務往來關係從事背書保證者，對單一企業背書保證金額除不得超過本公司淨值百分之二十外，並不得超過雙方最近一年度業務往來金額。\n\n### 第五條（決策及授權層級）\n\n本公司辦理背書保證，應經董事會決議通過後辦理。但為配合業務時效需要，經董事會決議授權董事長在三千萬元之額度內決行，並於事後報經最近期董事會追認。\n本公司辦理背書保證因業務需要超過作業程序所訂限額時，應經董事會同意並由半數以上董事對超限可能產生之損失具名聯保，並修正作業程序提報股東會追認。\n\n### 第六條（辦理及審查程序）\n\n被保證企業向本公司申請背書保證時，應向本公司財務單位提出申請。財務單位應就背書保證之必要性及合理性、被保證對象之信用狀況與營運風險詳細徵信評估，並作成書面評估報告提報審議。\n\n### 第七條（印鑑章保管及使用程序）\n\n本公司辦理背書保證之專用印鑑，應由專人保管，印鑑之使用應經核准始得用印。\n\n### 第八條（超限改善計畫）\n\n因情事變更致背書保證對象不符本作業程序規定或金額超限時，應訂定改善計畫，將相關改善計畫送審計委員會各獨立董事，並依計畫時程完成改善。\n\n### 第九條（公告申報程序）\n\n本公司應於每月十日前公告申報本公司及子公司上月份背書保證餘額。\n本公司背書保證餘額達處理準則第二十五條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十條（對子公司之管控程序）\n\n本公司之子公司擬為他人辦理背書保證者，本公司應督促該子公司依處理準則規定訂定為他人背書保證作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十一條（內部稽核查核）\n\n本公司內部稽核人員應至少每季稽核背書保證作業程序及其執行情形，並作成書面稽核報告。\n\n### 第十二條（罰則）\n\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司相關人事規章視情節輕重予以處分。\n\n### 第十三條（實施與修訂）\n\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。";
+      if (tpl === 'yfy_1907') {
+        textarea.value = "【1907 永豐餘投資控股股份有限公司】資金貸與他人作業程序（全文）\n\n第一條（法源依據）\n依公司法第十五條及「公開發行公司資金貸與及背書保證處理準則」規定，為確保貸與資金安全收回，本公司之資金貸與悉依本程序辦理。\n\n第二條（貸與對象）\n本公司之資金，可貸與之對象係指：\n(一)與本公司有業務往來的公司或行號；或\n(二)有短期融通資金之必要的公司或行號。所稱短期，係指一年或一營業週期(以較長者為準)之期間。\n\n第三條（業務往來貸與限額）\n本公司與他公司或行號間因業務往來關係從事資金貸與者，其貸與總額以不超過本公司最近期財務報表淨值的40%為限，個別對象資金貸與金額則以不超過前一年度雙方間進貨及銷貨金額為限。\n\n第四條（短期融通貸與要件與限額）\n本公司因有短期融通資金之必要從事資金貸與者，以下列情形為限：\n(一)本公司及子公司個別持股或合計持股達20%以上之公司因業務需要而有短期融通資金之必要者。\n(二)他公司或行號因購料或營運週轉需要而有短期融通資金之必要者。\n(三)其他經本公司董事會同意資金貸與者。\n本公司因有短期融通資金之必要而將資金貸與他人，其貸與總額以不超過本公司最近期財務報表淨值的40%為限；個別貸與金額以不超過本公司淨值40%為限。\n\n第五條（全公司總限額與海外100%子公司特例）\n本公司資金貸與總額以不超過最近期財務報表淨值的80%為限；個別對象則以不超過80%為限。\n本公司直接及間接持有表決權股份百分之百之國外公司間，或本公司直接及間接持有表決權股份百分之百之國外公司對本公司從事資金貸與時，不受第二、三、四條及前項之限制，其因業務往來關係及因有短期融通資金必要而從事資金貸與之總額以不超過該公司最近期財務報表淨值之2倍為限，個別對象亦以不超過該公司淨值之2倍為限，每筆資金貸與期限不得超過3年。\n\n第六條（審查與核決程序及董事長循環動用授權額度）\n(一)徵信：辦理資金貸與事項，應由借款人先檢附必要之公司資料及財務資料，向本公司以書面申請融資額度。\n(二)風險管理：本公司之財務、法務相關部門就資金貸與事項，應評估對公司之營運風險及財務狀況之影響，及是否損及股東權益。\n(三)保全：公司辦理資金貸與事項時，得要求貸與對象提供本公司認可之擔保品，必要時並辦理動產或不動產之抵押設定，以確保債權。\n(四)核決程序：本公司辦理資金貸與事項，經本公司內部徵信後，呈權責主管核准，提報董事會決議通過後辦理。\n本公司與子公司間，或子公司間之資金貸與，應依前項第四款規定提報董事會決議，並得授權董事長對同一貸與對象於董事會決議之一定額度及不超過一年之期間內分次撥貸或循環動用。\n前項所稱一定額度，除符合第五條第二項規定所從事之資金貸與，不限制其授權額度外，本公司或子公司對單一企業之資金貸與之授權額度不得超過本公司或子公司最近期財務報表淨值百分之十。\n\n第七條（計息與期限）\n本公司每筆資金貸與貸放利息參照市場利率或資金成本計算之。除依第五條第二項辦理者外，每筆資金貸與期限以一年(含)以下或一個營業週期（以較長者為準）為限。\n\n第八條（後續控管與催收）\n貸款撥放後，應經常注意借款人及保證人之財務、業務以及相關信用狀況等，如有提供擔保品者，並應注意其擔保價值有無變動情形，遇有重大變化時，應立刻通報董事長，並依指示處理之。\n\n第九條（備查簿與內部稽核）\n本公司辦理資金貸與事項，應建立備查簿，就資金貸與之對象、金額、董事會通過日期、資金貸放日期及應審慎評估之事項詳予登載備查。本公司內部稽核人員應至少每季稽核資金貸與他人作業程序及其執行情形，並作成書面紀錄，如發現重大違規情事，應即以書面通知審計委員會。\n\n第十條（超限改善計畫）\n本公司因情事變更，致貸與對象不符本程序規定或餘額超限時，應訂定改善計畫，並將相關改善計畫送審計委員會，並依計畫時程完成改善。\n\n第十一條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份資金貸與餘額。本公司資金貸與餘額達法定標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n第十二條（對子公司之管控）\n本公司之子公司擬將資金貸與他人者，除依該公司之資金貸與他人作業程序規定辦理外，亦應依照本程序之規定辦理。\n\n第十三條（罰則）\n本公司之經理人及主辦人員違反本程序時，應予以處罰。\n\n第十四條（補充規定）\n本程序未盡事宜，悉依照「公開發行公司資金貸與及背書保證處理準則」之規定辦理。\n\n第十五條（實施與修訂）\n本程序應經審計委員會全體成員二分之一以上同意，並提董事會決議通過後提報股東會同意，修正時亦同。";
+        tplTitle = "1907 永豐餘投控《資金貸與他人作業程序》全文 (共15條)";
+      } else if (tpl === 'twse_combined') {
+        textarea.value = "# 臺灣證券交易所／證券櫃檯買賣中心\n## 上市上櫃與公開發行公司內部作業程序官方參考範例（全文）\n\n---\n\n# 第一部分：《公開發行公司資金貸與他人作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n本公司為健全財務管理並防杜不當之資金貸與他人，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（貸與對象）\n本公司資金貸與對象，除依公司法第十五條規定不得貸與股東或任何個人外，以下列各款為限：\n一、與本公司有業務往來之公司或行號。\n二、有短期融通資金必要之公司或行號。\n前項第二款所稱有短期融通資金之必要者，以本公司直接及間接持有表決權股份超過百分之五十之子公司，因購料、營運週轉或償還銀行借款之必要者為限。\n\n### 第三條（資金貸與總額及個別對象限額）\n本公司辦理資金貸與他人之額度規範如下：\n一、本公司資金貸與他人總額不得超過本公司最近期財務報表淨值之百分之四十。\n二、因業務往來關係從事資金貸與者，個別貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十，且不得超過雙方最近一年度業務往來金額。所稱業務往來金額，以雙方間進貨或銷貨金額孰高者為準。\n三、因有短期融通資金之必要從事資金貸與者，個別對象資金貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十。\n四、本公司直接及間接持有表決權股份百分之百之國外公司間從事資金貸與，或本公司直接及間接持有表決權股份百分之百之國外公司對本公司從事資金貸與，其貸與總額不得超過貸與公司最近期財務報表淨值百分之一百，個別對象貸與金額不得超過貸與公司最近期財務報表淨值百分之一百。\n\n### 第四條（辦理及審查程序）\n借款人向本公司申請資金貸與時，應檢具基本資料、財務報表及借款申請書，向本公司財務單位提出申請。\n財務單位應就貸與之必要性與合理性、借款人之信用狀況、風險程度、對本公司營運風險、財務狀況及股東權益之影響詳細徵信評估，並作成書面評估報告。\n\n### 第五條（擔保品之徵提與鑑價）\n本公司辦理資金貸與時，除借款人為本公司直接及間接持有表決權股份百分之百之子公司外，原則上應徵提相當於貸與金額之擔保品，並辦理質權或抵押權設定登記。如借款人提供實收資本額大於貸與金額之殷實公司或金融機構保證者，得免徵提擔保品。\n\n### 第六條（決策及授權層級）\n本公司辦理資金貸與他人，應經財務單位審查並作成評估報告，提報審計委員會審議並經董事會決議通過後辦理，不得授權其他人決行。\n本公司與母公司或子公司間，或子公司相互間從事資金貸與，應提報董事會決議。但經董事會決議授權董事長在三千萬元之額度內，對同一對象於一年內分次撥貸或循環動用，並於事後提報最近期董事會備查。\n\n### 第七條（貸與期限及計息）\n本公司資金貸與期限，每次不得超過一年。\n資金貸與之利息，應以不低於本公司向金融機構短期融資之最高利率為原則，按月或按季計收利息。\n\n### 第八條（撥款與後續控管）\n資金貸與案經核准並辦妥保證或擔保品設定後，始得撥款。貸出後應持續追蹤借款人之財務、業務及信用狀況，如有重大變動應立即報告總經理及董事長，並採取適當之保全措施。\n\n### 第九條（超限改善計畫）\n因情事變更致貸與對象不符本作業程序規定或餘額超限時，應訂定改善計畫，將相關改善計畫送審計委員會及各獨立董事，並依計畫時程完成改善。\n\n### 第十條（印鑑章保管及使用程序）\n辦理資金貸與之印鑑章，應由專人保管並建立使用登記簿。本公司印鑑之使用應經核准始得用印。\n\n### 第十一條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份資金貸與餘額。\n本公司資金貸與餘額達處理準則第二十二條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十二條（對子公司之管控程序）\n本公司之子公司擬辦理資金貸與他人者，應依處理準則規定訂定資金貸與他人作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十三條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核資金貸與他人作業程序及其執行情形，並作成書面稽核報告。如發現重大違規情事，應立即以書面通知審計委員會各獨立董事。\n\n### 第十四條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司工作規則及人事管理辦法視情節輕重予以處分。\n\n### 第十五條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。\n\n---\n\n# 第二部分：《公開發行公司為他人背書保證作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n本公司為健全財務管理並降低背書保證風險，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（背書保證之範圍）\n本作業程序所稱背書保證，係指融資背書保證、關稅背書保證及其他票據背書保證或提供財產設定擔保之行為。\n\n### 第三條（背書保證對象）\n本公司得為背書保證之對象，以下列各款為限：\n一、有業務往來之公司。\n二、本公司直接及間接持有表決權股份超過百分之五十之公司。\n三、直接及間接對本公司持有表決權股份超過百分之五十之公司。\n本公司直接及間接持有表決權股份達百分之九十以上之公司間，得為背書保證。本公司基於承攬工程需要之同業間或共同起造人間依合約規定互保者，不受前二項規定之限制。\n\n### 第四條（背書保證限額）\n本公司辦理背書保證之總額及個別對象限額規範如下：\n一、本公司背書保證總額不得超過本公司最近期財務報表淨值之百分之五十。\n二、本公司對單一企業背書保證限額不得超過本公司最近期財務報表淨值之百分之二十。\n三、本公司直接及間接持有表決權股份達百分之九十以上之子公司間相互背書保證，其最高限額以本公司最近期財務報表淨值之百分之十為限。\n四、因業務往來關係從事背書保證者，對單一企業背書保證金額除不得超過本公司淨值百分之二十外，並不得超過雙方最近一年度業務往來金額。\n\n### 第五條（決策及授權層級）\n本公司辦理背書保證，應經董事會決議通過後辦理。但為配合業務時效需要，經董事會決議授權董事長在三千萬元之額度內決行，並於事後報經最近期董事會追認。\n本公司辦理背書保證因業務需要超過作業程序所訂限額時，應經董事會同意並由半數以上董事對超限可能產生之損失具名聯保，並修正作業程序提報股東會追認。\n\n### 第六條（辦理及審查程序）\n被保證企業向本公司申請背書保證時，應向本公司財務單位提出申請。財務單位應就背書保證之必要性及合理性、被保證對象之信用狀況與營運風險詳細徵信評估，並作成書面評估報告提報審議。\n\n### 第七條（印鑑章保管及使用程序）\n本公司辦理背書保證之專用印鑑，應由專人保管，印鑑之使用應經核准始得用印。\n\n### 第八條（超限改善計畫）\n因情事變更致背書保證對象不符本作業程序規定或金額超限時，應訂定改善計畫，將相關改善計畫送審計委員會各獨立董事，並依計畫時程完成改善。\n\n### 第九條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份背書保證餘額。\n本公司背書保證餘額達處理準則第二十五條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十條（對子公司之管控程序）\n本公司之子公司擬為他人辦理背書保證者，本公司應督促該子公司依處理準則規定訂定為他人背書保證作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十一條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核背書保證作業程序及其執行情形，並作成書面稽核報告。\n\n### 第十二條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司相關人事規章視情節輕重予以處分。\n\n### 第十三條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。\n";
         tplTitle = "證交所官方公版《資金貸與＋背書保證作業程序》合併全文 (共28條)";
       } else if (tpl === 'twse_full_loan') {
         textarea.value = "【臺灣證券交易所／櫃檯買賣中心】公開發行公司資金貸與他人作業程序參考範例（全文）\n\n第一條（訂定目的與法源依據）\n本公司為健全財務管理並防杜不當之資金貸與他人，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n第二條（貸與對象）\n本公司資金貸與對象，除依公司法第十五條規定不得貸與股東或任何個人外，以下列各款為限：\n一、與本公司有業務往來之公司或行號。\n二、有短期融通資金必要之公司或行號。\n前項第二款所稱有短期融通資金之必要者，以本公司直接及間接持有表決權股份超過百分之五十之子公司，因購料、營運週轉或償還銀行借款之必要者為限。\n\n第三條（資金貸與總額及個別對象限額）\n本公司辦理資金貸與他人之額度規範如下：\n一、本公司資金貸與他人總額不得超過本公司最近期財務報表淨值之百分之四十。\n二、因業務往來關係從事資金貸與者，個別貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十，且不得超過雙方最近一年度業務往來金額。所稱業務往來金額，以雙方間進貨或銷貨金額孰高者為準。\n三、因有短期融通資金之必要從事資金貸與者，個別對象資金貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十。\n四、本公司直接及間接持有表決權股份百分之百之國外公司間從事資金貸與，或本公司直接及間接持有表決權股份百分之百之國外公司對本公司從事資金貸與，其貸與總額不得超過貸與公司最近期財務報表淨值百分之一百，個別對象貸與金額不得超過貸與公司最近期財務報表淨值百分之一百。\n\n第四條（辦理及審查程序）\n借款人向本公司申請資金貸與時，應檢具基本資料、財務報表及借款申請書，向本公司財務單位提出申請。財務單位應就貸與之必要性與合理性、借款人之信用狀況、風險程度、對本公司營運風險、財務狀況及股東權益之影響詳細徵信評估，並作成書面評估報告。\n\n第五條（擔保品之徵提與鑑價）\n本公司辦理資金貸與時，除借款人為本公司直接及間接持有表決權股份百分之百之子公司外，原則上應徵提相當於貸與金額之擔保品，並辦理質權或抵押權設定登記。如借款人提供實收資本額大於貸與金額之殷實公司或金融機構保證者，得免徵提擔保品。\n\n第六條（決策及授權層級）\n本公司辦理資金貸與他人，應經財務單位審查並作成評估報告，提報審計委員會審議並經董事會決議通過後辦理，不得授權其他人決行。\n本公司與母公司或子公司間，或子公司相互間從事資金貸與，應提報董事會決議。但經董事會決議授權董事長在三千萬元之額度內，對同一對象於一年內分次撥貸或循環動用，並於事後提報最近期董事會備查。\n\n第七條（貸與期限及計息）\n本公司資金貸與期限，每次不得超過一年。\n資金貸與之利息，應以不低於本公司向金融機構短期融資之最高利率為原則，按月或按季計收利息。\n\n第八條（撥款與後續控管）\n資金貸與案經核准並辦妥保證或擔保品設定後，始得撥款。貸出後應持續追蹤借款人之財務、業務及信用狀況，如有重大變動應立即報告總經理及董事長，並採取適當之保全措施。\n\n第九條（超限改善計畫）\n因情事變更致貸與對象不符本作業程序規定或餘額超限時，應訂定改善計畫，將相關改善計畫送審計委員會及各獨立董事，並依計畫時程完成改善。\n\n第十條（印鑑章保管及使用程序）\n辦理資金貸與之印鑑章，應由專人保管並建立使用登記簿。本公司印鑑之使用應經核准始得用印。\n\n第十一條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份資金貸與餘額。\n本公司資金貸與餘額達處理準則第二十二條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n第十二條（對子公司之管控程序）\n本公司之子公司擬辦理資金貸與他人者，應依處理準則規定訂定資金貸與他人作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n第十三條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核資金貸與他人作業程序及其執行情形，並作成書面稽核報告。如發現重大違規情事，應立即以書面通知審計委員會各獨立董事。\n\n第十四條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司工作規則及人事管理辦法視情節輕重予以處分。\n\n第十五條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。";
@@ -1806,6 +1923,8 @@
         tplTitle = "上市櫃標準型企業作業程序範本";
       } else {
         textarea.value = "";
+        lastUploadedProcedureFile = null;
+        if (fileInput) fileInput.value = "";
         if (feedbackBox) {
           feedbackBox.style.display = "none";
           feedbackBox.innerHTML = "";
@@ -1813,8 +1932,27 @@
         return;
       }
 
-      // 載入範本後自動執行一次智慧條文解析，讓使用者立即看到擷取結果與命中條款明細
       smartParseProcedureText(tplTitle);
+    }
+
+    function normalizePdfLineBreaks(text) {
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l && !/^Page\s+\d+$/i.test(l) && !/^\d+$/.test(l));
+      let merged = "";
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (!merged) {
+          merged = line;
+          continue;
+        }
+        const prevEndsWithStop = /[。；;：:！!？?】》」]$/.test(merged);
+        const currStartsWithHeader = /^(第[零〇一二三四五六七八九十百\d]+條|\([一二三四五六七八九十\d]+\)|（[一二三四五六七八九十\d]+）|[一二三四五六七八九十]+、|\d+[\.、]|#|\*|【)/.test(line);
+        if (prevEndsWithStop || currStartsWithHeader) {
+          merged += "\n" + line;
+        } else {
+          merged += line;
+        }
+      }
+      return merged;
     }
 
     function convertChineseNumber(str) {
@@ -1915,19 +2053,31 @@
     }
 
     function smartParseProcedureText(sourceLabel) {
-      const text = document.getElementById('procedure-raw-text').value;
+      const textarea = document.getElementById('procedure-raw-text');
+      const fileInput = document.getElementById('procedure-file-input');
       const feedbackBox = document.getElementById('procedure-parse-feedback');
 
-      if (!text || !text.trim()) {
+      // 若文字框為空，但檔案選擇器已有選取檔案，自動讀取該檔案並解析！
+      if ((!textarea.value || !textarea.value.trim()) && ((fileInput && fileInput.files && fileInput.files[0]) || lastUploadedProcedureFile)) {
+        const targetFile = (fileInput && fileInput.files && fileInput.files[0]) ? fileInput.files[0] : lastUploadedProcedureFile;
+        processUploadedProcedureFile(targetFile);
+        return;
+      }
+
+      const rawText = textarea.value;
+      if (!rawText || !rawText.trim()) {
         if (feedbackBox) {
           feedbackBox.style.display = "block";
           feedbackBox.style.backgroundColor = "#fef2f2";
           feedbackBox.style.borderColor = "#ef4444";
           feedbackBox.style.color = "#991b1b";
-          feedbackBox.innerHTML = "⚠️ <b>請先貼上或上傳規章條文內容，或點選上方範本按鈕載入條文！</b>";
+          feedbackBox.innerHTML = "⚠️ <b>請先上傳辦法檔案、點選上方範本按鈕，或將條文貼入文字框中！</b>";
         }
         return;
       }
+
+      const text = normalizePdfLineBreaks(rawText);
+      const currentNetWorth = parseFloat(document.getElementById('input-net-worth').value) || 3200000000000;
 
       const result = {
         loanTotal: null,
@@ -1940,9 +2090,9 @@
       };
 
       // 支援 JSON 格式規章檔直接解析
-      if (text.trim().startsWith("{")) {
+      if (rawText.trim().startsWith("{")) {
         try {
-          const obj = JSON.parse(text.trim());
+          const obj = JSON.parse(rawText.trim());
           if (obj.loanTotalRatio !== undefined) { result.loanTotal = parseFloat(obj.loanTotalRatio); result.matchedClauses.push({ fieldId: "custom-loan-total-ratio", label: "資金貸與總額上限", value: result.loanTotal + "%", snippet: "JSON 欄位: loanTotalRatio" }); }
           if (obj.loanSingleRatio !== undefined) { result.loanSingle = parseFloat(obj.loanSingleRatio); result.matchedClauses.push({ fieldId: "custom-loan-single-ratio", label: "資金貸與單一企業限額", value: result.loanSingle + "%", snippet: "JSON 欄位: loanSingleRatio" }); }
           if (obj.guarTotalRatio !== undefined) { result.guarTotal = parseFloat(obj.guarTotalRatio); result.matchedClauses.push({ fieldId: "custom-guar-total-ratio", label: "背書保證總額上限", value: result.guarTotal + "%", snippet: "JSON 欄位: guarTotalRatio" }); }
@@ -1958,29 +2108,32 @@
       for (const clause of rawClauses) {
         // 排除 100% 國外子公司間特例條款，避免覆蓋母公司一般限額
         const isForeign100 = /百分之百之國外公司|100\s*[%％]之國外公司/.test(clause);
+        // 區分「授權額度」條款，避免將董事長循環動用授權額度誤判為一般單一企業限額
+        const isAuthClause = /授權董事長|授權額度/.test(clause);
         const subParts = clause.split(/[，,]+/).map(s => s.trim()).filter(Boolean);
 
         for (let i = 0; i < subParts.length; i++) {
           const part = subParts[i];
           const hasPct = extractPctFromClause(part) !== null;
           const nextPart = subParts[i + 1] || "";
-          const nextHasNewSubject = /(單一|個別|總額|總金額|背書保證|資金貸與)/.test(nextPart);
+          const nextHasNewSubject = /(單一|個別|總額|總金額|背書保證|資金貸與|授權額度)/.test(nextPart);
           const targetStr = (!hasPct && !nextHasNewSubject && nextPart) ? (part + "，" + nextPart) : part;
 
-          // 1. 資金貸與總額上限
-          if (!isForeign100 && result.loanTotal === null) {
-            if ((/(資金貸與|貸與他人|短期融通|對外貸與).*?(總額|總金額|最高限額|累計餘額)|(總額|總金額).*?(資金貸與|貸與)/.test(targetStr)) && !/背書保證|單一|個別/.test(targetStr)) {
+          // 1. 資金貸與總額上限 (優先採計短期融通或一般資金貸與總額)
+          if (!isForeign100 && !isAuthClause && (result.loanTotal === null || /短期融通/.test(clause))) {
+            if ((/(資金貸與|貸與他人|短期融通|對外貸與|其貸與).*?(總額|總金額|最高限額|累計餘額)|(總額|總金額).*?(資金貸與|貸與)/.test(targetStr)) && !/背書保證|單一|個別|授權/.test(targetStr)) {
               const val = extractPctFromClause(targetStr);
               if (val !== null) {
                 result.loanTotal = val;
+                result.matchedClauses = result.matchedClauses.filter(c => c.fieldId !== "custom-loan-total-ratio");
                 result.matchedClauses.push({ fieldId: "custom-loan-total-ratio", label: "資金貸與總額上限", value: val.toFixed(1) + "%", snippet: targetStr });
               }
             }
           }
 
           // 2. 資金貸與單一企業限額
-          if (!isForeign100 && result.loanSingle === null) {
-            if (/(單一企業|個別對象|單一對象|個別貸與|個別企業|每一借款人)/.test(targetStr) && (/(貸與|融通)/.test(targetStr) || /(資金貸與|短期融通|業務往來)/.test(clause)) && !/背書保證/.test(targetStr)) {
+          if (!isForeign100 && !isAuthClause && result.loanSingle === null) {
+            if (/(單一企業|個別對象|單一對象|個別貸與|個別企業|每一借款人)/.test(targetStr) && (/(貸與|融通)/.test(targetStr) || /(資金貸與|短期融通|業務往來)/.test(clause)) && !/背書保證|授權/.test(targetStr)) {
               const val = extractPctFromClause(targetStr);
               if (val !== null) {
                 result.loanSingle = val;
@@ -2012,14 +2165,26 @@
           }
         }
 
-        // 5. 授權董事長決行額度 (支援跨中文子句匹配)
-        if (result.chairmanAuth === null && /授權董事長/.test(clause)) {
-          const mAuth = clause.match(/授權董事長[\s\S]{0,45}?(?:新[臺台]幣|NT\$|\$)?\s*([零〇一二兩三四五六七八九十百千萬億壹貳參叁肆伍陸柒捌玖拾佰仟\d,.]+\s*(?:億元|億|萬元|萬|元))/);
-          if (mAuth) {
-            const moneyVal = parseChineseMoney(mAuth[1]);
+        // 5. 授權董事長決行額度 (支援固定金額如「三千萬元」及淨值百分比如「授權額度不得超過淨值百分之十」兩種寫法)
+        if (result.chairmanAuth === null && isAuthClause) {
+          const mAuthMoney = clause.match(/授權董事長[\s\S]{0,45}?(?:新[臺台]幣|NT\$|\$)?\s*([零〇一二兩三四五六七八九十百千萬億壹貳參叁肆伍陸柒捌玖拾佰仟\d,.]+\s*(?:億元|億|萬元|萬|元))/);
+          if (mAuthMoney) {
+            const moneyVal = parseChineseMoney(mAuthMoney[1]);
             if (moneyVal !== null && moneyVal >= 10000) {
               result.chairmanAuth = moneyVal;
               result.matchedClauses.push({ fieldId: "custom-chairman-auth-limit", label: "董事長授權決行額度", value: "NT$ " + moneyVal.toLocaleString(), snippet: clause });
+            }
+          } else if (/授權額度/.test(clause) && /淨值/.test(clause)) {
+            const authPct = extractPctFromClause(clause);
+            if (authPct !== null) {
+              const calcAuthMoney = Math.round(currentNetWorth * (authPct / 100));
+              result.chairmanAuth = calcAuthMoney;
+              result.matchedClauses.push({
+                fieldId: "custom-chairman-auth-limit",
+                label: "董事長授權決行額度",
+                value: `淨值之 ${authPct.toFixed(1)}% (依目前淨值折算 NT$ ${calcAuthMoney.toLocaleString()})`,
+                snippet: clause
+              });
             }
           }
         }
