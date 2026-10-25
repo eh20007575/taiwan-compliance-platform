@@ -669,15 +669,15 @@
                     <input type="text" class="form-control" id="guarantee-beneficiary-name" value="極智健康科技股份有限公司">
                   </div>
                   <div class="form-group">
-                    <label class="form-label">被保證對象關係代碼 (格式五之二註2)</label>
+                    <label class="form-label">被保證對象種類與關係代碼 (格式五之二註2)</label>
                     <select class="form-select" id="guarantee-rel">
-                      <option value="2">關係代碼 (2) - 直接及間接持股超過 50% 之子公司</option>
-                      <option value="4">關係代碼 (4) - 直接及間接持股達 90% 以上之公司間 (限額10%淨值)</option>
-                      <option value="100">關係代碼 (2) - 直接及間接持股 100% 之子公司間 (免受10%限制)</option>
-                      <option value="3">關係代碼 (3) - 直接及間接對公司持股超過 50% 之母公司</option>
-                      <option value="1">關係代碼 (1) - 有業務往來之公司</option>
+                      <option value="4">種類1 [非100%持股] 關係(4) - 直接及間接持股非100%(達90%~99%)公司間 (限額10%淨值＋受總額與單家規範)</option>
+                      <option value="100">種類2 [100%持股] 關係(2)/(4) - 直接及間接持股 100% 之公司間 (免10%限制，惟仍受總額與單家限額規範)</option>
+                      <option value="2">關係代碼 (2) - 母公司對直接及間接持股 >50% (非100%) 之子公司 (受總額與單家限額規範)</option>
+                      <option value="3">關係代碼 (3) - 直接及間接對公司持股超過 50% 之母公司 (受總額與單家限額規範)</option>
+                      <option value="1">關係代碼 (1) - 有業務往來之公司 (受近一年業務往來金額＋總額與單家限額規範)</option>
                       <option value="5">關係代碼 (5) - 承攬工程同業或共同起造人依約互保</option>
-                      <option value="OTHER_UNRELATED">其他非合格對象 (違規)</option>
+                      <option value="OTHER_UNRELATED">其他非合格對象 (法定違規對象)</option>
                     </select>
                   </div>
                 </div>
@@ -1204,12 +1204,14 @@
           <div id="procedure-parse-feedback" style="display: none; margin-bottom: 1.25rem; padding: 1rem 1.25rem; border-radius: 8px; border: 1px solid #10b981; background-color: #ecfdf5; color: #065f46;"></div>
 
           <div style="border-top: 1px solid var(--slate-200); padding-top: 1.25rem;">
-            <h4 style="font-size: 1rem; color: var(--slate-800); margin-bottom: 0.75rem;">🎯 貴公司內部辦法控制參數（支援「四層式資金貸與分類限額」解析與手動微調）：</h4>
+            <h4 style="font-size: 1.05rem; color: var(--primary); margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.4rem;">
+              <span>💰 第一部分：資金貸與他人控制參數（依「總體、業務往來、短期融通、100%國外子公司」四層分類）</span>
+            </h4>
 
-            <!-- 第一層：全公司總體貸與限額 -->
+            <!-- ① 全公司總體貸與限額 -->
             <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #1e40af; padding: 0.9rem 1rem; border-radius: 6px; margin-bottom: 0.85rem;">
               <div style="font-size: 0.88rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.5rem;">
-                ① 【全公司總體限額】業務往來 ＋ 短期融通合計上限（如 2330 台積電第 3 條：總額上限 20% / 個別上限 10%）
+                ① 【資金貸與 — 全公司總體限額】業務往來 ＋ 短期融通合計上限（如 2330 台積電第 3 條：總額上限 20% / 個別上限 10%）
               </div>
               <div class="form-row">
                 <div class="form-group" style="margin-bottom: 0;">
@@ -1225,49 +1227,72 @@
               </div>
             </div>
 
-            <!-- 第二層 & 第三層：依貸與種類區分（業務往來 vs 短期融通） -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0.85rem; margin-bottom: 0.85rem;">
+            <!-- ② & ③ 依貸與種類區分（業務往來 vs 短期融通），並將各自專屬的控管開關納入該區塊內 -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.85rem; margin-bottom: 0.85rem;">
+              <!-- ② 種類一：因業務往來關係 (含業務往來進銷貨金額併計設定) -->
               <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #15803d; padding: 0.9rem 1rem; border-radius: 6px;">
                 <div style="font-size: 0.88rem; font-weight: 700; color: #166534; margin-bottom: 0.5rem;">
-                  ② 【種類一：因業務往來關係】（如台積電第 3 條第 1 項第 1 款）
+                  ② 【資金貸與種類一：因業務往來關係】（如台積電第 3 條第 1 項第 1 款）
                 </div>
                 <div class="form-row">
-                  <div class="form-group" style="margin-bottom: 0;">
+                  <div class="form-group" style="margin-bottom: 0.6rem;">
                     <label class="form-label">業務往來貸與總額占淨值 (%)</label>
                     <input type="number" step="0.1" class="form-control" id="custom-bus-loan-total-ratio" value="20.0">
                     <span class="form-sublabel">台積電第 3 條為淨值 20%（公版為 40%）</span>
                   </div>
-                  <div class="form-group" style="margin-bottom: 0;">
+                  <div class="form-group" style="margin-bottom: 0.6rem;">
                     <label class="form-label">業務往來個別對象占淨值 (%)</label>
                     <input type="number" step="0.1" class="form-control" id="custom-bus-loan-single-ratio" value="10.0">
-                    <span class="form-sublabel">台積電第 3 條為 10%（且不超過近一年進銷貨金額）</span>
+                    <span class="form-sublabel">台積電第 3 條為淨值 10%</span>
                   </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">業務往來個別限額是否併計「近一年進銷貨金額」</label>
+                  <select class="form-select" id="custom-bus-by-trade-amount">
+                    <option value="true" selected>是（不得超過前 12 個月雙方進貨或銷貨金額孰高者，且受上方淨值 % 限制）</option>
+                    <option value="false">否（僅按淨值百分比計算）</option>
+                  </select>
                 </div>
               </div>
 
+              <!-- ③ 種類二：因短期融通資金必要 (含母子公司分次撥貸/循環動用授權設定) -->
               <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #2563eb; padding: 0.9rem 1rem; border-radius: 6px;">
                 <div style="font-size: 0.88rem; font-weight: 700; color: #1e40af; margin-bottom: 0.5rem;">
-                  ③ 【種類二：因短期融通資金必要】（如台積電第 3 條第 1 項第 2 款）
+                  ③ 【資金貸與種類二：因短期融通必要 ＆ 董事長分次撥貸授權】（如台積電第 3 條、第 9 條）
                 </div>
                 <div class="form-row">
-                  <div class="form-group" style="margin-bottom: 0;">
+                  <div class="form-group" style="margin-bottom: 0.6rem;">
                     <label class="form-label">短期融通貸與總額占淨值 (%)</label>
                     <input type="number" step="0.1" class="form-control" id="custom-loan-total-ratio" value="20.0">
                     <span class="form-sublabel">法定上限 40% / 台積電第 3 條為 20%</span>
                   </div>
-                  <div class="form-group" style="margin-bottom: 0;">
+                  <div class="form-group" style="margin-bottom: 0.6rem;">
                     <label class="form-label">短期融通個別對象占淨值 (%)</label>
                     <input type="number" step="0.1" class="form-control" id="custom-loan-single-ratio" value="10.0">
                     <span class="form-sublabel">公版 10% / 台積電第 3 條為 10%</span>
                   </div>
                 </div>
+                <div class="form-row">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">是否允許母子公司間分次撥貸或循環動用</label>
+                    <select class="form-select" id="custom-allow-revolving">
+                      <option value="true" selected>明文允許（1年內分次撥貸或循環動用）</option>
+                      <option value="false">未明文授權（禁止循環動用）</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label">資貸董事長分次撥貸授權額度 (NT$)</label>
+                    <input type="number" class="form-control" id="custom-chairman-auth-limit" value="320000000000">
+                    <span class="form-sublabel">台積電第 9 條為單一對象淨值 10%</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- 第四層：100% 持股國外公司間特例 -->
-            <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-left: 4px solid #7e22ce; padding: 0.9rem 1rem; border-radius: 6px; margin-bottom: 0.85rem;">
+            <!-- ④ 100% 持股國外子公司間資金貸與特例 -->
+            <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-left: 4px solid #7e22ce; padding: 0.9rem 1rem; border-radius: 6px; margin-bottom: 1.4rem;">
               <div style="font-size: 0.88rem; font-weight: 700; color: #6b21a8; margin-bottom: 0.5rem;">
-                ④ 【持股 100% 國外子公司間特例】豁免法定 40% 限制（如 2330 台積電第 3 條第 3 項：豁免 20% 與 1 年限制，依各子公司內部程序訂定）
+                ④ 【資金貸與特例：直接及間接持股 100% 國外子公司間】豁免法定 40% 限制（如 2330 台積電第 3 條第 3 項：豁免 20% 與 1 年限制，依各子公司內部程序訂定）
               </div>
               <div class="form-row-3">
                 <div class="form-group" style="margin-bottom: 0;">
@@ -1288,42 +1313,61 @@
               </div>
             </div>
 
-            <!-- 第五層：背書保證與董事長決行授權 -->
-            <div style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #d97706; padding: 0.9rem 1rem; border-radius: 6px;">
+            <!-- ================================================================= -->
+            <!-- 第二部分：為他人背書保證控制參數（總額／單家頂層限額 ＋ 持股種類分層） -->
+            <!-- ================================================================= -->
+            <h4 style="font-size: 1.05rem; color: #92400e; margin-bottom: 0.65rem; padding-top: 0.75rem; border-top: 1px dashed var(--slate-300); display: flex; align-items: center; gap: 0.4rem;">
+              <span>🛡️ 第二部分：為他人背書保證控制參數（先分「非 100% 持股 vs. 100% 持股」種類，且均受「總額與單家限額」規範）</span>
+            </h4>
+
+            <!-- ⑤ 背書保證頂層限額（總額上限 ＆ 單一企業限額） -->
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #d97706; padding: 0.9rem 1rem; border-radius: 6px; margin-bottom: 0.85rem;">
               <div style="font-size: 0.88rem; font-weight: 700; color: #92400e; margin-bottom: 0.5rem;">
-                ⑤ 【背書保證限額與董事長循環動用／決行授權】
+                ⑤ 【背書保證 — 全公司總額與單一企業頂層限額】⚠️ 下方所有背保種類（含非 100% 持股及 100% 持股公司間）均須受此「總額」與「單家限額」規範！
               </div>
               <div class="form-row-3">
                 <div class="form-group" style="margin-bottom: 0;">
                   <label class="form-label">背書保證總額上限占淨值 (%)</label>
-                  <input type="number" step="0.1" class="form-control" id="custom-guar-total-ratio" value="30.0">
-                  <span class="form-sublabel">法定上限通常為 50%</span>
+                  <input type="number" step="0.1" class="form-control" id="custom-guar-total-ratio" value="25.0">
+                  <span class="form-sublabel">台積電為淨值 25%（證交所公版為 50%）</span>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label">背書保證單一企業上限占淨值 (%)</label>
+                  <label class="form-label">對單一企業背書保證限額占淨值 (%)</label>
                   <input type="number" step="0.1" class="form-control" id="custom-guar-single-ratio" value="10.0">
-                  <span class="form-sublabel">法定上限通常為 20%</span>
+                  <span class="form-sublabel">台積電為淨值 10%（證交所公版為 20%）</span>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label">董事長授權決行/分次撥貸額度 (NT$)</label>
-                  <input type="number" class="form-control" id="custom-chairman-auth-limit" value="320000000000">
-                  <span class="form-sublabel">如台積電第 9 條第 2 項為單一對象淨值 10%</span>
+                  <label class="form-label">背保董事長授權先行決行額度 (NT$)</label>
+                  <input type="number" class="form-control" id="custom-guar-chairman-auth-limit" value="30000000">
+                  <span class="form-sublabel">準則第12條第8款（事後報董事會追認）</span>
                 </div>
               </div>
-              <div class="form-row" style="margin-top: 0.65rem;">
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label">是否允許母子公司間分次撥貸或循環動用</label>
-                  <select class="form-select" id="custom-allow-revolving">
-                    <option value="true" selected>明文允許（董事會授權一定額度及不超過1年期間內分次撥貸或循環動用）</option>
-                    <option value="false">未明文授權（禁止循環動用，須逐筆提董事會）</option>
-                  </select>
+            </div>
+
+            <!-- ⑥ 背書保證依持股比例種類分層（1. 非100%持股限額10%  2. 100%持股無10%限制，惟皆受⑤總額與單家限額規範） -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.85rem;">
+              <div style="background: #fff7ed; border: 1px solid #fed7aa; border-left: 4px solid #ea580c; padding: 0.9rem 1rem; border-radius: 6px;">
+                <div style="font-size: 0.88rem; font-weight: 700; color: #9a3412; margin-bottom: 0.5rem;">
+                  ⑥-1 【背保種類一：直接及間接持有表決權股份「非為 100%」時】（準則第 5 條第 2 項：持股 90%～99% 公司間）
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label">業務往來個別限額是否併計「近一年進銷貨金額」</label>
-                  <select class="form-select" id="custom-bus-by-trade-amount">
-                    <option value="true" selected>是（不得超過前一年度雙方進貨或銷貨金額）</option>
-                    <option value="false">否（僅按淨值百分比計算）</option>
+                  <label class="form-label">非 100% 持股公司間背保限額占淨值 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-guar-non100-ratio" value="10.0">
+                  <span class="form-sublabel">法定與公版上限為淨值 10%，且<b>同時受上方⑤「背保總額」與「單一企業限額」規範</b></span>
+                </div>
+              </div>
+
+              <div style="background: #fefce8; border: 1px solid #fef08a; border-left: 4px solid #ca8a04; padding: 0.9rem 1rem; border-radius: 6px;">
+                <div style="font-size: 0.88rem; font-weight: 700; color: #854d0e; margin-bottom: 0.5rem;">
+                  ⑥-2 【背保種類二：直接及間接持有表決權股份「為 100%」時】（準則第 5 條第 2 項但書：100% 持股公司間）
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">100% 持股公司間背保限額規則</label>
+                  <select class="form-select" id="custom-guar-100-exempt">
+                    <option value="true" selected>無 10% 限制（免受前項 10% 限制，惟仍受上方⑤「背保總額」與「單一企業限額」規範！）</option>
+                    <option value="false">一併適用非 100% 持股之 10% 淨值限額</option>
                   </select>
+                  <span class="form-sublabel">雖豁免 10% 子限額，累計仍不得逾越⑤背保總額上限，單家仍不得逾越⑤單一企業限額</span>
                 </div>
               </div>
             </div>
@@ -1430,18 +1474,21 @@
     let customCompanyProcedures = {
       isActive: true,
       overallLoanTotalRatio: 20.0,
-      overallLoanSingleRatio: 5.0,
+      overallLoanSingleRatio: 10.0,
       busLoanTotalRatio: 20.0,
-      busLoanSingleRatio: 5.0,
+      busLoanSingleRatio: 10.0,
       busByTradeAmount: true,
       loanTotalRatio: 20.0,
-      loanSingleRatio: 5.0,
+      loanSingleRatio: 10.0,
       sub100LoanTotalRatio: 100.0,
       sub100LoanSingleRatio: 100.0,
       sub100MaxYears: 1,
-      guarTotalRatio: 30.0,
+      guarTotalRatio: 25.0,
       guarSingleRatio: 10.0,
-      chairmanAuthLimit: 30000000,
+      guarNon100Ratio: 10.0,
+      guar100Exempt: true,
+      guarChairmanAuthLimit: 30000000,
+      chairmanAuthLimit: 320000000000,
       allowRevolving: true
     };
 
@@ -1751,8 +1798,16 @@
       const relCode = document.getElementById('guarantee-rel').value;
       const isMainland = document.getElementById('guarantee-is-mainland').value;
 
-      const singleLimit = customCompanyProcedures.isActive ? (netWorth * customCompanyProcedures.guarSingleRatio / 100) : (netWorth * 0.20);
+      let singleLimit = customCompanyProcedures.isActive ? (netWorth * customCompanyProcedures.guarSingleRatio / 100) : (netWorth * 0.20);
       const totalLimit = customCompanyProcedures.isActive ? (netWorth * customCompanyProcedures.guarTotalRatio / 100) : (netWorth * 0.50);
+      if (relCode === '4') {
+        // 種類1：直接及間接持有表決權股份非為 100% (90%~99%) 時，限額為淨值 10% (或內部自訂比例)，且同時受單一企業限額與總額上限規範
+        const non100Cap = customCompanyProcedures.isActive ? (netWorth * (customCompanyProcedures.guarNon100Ratio / 100)) : (netWorth * 0.10);
+        singleLimit = Math.min(singleLimit, non100Cap, totalLimit);
+      } else {
+        // 種類2 (100%持股) 及其他種類：100%持股無 10% 限制，惟仍受對單一企業背書保證限額及背書保證總額上限規範
+        singleLimit = Math.min(singleLimit, totalLimit);
+      }
 
       const ratio = ((transAmount / netWorth) * 100).toFixed(2) + "%";
 
@@ -2019,13 +2074,13 @@
         textarea.value = TSMC_2330_PROCEDURE_TEXT;
         tplTitle = "2330 台積電《資金貸與他人作業程序》全文 (共17條)";
       } else if (tpl === 'twse_combined') {
-        textarea.value = "# 臺灣證券交易所／證券櫃檯買賣中心\n## 上市上櫃與公開發行公司內部作業程序官方參考範例（全文）\n\n---\n\n# 第一部分：《公開發行公司資金貸與他人作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n本公司為健全財務管理並防杜不當之資金貸與他人，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（貸與對象）\n本公司資金貸與對象，除依公司法第十五條規定不得貸與股東或任何個人外，以下列各款為限：\n一、與本公司有業務往來之公司或行號。\n二、有短期融通資金必要之公司或行號。\n前項第二款所稱有短期融通資金之必要者，以本公司直接及間接持有表決權股份超過百分之五十之子公司，因購料、營運週轉或償還銀行借款之必要者為限。\n\n### 第三條（資金貸與總額及個別對象限額）\n本公司辦理資金貸與他人之額度規範如下：\n一、本公司資金貸與他人總額不得超過本公司最近期財務報表淨值之百分之四十。\n二、因業務往來關係從事資金貸與者，個別貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十，且不得超過雙方最近一年度業務往來金額。所稱業務往來金額，以雙方間進貨或銷貨金額孰高者為準。\n三、因有短期融通資金之必要從事資金貸與者，個別對象資金貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十。\n四、本公司直接及間接持有表決權股份百分之百之國外公司間從事資金貸與，或本公司直接及間接持有表決權股份百分之百之國外公司對本公司從事資金貸與，其貸與總額不得超過貸與公司最近期財務報表淨值百分之一百，個別對象貸與金額不得超過貸與公司最近期財務報表淨值百分之一百。\n\n### 第四條（辦理及審查程序）\n借款人向本公司申請資金貸與時，應檢具基本資料、財務報表及借款申請書，向本公司財務單位提出申請。\n財務單位應就貸與之必要性與合理性、借款人之信用狀況、風險程度、對本公司營運風險、財務狀況及股東權益之影響詳細徵信評估，並作成書面評估報告。\n\n### 第五條（擔保品之徵提與鑑價）\n本公司辦理資金貸與時，除借款人為本公司直接及間接持有表決權股份百分之百之子公司外，原則上應徵提相當於貸與金額之擔保品，並辦理質權或抵押權設定登記。如借款人提供實收資本額大於貸與金額之殷實公司或金融機構保證者，得免徵提擔保品。\n\n### 第六條（決策及授權層級）\n本公司辦理資金貸與他人，應經財務單位審查並作成評估報告，提報審計委員會審議並經董事會決議通過後辦理，不得授權其他人決行。\n本公司與母公司或子公司間，或子公司相互間從事資金貸與，應提報董事會決議。但經董事會決議授權董事長在三千萬元之額度內，對同一對象於一年內分次撥貸或循環動用，並於事後提報最近期董事會備查。\n\n### 第七條（貸與期限及計息）\n本公司資金貸與期限，每次不得超過一年。\n資金貸與之利息，應以不低於本公司向金融機構短期融資之最高利率為原則，按月或按季計收利息。\n\n### 第八條（撥款與後續控管）\n資金貸與案經核准並辦妥保證或擔保品設定後，始得撥款。貸出後應持續追蹤借款人之財務、業務及信用狀況，如有重大變動應立即報告總經理及董事長，並採取適當之保全措施。\n\n### 第九條（超限改善計畫）\n因情事變更致貸與對象不符本作業程序規定或餘額超限時，應訂定改善計畫，將相關改善計畫送審計委員會及各獨立董事，並依計畫時程完成改善。\n\n### 第十條（印鑑章保管及使用程序）\n辦理資金貸與之印鑑章，應由專人保管並建立使用登記簿。本公司印鑑之使用應經核准始得用印。\n\n### 第十一條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份資金貸與餘額。\n本公司資金貸與餘額達處理準則第二十二條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十二條（對子公司之管控程序）\n本公司之子公司擬辦理資金貸與他人者，應依處理準則規定訂定資金貸與他人作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十三條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核資金貸與他人作業程序及其執行情形，並作成書面稽核報告。如發現重大違規情事，應立即以書面通知審計委員會各獨立董事。\n\n### 第十四條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司工作規則及人事管理辦法視情節輕重予以處分。\n\n### 第十五條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。\n\n---\n\n# 第二部分：《公開發行公司為他人背書保證作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n本公司為健全財務管理並降低背書保證風險，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（背書保證之範圍）\n本作業程序所稱背書保證，係指融資背書保證、關稅背書保證及其他票據背書保證或提供財產設定擔保之行為。\n\n### 第三條（背書保證對象）\n本公司得為背書保證之對象，以下列各款為限：\n一、有業務往來之公司。\n二、本公司直接及間接持有表決權股份超過百分之五十之公司。\n三、直接及間接對本公司持有表決權股份超過百分之五十之公司。\n本公司直接及間接持有表決權股份達百分之九十以上之公司間，得為背書保證。本公司基於承攬工程需要之同業間或共同起造人間依合約規定互保者，不受前二項規定之限制。\n\n### 第四條（背書保證限額）\n本公司辦理背書保證之總額及個別對象限額規範如下：\n一、本公司背書保證總額不得超過本公司最近期財務報表淨值之百分之五十。\n二、本公司對單一企業背書保證限額不得超過本公司最近期財務報表淨值之百分之二十。\n三、本公司直接及間接持有表決權股份達百分之九十以上之子公司間相互背書保證，其最高限額以本公司最近期財務報表淨值之百分之十為限。\n四、因業務往來關係從事背書保證者，對單一企業背書保證金額除不得超過本公司淨值百分之二十外，並不得超過雙方最近一年度業務往來金額。\n\n### 第五條（決策及授權層級）\n本公司辦理背書保證，應經董事會決議通過後辦理。但為配合業務時效需要，經董事會決議授權董事長在三千萬元之額度內決行，並於事後報經最近期董事會追認。\n本公司辦理背書保證因業務需要超過作業程序所訂限額時，應經董事會同意並由半數以上董事對超限可能產生之損失具名聯保，並修正作業程序提報股東會追認。\n\n### 第六條（辦理及審查程序）\n被保證企業向本公司申請背書保證時，應向本公司財務單位提出申請。財務單位應就背書保證之必要性及合理性、被保證對象之信用狀況與營運風險詳細徵信評估，並作成書面評估報告提報審議。\n\n### 第七條（印鑑章保管及使用程序）\n本公司辦理背書保證之專用印鑑，應由專人保管，印鑑之使用應經核准始得用印。\n\n### 第八條（超限改善計畫）\n因情事變更致背書保證對象不符本作業程序規定或金額超限時，應訂定改善計畫，將相關改善計畫送審計委員會各獨立董事，並依計畫時程完成改善。\n\n### 第九條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份背書保證餘額。\n本公司背書保證餘額達處理準則第二十五條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十條（對子公司之管控程序）\n本公司之子公司擬為他人辦理背書保證者，本公司應督促該子公司依處理準則規定訂定為他人背書保證作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十一條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核背書保證作業程序及其執行情形，並作成書面稽核報告。\n\n### 第十二條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司相關人事規章視情節輕重予以處分。\n\n### 第十三條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。\n";
+        textarea.value = "# 臺灣證券交易所／證券櫃檯買賣中心\n## 上市上櫃與公開發行公司內部作業程序官方參考範例（全文）\n\n---\n\n# 第一部分：《公開發行公司資金貸與他人作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n本公司為健全財務管理並防杜不當之資金貸與他人，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（貸與對象）\n本公司資金貸與對象，除依公司法第十五條規定不得貸與股東或任何個人外，以下列各款為限：\n一、與本公司有業務往來之公司或行號。\n二、有短期融通資金必要之公司或行號。\n前項第二款所稱有短期融通資金之必要者，以本公司直接及間接持有表決權股份超過百分之五十之子公司，因購料、營運週轉或償還銀行借款之必要者為限。\n\n### 第三條（資金貸與總額及個別對象限額）\n本公司辦理資金貸與他人之額度規範如下：\n一、本公司資金貸與他人總額不得超過本公司最近期財務報表淨值之百分之四十。\n二、因業務往來關係從事資金貸與者，個別貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十，且不得超過雙方最近一年度業務往來金額。所稱業務往來金額，以雙方間進貨或銷貨金額孰高者為準。\n三、因有短期融通資金之必要從事資金貸與者，個別對象資金貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十。\n四、本公司直接及間接持有表決權股份百分之百之國外公司間從事資金貸與，或本公司直接及間接持有表決權股份百分之百之國外公司對本公司從事資金貸與，其貸與總額不得超過貸與公司最近期財務報表淨值百分之一百，個別對象貸與金額不得超過貸與公司最近期財務報表淨值百分之一百。\n\n### 第四條（辦理及審查程序）\n借款人向本公司申請資金貸與時，應檢具基本資料、財務報表及借款申請書，向本公司財務單位提出申請。\n財務單位應就貸與之必要性與合理性、借款人之信用狀況、風險程度、對本公司營運風險、財務狀況及股東權益之影響詳細徵信評估，並作成書面評估報告。\n\n### 第五條（擔保品之徵提與鑑價）\n本公司辦理資金貸與時，除借款人為本公司直接及間接持有表決權股份百分之百之子公司外，原則上應徵提相當於貸與金額之擔保品，並辦理質權或抵押權設定登記。如借款人提供實收資本額大於貸與金額之殷實公司或金融機構保證者，得免徵提擔保品。\n\n### 第六條（決策及授權層級）\n本公司辦理資金貸與他人，應經財務單位審查並作成評估報告，提報審計委員會審議並經董事會決議通過後辦理，不得授權其他人決行。\n本公司與母公司或子公司間，或子公司相互間從事資金貸與，應提報董事會決議。但經董事會決議授權董事長在三千萬元之額度內，對同一對象於一年內分次撥貸或循環動用，並於事後提報最近期董事會備查。\n\n### 第七條（貸與期限及計息）\n本公司資金貸與期限，每次不得超過一年。\n資金貸與之利息，應以不低於本公司向金融機構短期融資之最高利率為原則，按月或按季計收利息。\n\n### 第八條（撥款與後續控管）\n資金貸與案經核准並辦妥保證或擔保品設定後，始得撥款。貸出後應持續追蹤借款人之財務、業務及信用狀況，如有重大變動應立即報告總經理及董事長，並採取適當之保全措施。\n\n### 第九條（超限改善計畫）\n因情事變更致貸與對象不符本作業程序規定或餘額超限時，應訂定改善計畫，將相關改善計畫送審計委員會及各獨立董事，並依計畫時程完成改善。\n\n### 第十條（印鑑章保管及使用程序）\n辦理資金貸與之印鑑章，應由專人保管並建立使用登記簿。本公司印鑑之使用應經核准始得用印。\n\n### 第十一條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份資金貸與餘額。\n本公司資金貸與餘額達處理準則第二十二條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十二條（對子公司之管控程序）\n本公司之子公司擬辦理資金貸與他人者，應依處理準則規定訂定資金貸與他人作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十三條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核資金貸與他人作業程序及其執行情形，並作成書面稽核報告。如發現重大違規情事，應立即以書面通知審計委員會各獨立董事。\n\n### 第十四條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司工作規則及人事管理辦法視情節輕重予以處分。\n\n### 第十五條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。\n\n---\n\n# 第二部分：《公開發行公司為他人背書保證作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n本公司為健全財務管理並降低背書保證風險，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（背書保證之範圍）\n本作業程序所稱背書保證，係指融資背書保證、關稅背書保證及其他票據背書保證或提供財產設定擔保之行為。\n\n### 第三條（背書保證對象）\n本公司得為背書保證之對象，以下列各款為限：\n一、有業務往來之公司。\n二、本公司直接及間接持有表決權股份超過百分之五十之公司。\n三、直接及間接對本公司持有表決權股份超過百分之五十之公司。\n本公司直接及間接持有表決權股份達百分之九十以上之公司間，得為背書保證。本公司基於承攬工程需要之同業間或共同起造人間依合約規定互保者，不受前二項規定之限制。\n\n### 第四條（背書保證限額）\n本公司辦理背書保證之總額及個別對象限額規範如下：\n一、本公司背書保證總額不得超過本公司最近期財務報表淨值之百分之五十。\n二、本公司對單一企業背書保證限額不得超過本公司最近期財務報表淨值之百分之二十。\n三、本公司直接及間接持有表決權股份非為百分之百（達百分之九十以上）之子公司間相互背書保證，其最高限額以本公司最近期財務報表淨值之百分之十為限；但直接及間接持有表決權股份百分之百之公司間為背書保證，不在此限（惟仍不得超過第一款背書保證總額及第二款對單一企業背書保證限額）。\n四、因業務往來關係從事背書保證者，對單一企業背書保證金額除不得超過本公司淨值百分之二十外，並不得超過雙方最近一年度業務往來金額。\n\n### 第五條（決策及授權層級）\n本公司辦理背書保證，應經董事會決議通過後辦理。但為配合業務時效需要，經董事會決議授權董事長在三千萬元之額度內決行，並於事後報經最近期董事會追認。\n本公司辦理背書保證因業務需要超過作業程序所訂限額時，應經董事會同意並由半數以上董事對超限可能產生之損失具名聯保，並修正作業程序提報股東會追認。\n\n### 第六條（辦理及審查程序）\n被保證企業向本公司申請背書保證時，應向本公司財務單位提出申請。財務單位應就背書保證之必要性及合理性、被保證對象之信用狀況與營運風險詳細徵信評估，並作成書面評估報告提報審議。\n\n### 第七條（印鑑章保管及使用程序）\n本公司辦理背書保證之專用印鑑，應由專人保管，印鑑之使用應經核准始得用印。\n\n### 第八條（超限改善計畫）\n因情事變更致背書保證對象不符本作業程序規定或金額超限時，應訂定改善計畫，將相關改善計畫送審計委員會各獨立董事，並依計畫時程完成改善。\n\n### 第九條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份背書保證餘額。\n本公司背書保證餘額達處理準則第二十五條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十條（對子公司之管控程序）\n本公司之子公司擬為他人辦理背書保證者，本公司應督促該子公司依處理準則規定訂定為他人背書保證作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十一條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核背書保證作業程序及其執行情形，並作成書面稽核報告。\n\n### 第十二條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司相關人事規章視情節輕重予以處分。\n\n### 第十三條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。\n";
         tplTitle = "證交所官方公版《資金貸與＋背書保證作業程序》合併全文 (共28條)";
       } else if (tpl === 'twse_full_loan') {
         textarea.value = "【臺灣證券交易所／櫃檯買賣中心】公開發行公司資金貸與他人作業程序參考範例（全文）\n\n第一條（訂定目的與法源依據）\n本公司為健全財務管理並防杜不當之資金貸與他人，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n第二條（貸與對象）\n本公司資金貸與對象，除依公司法第十五條規定不得貸與股東或任何個人外，以下列各款為限：\n一、與本公司有業務往來之公司或行號。\n二、有短期融通資金必要之公司或行號。\n前項第二款所稱有短期融通資金之必要者，以本公司直接及間接持有表決權股份超過百分之五十之子公司，因購料、營運週轉或償還銀行借款之必要者為限。\n\n### 第三條（資金貸與總額及個別對象限額）\n本公司辦理資金貸與他人之額度規範如下：\n一、本公司資金貸與他人總額不得超過本公司最近期財務報表淨值之百分之四十。\n二、因業務往來關係從事資金貸與者，個別貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十，且不得超過雙方最近一年度業務往來金額。所稱業務往來金額，以雙方間進貨或銷貨金額孰高者為準。\n三、因有短期融通資金之必要從事資金貸與者，個別對象資金貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十。\n四、本公司直接及間接持有表決權股份百分之百之國外公司間從事資金貸與，或本公司直接及間接持有表決權股份百分之百之國外公司對本公司從事資金貸與，其貸與總額不得超過貸與公司最近期財務報表淨值百分之一百，個別對象貸與金額不得超過貸與公司最近期財務報表淨值百分之一百。\n\n第四條（辦理及審查程序）\n借款人向本公司申請資金貸與時，應檢具基本資料、財務報表及借款申請書，向本公司財務單位提出申請。財務單位應就貸與之必要性與合理性、借款人之信用狀況、風險程度、對本公司營運風險、財務狀況及股東權益之影響詳細徵信評估，並作成書面評估報告。\n\n第五條（擔保品之徵提與鑑價）\n本公司辦理資金貸與時，除借款人為本公司直接及間接持有表決權股份百分之百之子公司外，原則上應徵提相當於貸與金額之擔保品，並辦理質權或抵押權設定登記。如借款人提供實收資本額大於貸與金額之殷實公司或金融機構保證者，得免徵提擔保品。\n\n第六條（決策及授權層級）\n本公司辦理資金貸與他人，應經財務單位審查並作成評估報告，提報審計委員會審議並經董事會決議通過後辦理，不得授權其他人決行。\n本公司與母公司或子公司間，或子公司相互間從事資金貸與，應提報董事會決議。但經董事會決議授權董事長在三千萬元之額度內，對同一對象於一年內分次撥貸或循環動用，並於事後提報最近期董事會備查。\n\n第七條（貸與期限及計息）\n本公司資金貸與期限，每次不得超過一年。\n資金貸與之利息，應以不低於本公司向金融機構短期融資之最高利率為原則，按月或按季計收利息。\n\n第八條（撥款與後續控管）\n資金貸與案經核准並辦妥保證或擔保品設定後，始得撥款。貸出後應持續追蹤借款人之財務、業務及信用狀況，如有重大變動應立即報告總經理及董事長，並採取適當之保全措施。\n\n第九條（超限改善計畫）\n因情事變更致貸與對象不符本作業程序規定或餘額超限時，應訂定改善計畫，將相關改善計畫送審計委員會及各獨立董事，並依計畫時程完成改善。\n\n第十條（印鑑章保管及使用程序）\n辦理資金貸與之印鑑章，應由專人保管並建立使用登記簿。本公司印鑑之使用應經核准始得用印。\n\n第十一條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份資金貸與餘額。\n本公司資金貸與餘額達處理準則第二十二條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n第十二條（對子公司之管控程序）\n本公司之子公司擬辦理資金貸與他人者，應依處理準則規定訂定資金貸與他人作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n第十三條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核資金貸與他人作業程序及其執行情形，並作成書面稽核報告。如發現重大違規情事，應立即以書面通知審計委員會各獨立董事。\n\n第十四條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司工作規則及人事管理辦法視情節輕重予以處分。\n\n第十五條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。";
         tplTitle = "證交所官方公版《資金貸與他人作業程序》全文 (共15條)";
       } else if (tpl === 'twse_full_guar') {
-        textarea.value = "【臺灣證券交易所／櫃檯買賣中心】公開發行公司為他人背書保證作業程序參考範例（全文）\n\n第一條（訂定目的與法源依據）\n本公司為健全財務管理並降低背書保證風險，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n第二條（背書保證之範圍）\n本作業程序所稱背書保證，係指融資背書保證、關稅背書保證及其他票據背書保證或提供財產設定擔保之行為。\n\n第三條（背書保證對象）\n本公司得為背書保證之對象，以下列各款為限：\n一、有業務往來之公司。\n二、本公司直接及間接持有表決權股份超過百分之五十之公司。\n三、直接及間接對本公司持有表決權股份超過百分之五十之公司。\n本公司直接及間接持有表決權股份達百分之九十以上之公司間，得為背書保證。本公司基於承攬工程需要之同業間或共同起造人間依合約規定互保者，不受前二項規定之限制。\n\n第四條（背書保證限額）\n本公司辦理背書保證之總額及個別對象限額規範如下：\n一、本公司背書保證總額不得超過本公司最近期財務報表淨值之百分之五十。\n二、本公司對單一企業背書保證限額不得超過本公司最近期財務報表淨值之百分之二十。\n三、本公司直接及間接持有表決權股份達百分之九十以上之子公司間相互背書保證，其最高限額以本公司最近期財務報表淨值之百分之十為限。\n四、因業務往來關係從事背書保證者，對單一企業背書保證金額除不得超過本公司淨值百分之二十外，並不得超過雙方最近一年度業務往來金額。\n\n第五條（決策及授權層級）\n本公司辦理背書保證，應經董事會決議通過後辦理。但為配合業務時效需要，經董事會決議授權董事長在三千萬元之額度內決行，並於事後報經最近期董事會追認。\n本公司辦理背書保證因業務需要超過作業程序所訂限額時，應經董事會同意並由半數以上董事對超限可能產生之損失具名聯保，並修正作業程序提報股東會追認。\n\n第六條（辦理及審查程序）\n被保證企業向本公司申請背書保證時，應向本公司財務單位提出申請。財務單位應就背書保證之必要性及合理性、被保證對象之信用狀況與營運風險詳細徵信評估，並作成書面評估報告提報審議。\n\n第七條（印鑑章保管及使用程序）\n本公司辦理背書保證之專用印鑑，應由專人保管，印鑑之使用應經核准始得用印。\n\n第八條（超限改善計畫）\n因情事變更致背書保證對象不符本作業程序規定或金額超限時，應訂定改善計畫，將相關改善計畫送審計委員會各獨立董事，並依計畫時程完成改善。\n\n第九條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份背書保證餘額。\n本公司背書保證餘額達處理準則第二十五條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n第十條（對子公司之管控程序）\n本公司之子公司擬為他人辦理背書保證者，本公司應督促該子公司依處理準則規定訂定為他人背書保證作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n第十一條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核背書保證作業程序及其執行情形，並作成書面稽核報告。\n\n第十二條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司相關人事規章視情節輕重予以處分。\n\n第十三條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。";
+        textarea.value = "【臺灣證券交易所／櫃檯買賣中心】公開發行公司為他人背書保證作業程序參考範例（全文）\n\n第一條（訂定目的與法源依據）\n本公司為健全財務管理並降低背書保證風險，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n第二條（背書保證之範圍）\n本作業程序所稱背書保證，係指融資背書保證、關稅背書保證及其他票據背書保證或提供財產設定擔保之行為。\n\n第三條（背書保證對象）\n本公司得為背書保證之對象，以下列各款為限：\n一、有業務往來之公司。\n二、本公司直接及間接持有表決權股份超過百分之五十之公司。\n三、直接及間接對本公司持有表決權股份超過百分之五十之公司。\n本公司直接及間接持有表決權股份達百分之九十以上之公司間，得為背書保證。本公司基於承攬工程需要之同業間或共同起造人間依合約規定互保者，不受前二項規定之限制。\n\n第四條（背書保證限額）\n本公司辦理背書保證之總額及個別對象限額規範如下：\n一、本公司背書保證總額不得超過本公司最近期財務報表淨值之百分之五十。\n二、本公司對單一企業背書保證限額不得超過本公司最近期財務報表淨值之百分之二十。\n三、本公司直接及間接持有表決權股份非為百分之百（達百分之九十以上）之子公司間相互背書保證，其最高限額以本公司最近期財務報表淨值之百分之十為限；但直接及間接持有表決權股份百分之百之公司間為背書保證，不在此限（惟仍不得超過第一款背書保證總額及第二款對單一企業背書保證限額）。\n四、因業務往來關係從事背書保證者，對單一企業背書保證金額除不得超過本公司淨值百分之二十外，並不得超過雙方最近一年度業務往來金額。\n\n第五條（決策及授權層級）\n本公司辦理背書保證，應經董事會決議通過後辦理。但為配合業務時效需要，經董事會決議授權董事長在三千萬元之額度內決行，並於事後報經最近期董事會追認。\n本公司辦理背書保證因業務需要超過作業程序所訂限額時，應經董事會同意並由半數以上董事對超限可能產生之損失具名聯保，並修正作業程序提報股東會追認。\n\n第六條（辦理及審查程序）\n被保證企業向本公司申請背書保證時，應向本公司財務單位提出申請。財務單位應就背書保證之必要性及合理性、被保證對象之信用狀況與營運風險詳細徵信評估，並作成書面評估報告提報審議。\n\n第七條（印鑑章保管及使用程序）\n本公司辦理背書保證之專用印鑑，應由專人保管，印鑑之使用應經核准始得用印。\n\n第八條（超限改善計畫）\n因情事變更致背書保證對象不符本作業程序規定或金額超限時，應訂定改善計畫，將相關改善計畫送審計委員會各獨立董事，並依計畫時程完成改善。\n\n第九條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份背書保證餘額。\n本公司背書保證餘額達處理準則第二十五條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n第十條（對子公司之管控程序）\n本公司之子公司擬為他人辦理背書保證者，本公司應督促該子公司依處理準則規定訂定為他人背書保證作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n第十一條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核背書保證作業程序及其執行情形，並作成書面稽核報告。\n\n第十二條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司相關人事規章視情節輕重予以處分。\n\n第十三條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。";
         tplTitle = "證交所官方公版《為他人背書保證作業程序》全文 (共13條)";
       } else if (tpl === 'strict') {
         textarea.value = "【穩健嚴格型企業自訂作業程序範本】\n第三條 本公司資金貸與他人總額不得超過本公司最近期財務報表淨值百分之二十，對單一企業資金貸與限額不得超過淨值百分之五。\n第四條 本公司為他人背書保證總額不得超過淨值百分之三十，對單一企業背書保證不得超過淨值百分之十。\n第十條 授權董事長在二千萬元之額度內決行，並於事後報最近期董事會追認。\n第十四條 本公司與母公司或子公司間資金貸與，得授權董事長在一定額度內分次撥貸或循環動用，期間不超過一年。";
@@ -2220,6 +2275,8 @@
         sub100MaxYears: null,
         guarTotal: null,
         guarSingle: null,
+        guarNon100: null,
+        guar100Exempt: null,
         chairmanAuth: null,
         allowRevolving: null,
         borrowerNetWorthCap: null,
@@ -2404,23 +2461,46 @@
         }
 
         // -------------------------------------------------------------------
-        // E. 第五層：背書保證限額、董事長授權額度、循環動用
+        // E. 第五層＆第六層：背書保證（總額上限、單一企業限額、非100%持股10%限額、100%持股豁免10%惟受總額與單家規範）
         // -------------------------------------------------------------------
         if (isGuarClause && !isAuthClause) {
           const subParts = clause.split(/[，,；;]+/).map(s => s.trim()).filter(Boolean);
-          for (const part of subParts) {
-            if (/背書保證.*?(總額|總金額|最高限額)|(總額|總金額).*?背書保證/.test(part) && !/(單一|個別|百分之九十|90%)/.test(part)) {
-              const val = extractPctFromClause(part);
-              if (val !== null && result.guarTotal === null) {
-                result.guarTotal = val;
-                upsertClause("custom-guar-total-ratio", "⑤ 背書保證總額上限", `${val.toFixed(1)}%`, part);
+          const isNon100SubClause = /百分之九十|90\s*[%％]|非為百分之百|非為\s*100\s*[%％]|未達百分之百|子公司間相互背書保證/.test(clause);
+          const is100SubGuarClause = /百分之百之(?:子)?公司|100\s*[%％]之(?:子)?公司/.test(clause);
+
+          if (is100SubGuarClause && /(不在此限|無限制|不受.*?限制)/.test(clause)) {
+            result.guar100Exempt = true;
+            upsertClause("custom-guar-100-exempt", "⑥-2 100%持股公司間背保限額", "無 10% 限制（惟仍受全公司背保總額與單一企業限額規範）", clause);
+          }
+
+          if (isNon100SubClause) {
+            for (const part of subParts) {
+              // 排除「持有表決權股份達百分之九十以上」或「非為100%」等持股比例文字，僅擷取「淨值」或「限額/不得超過」之百分比
+              const partWithoutSharePct = part.replace(/(?:持有)?表決權(?:之)?股份[^，,。；;]*?(?:百分之[零〇一二兩三四五六七八九十百]+|\d+\s*[%％])(?:以上)?/g, "");
+              if (/淨值|限額|不得超過|以不超過/.test(partWithoutSharePct)) {
+                const val = extractPctFromClause(partWithoutSharePct);
+                if (val !== null) {
+                  result.guarNon100 = val;
+                  upsertClause("custom-guar-non100-ratio", "⑥-1 非100%持股(90%~99%)公司間背保限額", `${val.toFixed(1)}%（且受總額與單一企業限額規範）`, clause);
+                  break;
+                }
               }
             }
-            if (/(單一企業|單一對象|個別對象|個別企業)/.test(part) && !/(百分之九十|90%)/.test(part)) {
-              const val = extractPctFromClause(part);
-              if (val !== null && result.guarSingle === null) {
-                result.guarSingle = val;
-                upsertClause("custom-guar-single-ratio", "⑤ 背書保證單一企業限額", `${val.toFixed(1)}%`, part);
+          } else {
+            for (const part of subParts) {
+              if (/背書保證.*?(總額|總額度|總金額|最高限額)|(總額|總額度|總金額).*?背書保證/.test(part) && !/(單一|個別|百分之九十|90%|非為百分之百)/.test(part)) {
+                const val = extractPctFromClause(part);
+                if (val !== null && result.guarTotal === null) {
+                  result.guarTotal = val;
+                  upsertClause("custom-guar-total-ratio", "⑤ 背書保證總額上限", `${val.toFixed(1)}%`, part);
+                }
+              }
+              if (/(單一企業|單一對象|個別對象|個別企業)/.test(part) && !/(百分之九十|90%|非為百分之百)/.test(part)) {
+                const val = extractPctFromClause(part);
+                if (val !== null && result.guarSingle === null) {
+                  result.guarSingle = val;
+                  upsertClause("custom-guar-single-ratio", "⑤ 對單一企業背書保證限額", `${val.toFixed(1)}%`, part);
+                }
               }
             }
           }
@@ -2489,6 +2569,7 @@
       if (result.sub100Total === null) result.sub100Total = 100.0;
       if (result.sub100Single === null) result.sub100Single = 100.0;
       if (result.sub100MaxYears === null) result.sub100MaxYears = 1;
+      if (result.guar100Exempt === null) result.guar100Exempt = true;
 
       // 寫入 DOM 欄位並觸發高亮動畫
       const setField = (id, val) => {
@@ -2511,6 +2592,8 @@
       if (result.sub100MaxYears !== null) setField('custom-sub100-max-years', result.sub100MaxYears);
       if (result.guarTotal !== null) setField('custom-guar-total-ratio', result.guarTotal.toFixed(1));
       if (result.guarSingle !== null) setField('custom-guar-single-ratio', result.guarSingle.toFixed(1));
+      if (result.guarNon100 !== null) setField('custom-guar-non100-ratio', result.guarNon100.toFixed(1));
+      if (result.guar100Exempt !== null) setField('custom-guar-100-exempt', result.guar100Exempt ? "true" : "false");
       if (result.chairmanAuth !== null) setField('custom-chairman-auth-limit', result.chairmanAuth);
       if (result.allowRevolving !== null) setField('custom-allow-revolving', result.allowRevolving ? "true" : "false");
 
@@ -2563,8 +2646,11 @@
       customCompanyProcedures.sub100LoanTotalRatio = parseFloat(document.getElementById('custom-sub100-loan-total-ratio').value) || 100.0;
       customCompanyProcedures.sub100LoanSingleRatio = parseFloat(document.getElementById('custom-sub100-loan-single-ratio').value) || 100.0;
       customCompanyProcedures.sub100MaxYears = parseInt(document.getElementById('custom-sub100-max-years').value) || 1;
-      customCompanyProcedures.guarTotalRatio = parseFloat(document.getElementById('custom-guar-total-ratio').value) || 30.0;
+      customCompanyProcedures.guarTotalRatio = parseFloat(document.getElementById('custom-guar-total-ratio').value) || 25.0;
       customCompanyProcedures.guarSingleRatio = parseFloat(document.getElementById('custom-guar-single-ratio').value) || 10.0;
+      customCompanyProcedures.guarNon100Ratio = parseFloat(document.getElementById('custom-guar-non100-ratio').value) || 10.0;
+      customCompanyProcedures.guar100Exempt = (document.getElementById('custom-guar-100-exempt').value === 'true');
+      customCompanyProcedures.guarChairmanAuthLimit = parseFloat(document.getElementById('custom-guar-chairman-auth-limit').value) || 30000000;
       customCompanyProcedures.chairmanAuthLimit = parseFloat(document.getElementById('custom-chairman-auth-limit').value) || 320000000000;
       customCompanyProcedures.allowRevolving = (document.getElementById('custom-allow-revolving').value === 'true');
 
@@ -2602,6 +2688,9 @@
       document.getElementById('custom-sub100-max-years').value = "1";
       document.getElementById('custom-guar-total-ratio').value = "50.0";
       document.getElementById('custom-guar-single-ratio').value = "20.0";
+      document.getElementById('custom-guar-non100-ratio').value = "10.0";
+      document.getElementById('custom-guar-100-exempt').value = "true";
+      document.getElementById('custom-guar-chairman-auth-limit').value = "30000000";
       document.getElementById('custom-chairman-auth-limit').value = "50000000";
 
       document.getElementById('active-procedure-label').innerText = "採用金管會主管法規標準（未設定更嚴格之內部規章）";
@@ -2995,50 +3084,114 @@
         if (evalBal >= 10000000 && (evalBal / netWorth) >= 0.02) announcementTriggers.push(`新增貸與達 1,000 萬元且達淨值 2% [準則§22-I-(3)]`);
       }
 
-      // 背書保證
+      // 背書保證（先分「非100%持股 vs 100%持股」種類，且兩者皆受「背保總額上限」與「單一企業限額」頂層規範）
       else if (currentTransType === 'GUARANTEE') {
         transAmount = parseFloat(document.getElementById('guarantee-amount').value) || 0;
         const beneficiaryRel = document.getElementById('guarantee-rel').value;
         const equityBookVal = parseFloat(document.getElementById('guarantee-equity-book-val').value) || 0;
         const loanBal = parseFloat(document.getElementById('guarantee-loan-bal').value) || 0;
         const existingGroupGuar = parseFloat(document.getElementById('guarantee-existing-group').value) || 0;
+        const projectedGuar = existingGroupGuar + transAmount;
 
+        // 1. 法定對象資格檢核
+        if (beneficiaryRel === 'OTHER_UNRELATED') {
+          isOverallCompliant = false;
+          ruleItems.push({ id: 'RULE-E01', name: '【法定資格】被保證對象資格', tag: 'tag-fail', text: '🔴 法令禁止：非屬法定合格公司或專案互保對象，不得為其背書保證！[準則§5-I]' });
+        } else {
+          ruleItems.push({ id: 'RULE-E01', name: '【法定資格】被保證對象資格', tag: 'tag-pass', text: '被保證對象符合《處理準則》第 5 條之法定合格對象規定。' });
+        }
+
+        // 2. 第一步：依背書保證種類檢核（種類1：非100%持股公司間限額10% vs 種類2：100%持股公司間免10%限制）
+        if (beneficiaryRel === '4') {
+          // 種類 1：直接及間接持有表決權股份非為 100% 時 (達 90%~99% 公司間)，限額為淨值 10%
+          const statMaxNon100 = netWorth * 0.10;
+          const compMaxNon100 = customCompanyProcedures.isActive ? (netWorth * (customCompanyProcedures.guarNon100Ratio / 100)) : statMaxNon100;
+          if (transAmount > statMaxNon100) {
+            isOverallCompliant = false;
+            ruleItems.push({
+              id: 'RULE-E02-NON100',
+              name: '【種類一：非100%持股公司間】淨值10%法定上限',
+              tag: 'tag-fail',
+              text: `🔴 法令禁止：直接及間接持有表決權股份非為 100%（持股 90%～99%）之公司間背保金額占淨值 ${((transAmount/netWorth)*100).toFixed(1)}%，超過法定淨值 10% (NT$${statMaxNon100.toLocaleString()}) 上限！[準則§5-II]`
+            });
+          } else if (customCompanyProcedures.isActive && transAmount > compMaxNon100) {
+            hasCompanyProcedureViolation = true;
+            ruleItems.push({
+              id: 'RULE-E02-NON100',
+              name: '【種類一：非100%持股公司間】內部辦法限額',
+              tag: 'tag-warn',
+              text: `⚠️ 逾越貴公司辦法：非 100% 持股公司間背保超過內部訂定之 ${customCompanyProcedures.guarNon100Ratio}% 限額 (NT$${compMaxNon100.toLocaleString()})！`
+            });
+          } else {
+            ruleItems.push({
+              id: 'RULE-E02-NON100',
+              name: '【種類一：非100%持股公司間】淨值10%限額檢核',
+              tag: 'tag-pass',
+              text: `符合直接及間接持股非為 100% 時不得超過淨值 ${customCompanyProcedures.isActive ? customCompanyProcedures.guarNon100Ratio : 10}% (NT$${compMaxNon100.toLocaleString()}) 之規定（且續受下方總額與單家限額規範）。[準則§5-II]`
+            });
+          }
+          approvals.push('提報公開發行母公司董事會決議通過後始得辦理 [準則§5-II]');
+        } else if (beneficiaryRel === '100') {
+          // 種類 2：直接及間接持有表決權股份為 100% 時，無 10% 限制，但仍受總額與單家限額規範
+          if (customCompanyProcedures.isActive && !customCompanyProcedures.guar100Exempt) {
+            const cap100 = netWorth * (customCompanyProcedures.guarNon100Ratio / 100);
+            if (transAmount > cap100) {
+              hasCompanyProcedureViolation = true;
+              ruleItems.push({
+                id: 'RULE-E02-100',
+                name: '【種類二：100%持股公司間】內部辦法限額',
+                tag: 'tag-warn',
+                text: `⚠️ 貴公司內部設定對 100% 持股公司間亦套用 ${customCompanyProcedures.guarNon100Ratio}% 限制 (NT$${cap100.toLocaleString()})，本次金額已超限！`
+              });
+            }
+          } else {
+            ruleItems.push({
+              id: 'RULE-E02-100',
+              name: '【種類二：100%持股公司間】豁免10%子限額（仍受總額與單家規範）',
+              tag: 'tag-pass',
+              text: `屬直接及間接持有表決權股份 100% 之公司間背書保證，依法無淨值 10% 之子限額限制 [準則§5-II但書]；惟仍須受下方貴公司「背保總額上限」與「單一企業限額」之頂層規範！`
+            });
+          }
+        }
+
+        // 3. 第二步：頂層「背書保證總額上限」與「對單一企業背書保證限額」強制規範（無論是否為 100% 持股皆須遵循！）
         if (customCompanyProcedures.isActive) {
           const customTotalLimit = netWorth * (customCompanyProcedures.guarTotalRatio / 100);
           const customSingleLimit = netWorth * (customCompanyProcedures.guarSingleRatio / 100);
-          const projectedGuar = existingGroupGuar + transAmount;
 
           if (projectedGuar > customTotalLimit) {
             hasCompanyProcedureViolation = true;
             ruleItems.push({
               id: 'RULE-CP-E01',
-              name: '【公司辦法】背保總額上限',
+              name: '【頂層規範：背保總額上限】全公司背書保證最高限額',
               tag: 'tag-warn',
-              text: `⚠️ 逾越貴公司辦法：背保累計達淨值 ${((projectedGuar/netWorth)*100).toFixed(1)}%，已超過貴公司訂定之 ${customCompanyProcedures.guarTotalRatio}% 上限 (NT$${customTotalLimit.toLocaleString()})！(法定通常為 50%)`
+              text: `⚠️ 逾越貴公司辦法總額上限：累計背保達淨值 ${((projectedGuar/netWorth)*100).toFixed(1)}%，已超過貴公司訂定之 ${customCompanyProcedures.guarTotalRatio}% 總額上限 (NT$${customTotalLimit.toLocaleString()})！（即使為 100% 或非 100% 持股公司間，仍不得超過全公司背保總額上限）`
+            });
+          } else {
+            ruleItems.push({
+              id: 'RULE-CP-E01',
+              name: '【頂層規範：背保總額上限】全公司背書保證最高限額',
+              tag: 'tag-pass',
+              text: `符合貴公司辦法訂定之全公司背書保證總額上限 ${customCompanyProcedures.guarTotalRatio}% (NT$${customTotalLimit.toLocaleString()})。`
             });
           }
+
           if (transAmount > customSingleLimit) {
             hasCompanyProcedureViolation = true;
             ruleItems.push({
               id: 'RULE-CP-E02',
-              name: '【公司辦法】背保單一對象限額',
+              name: '【頂層規範：單家背保限額】對單一企業背書保證限額',
               tag: 'tag-warn',
-              text: `⚠️ 逾越貴公司辦法：對單一對象背保占淨值 ${((transAmount/netWorth)*100).toFixed(1)}%，超過貴公司訂定之 ${customCompanyProcedures.guarSingleRatio}% 限額！`
+              text: `⚠️ 逾越貴公司辦法單家限額：對單一企業背保占淨值 ${((transAmount/netWorth)*100).toFixed(1)}%，超過貴公司訂定之 ${customCompanyProcedures.guarSingleRatio}% 單家上限 (NT$${customSingleLimit.toLocaleString()})！（即使為 100% 或非 100% 持股公司間，仍受對單一企業背保限額規範）`
+            });
+          } else {
+            ruleItems.push({
+              id: 'RULE-CP-E02',
+              name: '【頂層規範：單家背保限額】對單一企業背書保證限額',
+              tag: 'tag-pass',
+              text: `符合貴公司辦法訂定之對單一企業背書保證限額 ${customCompanyProcedures.guarSingleRatio}% (NT$${customSingleLimit.toLocaleString()})。`
             });
           }
-        }
-
-        if (beneficiaryRel === 'OTHER_UNRELATED') {
-          isOverallCompliant = false;
-          ruleItems.push({ id: 'RULE-E01', name: '【法定資格】被保證對象', tag: 'tag-fail', text: '🔴 法令禁止：非屬法定合格公司或專案互保對象，不得為其背保！[準則§5-I]' });
-        }
-        if (beneficiaryRel === '4') {
-          const max90 = netWorth * 0.10;
-          if (transAmount > max90) {
-            isOverallCompliant = false;
-            ruleItems.push({ id: 'RULE-E02', name: '【法定限額】90%子公司互保', tag: 'tag-fail', text: `🔴 法令禁止：持股90%互保金額超過法定淨值 10% (NT$${max90.toLocaleString()}) 上限！[準則§5-II]` });
-          }
-          approvals.push('提報公開發行母公司董事會決議通過');
         }
 
         if ((existingGroupGuar + transAmount) / netWorth >= 0.50) announcementTriggers.push(`集團背保總餘額達淨值 50% [準則§25-I-(1)]`);
