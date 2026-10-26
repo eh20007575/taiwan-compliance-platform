@@ -734,16 +734,39 @@
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label">資產標的類別</label>
+                  <label class="form-label">資產標的類別（對齊辦法第 2 條「資產之適用範圍」第(一)～(七)款）</label>
                   <select class="form-select" id="asset-category">
-                    <option value="ROU_REAL_ESTATE">供營業使用之不動產使用權資產 (IFRS 16 租賃承租)</option>
-                    <option value="REAL_ESTATE">供營業使用之不動產 (土地、廠房、商辦)</option>
-                    <option value="REAL_ESTATE_NON_OP">非供營業使用之不動產及其使用權資產 (受內部投資額度上限控管)</option>
-                    <option value="EQUIPMENT_OPERATING">供營業使用之設備或其使用權資產</option>
-                    <option value="SECURITIES_NON_PUBLIC">未上市櫃有價證券 (私募/股權投資 — 受有價證券總額＆單一限額＋會計師意見控管)</option>
-                    <option value="SECURITIES_PUBLIC">上市櫃/公開市場有價證券 (受有價證券總額＆單一限額控管)</option>
-                    <option value="CONSTRUCTION_RE">自地委建 / 租地委建 / 合建或供營建使用之不動產</option>
-                    <option value="INTANGIBLE_ASSET">無形資產或會員證 (專利、技術授權、軟體)</option>
+                    <optgroup label="(一) 有價證券投資（股票、公債、公司債、金融債券、基金、存託憑證、權證等）">
+                      <option value="SECURITIES_PUBLIC">(一)-1 有價證券投資 — 具活絡市場公開報價（上市櫃股票/ETF/一般公司債；受第3條有價證券限額控管）</option>
+                      <option value="SECURITIES_NON_PUBLIC">(一)-2 有價證券投資 — 非活絡市場／未上市櫃或私募有價證券（受第3條限額＋達門檻須會計師合理性意見）</option>
+                      <option value="SECURITIES_EXEMPT">(一)-3 有價證券投資 — 國內公債、附買回/賣回條件債券、國內貨幣市場基金（第4條豁免公告與事前評估）</option>
+                    </optgroup>
+                    <optgroup label="(二) 不動產（含土地、房屋及建築、投資性不動產、營建業存貨）及設備">
+                      <option value="REAL_ESTATE">(二)-1 不動產 — 供營業使用之不動產（土地、廠房、房屋及建築）</option>
+                      <option value="REAL_ESTATE_NON_OP">(二)-2 不動產 — 非供營業使用之不動產／投資性不動產（受第3條非營業不動產限額控管）</option>
+                      <option value="CONSTRUCTION_RE">(二)-3 不動產 — 自地委建、租地委建、合建或供營建使用之不動產（非關係人達5億元公告）</option>
+                      <option value="EQUIPMENT_OPERATING">(二)-4 設備 — 供營業使用之機器設備（非關係人適用第4條放寬門檻；母子公司適用董長5億先行決行）</option>
+                    </optgroup>
+                    <optgroup label="(三) 會員證">
+                      <option value="MEMBERSHIP_CERT">(三) 會員證（達實收資本額 20% 或 3 億元須公告並洽請會計師表示意見）</option>
+                    </optgroup>
+                    <optgroup label="(四) 專利權、著作權、商標權、特許權等無形資產">
+                      <option value="INTANGIBLE_ASSET">(四) 專利權、著作權、商標權、特許權等無形資產（達實收資本額 20% 或 3 億元須洽請會計師表示意見）</option>
+                    </optgroup>
+                    <optgroup label="(五) 使用權資產（IFRS 16 租賃資產）">
+                      <option value="ROU_REAL_ESTATE" selected>(五)-1 使用權資產 — 供營業使用之不動產使用權資產（廠房/商辦承租；母子公司適用董長5億先行決行）</option>
+                      <option value="ROU_REAL_ESTATE_NON_OP">(五)-2 使用權資產 — 非供營業使用之不動產使用權資產（併入第3條非營業不動產額度上限控管）</option>
+                      <option value="ROU_EQUIPMENT_OPERATING">(五)-3 使用權資產 — 供營業使用之設備使用權資產（非關係人適用設備放寬門檻；母子公司適用董長5億先行決行）</option>
+                      <option value="ROU_INTANGIBLE">(五)-4 使用權資產 — 無形資產使用權資產（達實收資本額 20% 或 3 億元須洽請會計師表示意見）</option>
+                    </optgroup>
+                    <optgroup label="(六) 衍生性商品 ／ 金融機構之債權">
+                      <option value="DERIVATIVES">(六)-1 衍生性商品（適用衍生性商品交易處理程序及取處準則專章）</option>
+                      <option value="FINANCIAL_CLAIMS">(六)-2 金融機構之債權（含應收款項、買匯貼現及放款、催收款項）</option>
+                    </optgroup>
+                    <optgroup label="(七) 依法律合併、分割、收購或股份受讓而取得或處分之資產及其他重要資產">
+                      <option value="MERGER_ACQUISITION">(七)-1 依法律合併、分割、收購或股份受讓而取得或處分之資產（不論金額均須於2日內公告並取具專家意見）</option>
+                      <option value="OTHER_IMPORTANT_ASSET">(七)-2 其他重要資產（達實收資本額 20% 或 3 億元須公告）</option>
+                    </optgroup>
                   </select>
                 </div>
 
@@ -1464,21 +1487,29 @@
               </div>
               <div class="form-row-3" style="margin-bottom: 0.65rem;">
                 <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">「供營業使用設備/使用權資產」交易對象身分類別</label>
+                  <select class="form-select" id="custom-asset-equip-party-type" onchange="onChangeEquipPartyType()">
+                    <option value="NON_RELATED" selected>① 非關係人（適用辦法第 4 條營業用設備放寬公告門檻）</option>
+                    <option value="RELATED_GENERAL">② 關係人 — 一般/實質關係人（適用第 4 條第 1 款＆第 8 條門檻）</option>
+                    <option value="RELATED_PARENT_SUB">③ 關係人 — 母子公司或 100% 子公司間（適用第 8 條董長先行決行）</option>
+                  </select>
+                  <span class="form-sublabel" id="custom-asset-equip-party-hint">切換「關係人／非關係人」即可檢視或調整對應之公告與授權限額</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" id="label-asset-equip-limit">對應之「營業用設備/使用權資產」公告申報門檻</label>
+                  <div style="display: flex; gap: 0.35rem;">
+                    <select class="form-select" id="custom-asset-equip-ann-mode" style="width: 48%;" onchange="onChangeEquipAnnMode()">
+                      <option value="CAPITAL_PCT" selected>實收資本額 (%)</option>
+                      <option value="FIXED_AMOUNT">固定金額 (NT$)</option>
+                    </select>
+                    <input type="number" step="0.1" class="form-control" id="custom-asset-equip-ann-val" style="width: 52%;" value="5.0">
+                  </div>
+                  <span class="form-sublabel" id="sublabel-asset-equip-limit">非關係人：台積電為資本額 5.0% (約129.6億) / 永豐餘為 10 億元</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
                   <label class="form-label">母子公司間營業用設備/使用權資產 董長先行決行額度 (NT$)</label>
                   <input type="number" class="form-control" id="custom-asset-chairman-auth-limit" value="500000000">
-                  <span class="form-sublabel">台積電第 8 條為新台幣 5 億元（事後報董事會追認）</span>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label">非關係人「供營業使用設備/使用權資產」公告門檻模式</label>
-                  <select class="form-select" id="custom-asset-equip-ann-mode">
-                    <option value="CAPITAL_PCT" selected>按實收資本額百分比 (%)（如台積電第 4 條：達資本額 5%）</option>
-                    <option value="FIXED_AMOUNT">按固定金額 (NT$)（如永豐餘第 4 條：達 10 億元 / 一般 5 億元）</option>
-                  </select>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label">非關係人營業用設備公告門檻數值（% 或 NT$）</label>
-                  <input type="number" step="0.1" class="form-control" id="custom-asset-equip-ann-val" value="5.0">
-                  <span class="form-sublabel">台積電為 5.0 (%) / 永豐餘為 1000000000 (NT$10億元)</span>
+                  <span class="form-sublabel">關係人(母子公司間)：台積電第 8 條為 5 億元先行決行（永豐餘為 0）</span>
                 </div>
               </div>
 
@@ -2404,6 +2435,66 @@
       }, 1800);
     }
 
+    
+    // 供營業使用設備/使用權資產：切換「非關係人 / 關係人(一般) / 關係人(母子公司)」時自動帶入對應限額
+    let parsedNonRelEquipMode = 'CAPITAL_PCT';
+    let parsedNonRelEquipVal = 5.0;
+
+    function onChangeEquipPartyType() {
+      const partyType = document.getElementById('custom-asset-equip-party-type').value;
+      const modeEl = document.getElementById('custom-asset-equip-ann-mode');
+      const valEl = document.getElementById('custom-asset-equip-ann-val');
+      const labelEl = document.getElementById('label-asset-equip-limit');
+      const sublabelEl = document.getElementById('sublabel-asset-equip-limit');
+      const chairEl = document.getElementById('custom-asset-chairman-auth-limit');
+      const genCap = parseFloat(document.getElementById('custom-asset-general-cap-ratio').value) || 20.0;
+      const genAmt = parseFloat(document.getElementById('custom-asset-general-amount').value) || 300000000;
+      const relSh = parseFloat(document.getElementById('custom-asset-rel-shareholder-ratio').value) || 10.0;
+
+      if (partyType === 'NON_RELATED') {
+        modeEl.disabled = false;
+        modeEl.value = parsedNonRelEquipMode;
+        valEl.value = (parsedNonRelEquipMode === 'CAPITAL_PCT') ? Number(parsedNonRelEquipVal).toFixed(1) : parsedNonRelEquipVal;
+        labelEl.innerText = "【非關係人】營業用設備/使用權資產 公告申報門檻";
+        sublabelEl.innerText = (parsedNonRelEquipMode === 'CAPITAL_PCT')
+          ? `非關係人：達實收資本額 ${Number(parsedNonRelEquipVal).toFixed(1)}% 始須公告（台積電第 4 條為 5.0%）`
+          : `非關係人：達新臺幣 ${Number(parsedNonRelEquipVal).toLocaleString()} 元始須公告（永豐餘第 4 條為 10 億元）`;
+        flashFieldHighlight('custom-asset-equip-ann-val');
+      } else if (partyType === 'RELATED_GENERAL') {
+        modeEl.value = 'FIXED_AMOUNT';
+        valEl.value = genAmt;
+        labelEl.innerText = "【關係人】營業用設備/使用權資產 公告暨審委會門檻";
+        sublabelEl.innerText = `關係人：達實收資本額 ${genCap}%、總資產 ${relSh}% 或 NT$ ${genAmt.toLocaleString()} (3億元) 孰低者即須公告並提審委會＋董事會！`;
+        flashFieldHighlight('custom-asset-equip-ann-val');
+      } else if (partyType === 'RELATED_PARENT_SUB') {
+        modeEl.value = 'FIXED_AMOUNT';
+        valEl.value = genAmt;
+        labelEl.innerText = "【母子公司關係人】公告門檻（右欄為董事長先行決行額度）";
+        const chairVal = parseFloat(chairEl.value) || 0;
+        sublabelEl.innerText = chairVal > 0
+          ? `母子公司間：公告門檻為 3 億元/資本額${genCap}%；且在右欄 NT$ ${chairVal.toLocaleString()} 內得由董事長先行決行！`
+          : `母子公司間：公告門檻為 3 億元/資本額${genCap}%；本辦法未另設董事長先行決行特例額度 (NT$ 0)。`;
+        flashFieldHighlight('custom-asset-equip-ann-val');
+        flashFieldHighlight('custom-asset-chairman-auth-limit');
+      }
+    }
+
+    function onChangeEquipAnnMode() {
+      const partyType = document.getElementById('custom-asset-equip-party-type').value;
+      const modeEl = document.getElementById('custom-asset-equip-ann-mode');
+      const valEl = document.getElementById('custom-asset-equip-ann-val');
+      if (partyType === 'NON_RELATED') {
+        parsedNonRelEquipMode = modeEl.value;
+        if (modeEl.value === 'CAPITAL_PCT' && parseFloat(valEl.value) > 100) {
+          valEl.value = "5.0";
+          parsedNonRelEquipVal = 5.0;
+        } else if (modeEl.value === 'FIXED_AMOUNT' && parseFloat(valEl.value) <= 100) {
+          valEl.value = "1000000000";
+          parsedNonRelEquipVal = 1000000000;
+        }
+      }
+    }
+
     function smartParseProcedureText(sourceLabel) {
       const textarea = document.getElementById('procedure-raw-text');
       const fileInput = document.getElementById('procedure-file-input');
@@ -3010,8 +3101,21 @@
       if (result.assetSubSecTotal !== null) setField('custom-asset-sub-sec-total-ratio', result.assetSubSecTotal.toFixed(1));
       if (result.assetSubSecSingle !== null) setField('custom-asset-sub-sec-single-ratio', result.assetSubSecSingle.toFixed(1));
       if (result.assetChairmanAuth !== null) setField('custom-asset-chairman-auth-limit', result.assetChairmanAuth);
-      if (result.assetEquipAnnMode !== null) setField('custom-asset-equip-ann-mode', result.assetEquipAnnMode);
-      if (result.assetEquipAnnVal !== null) setField('custom-asset-equip-ann-val', result.assetEquipAnnMode === 'CAPITAL_PCT' ? result.assetEquipAnnVal.toFixed(1) : result.assetEquipAnnVal);
+      if (result.assetEquipAnnMode !== null) {
+        parsedNonRelEquipMode = result.assetEquipAnnMode;
+        setField('custom-asset-equip-ann-mode', result.assetEquipAnnMode);
+      }
+      if (result.assetEquipAnnVal !== null) {
+        parsedNonRelEquipVal = result.assetEquipAnnVal;
+        setField('custom-asset-equip-ann-val', result.assetEquipAnnMode === 'CAPITAL_PCT' ? result.assetEquipAnnVal.toFixed(1) : result.assetEquipAnnVal);
+      }
+      if (result.assetEquipAnnMode !== null || result.assetChairmanAuth !== null) {
+        const partySel = document.getElementById('custom-asset-equip-party-type');
+        if (partySel) {
+          partySel.value = 'NON_RELATED';
+          onChangeEquipPartyType();
+        }
+      }
       if (result.assetGeneralCapRatio !== null) setField('custom-asset-general-cap-ratio', result.assetGeneralCapRatio.toFixed(1));
       if (result.assetGeneralAmount !== null) setField('custom-asset-general-amount', result.assetGeneralAmount);
       if (result.assetDualAppraisalAmount !== null) setField('custom-asset-dual-appraisal-amount', result.assetDualAppraisalAmount);
@@ -3085,8 +3189,20 @@
       customCompanyProcedures.assetSubSecSingleRatio = parseFloat(document.getElementById('custom-asset-sub-sec-single-ratio').value) || 40.0;
       const rawAssetChairAuth = parseFloat(document.getElementById('custom-asset-chairman-auth-limit').value);
       customCompanyProcedures.assetChairmanAuthLimit = isNaN(rawAssetChairAuth) ? 500000000 : rawAssetChairAuth;
-      customCompanyProcedures.assetEquipAnnMode = document.getElementById('custom-asset-equip-ann-mode').value || 'CAPITAL_PCT';
-      customCompanyProcedures.assetEquipAnnVal = parseFloat(document.getElementById('custom-asset-equip-ann-val').value) || 5.0;
+      const equipPartySel = (document.getElementById('custom-asset-equip-party-type') || {}).value || 'NON_RELATED';
+      if (equipPartySel === 'NON_RELATED') {
+        parsedNonRelEquipMode = document.getElementById('custom-asset-equip-ann-mode').value || 'CAPITAL_PCT';
+        parsedNonRelEquipVal = parseFloat(document.getElementById('custom-asset-equip-ann-val').value) || 5.0;
+      }
+      customCompanyProcedures.assetEquipAnnMode = parsedNonRelEquipMode;
+      customCompanyProcedures.assetEquipAnnVal = parsedNonRelEquipVal;
+      // 同步交易對象身分至導航精靈「取得或處分資產」之相對人屬性
+      const wizCounterpartyEl = document.getElementById('asset-counterparty-type');
+      if (wizCounterpartyEl) {
+        if (equipPartySel === 'NON_RELATED') wizCounterpartyEl.value = 'NON_RELATED_PARTY';
+        else if (equipPartySel === 'RELATED_GENERAL') wizCounterpartyEl.value = 'RELATED_PARTY';
+        else if (equipPartySel === 'RELATED_PARENT_SUB') wizCounterpartyEl.value = 'RELATED_PARTY_SUB';
+      }
       customCompanyProcedures.assetGeneralCapRatio = parseFloat(document.getElementById('custom-asset-general-cap-ratio').value) || 20.0;
       customCompanyProcedures.assetGeneralAmount = parseFloat(document.getElementById('custom-asset-general-amount').value) || 300000000;
       customCompanyProcedures.assetDualAppraisalAmount = parseFloat(document.getElementById('custom-asset-dual-appraisal-amount').value) || 1000000000;
@@ -3697,9 +3813,19 @@
         const dualAppraisalAmt = customCompanyProcedures.assetDualAppraisalAmount || 1000000000;
         const relShRatio = (customCompanyProcedures.assetRelShareholderRatio || 10.0) / 100;
 
+        // 0. 豁免類有價證券（第 4 條但書及第 7 條：國內公債、RP/RS 債券、國內貨幣市場基金）
+        if (category === 'SECURITIES_EXEMPT') {
+          ruleItems.push({
+            id: 'RULE-A-EXEMPT',
+            name: '【法定＆公司辦法】低風險金融資產豁免公告與事前評估',
+            tag: 'tag-pass',
+            text: '屬買賣國內公債、附買回/賣回條件之債券，或申購/買回國內證券投資信託事業發行之貨幣市場基金，依辦法第 4 條但書及第 7 條規定，豁免 2 日內重訊公告申報及投資前評估作業。'
+          });
+        }
+
         // 1. 第一軌：【公司辦法】各類資產投資額度上限檢核 (第 3 條)
         if (customCompanyProcedures.isActive) {
-          if (category === 'REAL_ESTATE_NON_OP') {
+          if (['REAL_ESTATE_NON_OP', 'ROU_REAL_ESTATE_NON_OP'].includes(category)) {
             const nonOpRatio = isSubEntity ? customCompanyProcedures.assetSubNonOpReRatio : customCompanyProcedures.assetNonOpReRatio;
             const maxNonOp = basisVal * (nonOpRatio / 100);
             const currPct = ((projectedAssetTotal / (basisVal || 1)) * 100).toFixed(1);
@@ -3771,14 +3897,14 @@
           }
 
           // 母子公司間營業用設備／使用權資產 董事長先行決行額度檢核 (如台積電第 8 條第 1 項第 3 款：5 億元)
-          if (counterparty === 'RELATED_PARTY_SUB' && ['EQUIPMENT_OPERATING', 'ROU_REAL_ESTATE'].includes(category)) {
+          if (counterparty === 'RELATED_PARTY_SUB' && ['EQUIPMENT_OPERATING', 'ROU_EQUIPMENT_OPERATING', 'ROU_REAL_ESTATE'].includes(category)) {
             if (customCompanyProcedures.assetChairmanAuthLimit > 0) {
               if (transAmount <= customCompanyProcedures.assetChairmanAuthLimit) {
                 ruleItems.push({
                   id: 'RULE-CP-A03',
                   name: '【公司辦法】母子公司間董事長先行決行額度',
                   tag: 'tag-pass',
-                  text: `屬母子公司或 100% 子公司彼此間取得/處分供營業使用之設備或使用權資產，金額 (NT$${transAmount.toLocaleString()}) 在董事長授權先行決行額度 (NT$${customCompanyProcedures.assetChairmanAuthLimit.toLocaleString()}) 內，得由董事長先行決行，事後提報最近期董事會追認。[準則§15-II / 程序§8]`
+                  text: `屬母子公司或 100% 子公司彼此間取得/處分供營業使用之設備或使用權資產，金額 (NT$${transAmount.toLocaleString()}) 在董事長授權先行決行額度 (NT$${customCompanyProcedures.assetChairmanAuthLimit.toLocaleString()}) 內，得由董事長先行決行，事後提報最近期董事會追認。[準則§15-III / 程序§8]`
                 });
               } else {
                 ruleItems.push({
@@ -3792,10 +3918,10 @@
           }
         }
 
-        // 2. 第二軌：【法定＆公司辦法】專業估價報告與會計師合理性意見書門檻 (準則§9/§10/§11 & 程序§6/§7/§8)
+        // 2. 第二軌：【法定＆公司辦法】專業估價報告與會計師合理性意見書門檻 (準則§9/§10/§11/§23 & 程序§6/§7/§8/§9)
         const reachGeneralThreshold = (transAmount >= genAmt) || (capital > 0 && (transAmount / capital) >= genCapRatio) || (isRelated && totalAssets > 0 && (transAmount / totalAssets) >= relShRatio);
 
-        if (['REAL_ESTATE', 'ROU_REAL_ESTATE', 'REAL_ESTATE_NON_OP'].includes(category)) {
+        if (['REAL_ESTATE', 'ROU_REAL_ESTATE', 'REAL_ESTATE_NON_OP', 'ROU_REAL_ESTATE_NON_OP'].includes(category)) {
           if (reachGeneralThreshold) {
             if (transAmount >= dualAppraisalAmt) {
               expertOpinions.push(`於事實發生日前洽請『二家以上』專業估價者出具估價報告（達 NT$${(dualAppraisalAmt/100000000).toFixed(0)}億元以上；若估價差距達10%以上應請會計師表示意見）[準則§9-I-(3) / 程序§6・§7]`);
@@ -3807,54 +3933,68 @@
           }
         }
 
-        if (['SECURITIES_NON_PUBLIC', 'INTANGIBLE_ASSET'].includes(category)) {
+        if (['SECURITIES_NON_PUBLIC', 'INTANGIBLE_ASSET', 'ROU_INTANGIBLE', 'MEMBERSHIP_CERT', 'FINANCIAL_CLAIMS', 'OTHER_IMPORTANT_ASSET'].includes(category)) {
           if (reachGeneralThreshold) {
             expertOpinions.push(`於事實發生日前取具標的公司最近期經會計師查核/核閱財報，並洽請會計師就交易價格合理性表示意見 [準則§10/§11 / 程序§6・§7]`);
-            ruleItems.push({ id: 'RULE-A03', name: '【法定＆公司辦法】會計師價格合理性意見書', tag: 'tag-action', text: `非活絡市場有價證券、無形資產或會員證交易達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}% 或 NT$${genAmt.toLocaleString()} 以上，應於事實發生日前洽請會計師就交易價格合理性表示意見。` });
+            ruleItems.push({ id: 'RULE-A03', name: '【法定＆公司辦法】會計師價格合理性意見書', tag: 'tag-action', text: `非活絡市場有價證券、(三)會員證、(四)無形資產或其使用權資產達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}% 或 NT$${genAmt.toLocaleString()} 以上，應於事實發生日前洽請會計師就交易價格合理性表示意見。` });
           }
         }
 
+        if (category === 'MERGER_ACQUISITION') {
+          expertOpinions.push('提報董事會決議前，應委請會計師、律師或證券承銷商就換股比例、收購價格或配發股東現金或其他財產之合理性表示意見 [準則§23 / 程序§9]');
+          ruleItems.push({ id: 'RULE-A-MA', name: '【法定＆公司辦法】(七) 合併、分割、收購或股份受讓專家意見', tag: 'tag-action', text: '辦理合併、分割、收購或股份受讓，應於提報董事會決議前委請會計師、律師或證券承銷商就換股比例或收購價格合理性表示意見，且不論金額大小均應於事實發生日 2 日內公告申報。' });
+          announcementTriggers.push('進行合併、分割、收購或股份受讓（不論金額大小均應於事實發生之即日起算 2 日內公告）[準則§31-I-(2) / 程序§4]');
+        }
+
+        if (category === 'DERIVATIVES') {
+          ruleItems.push({ id: 'RULE-A-DERIV', name: '【法定＆公司辦法】(六) 衍生性商品交易專章控管', tag: 'tag-action', text: '從事衍生性商品交易應依公司《從事衍生性商品交易處理程序》控管契約總額與全部/個別契約損失上限，並於每月 10 日前公告申報上月資訊（若損失達上限應於 2 日內公告）。[準則§19~§22 / 程序§10]' });
+        }
+
         // 3. 關係人交易審批＆股東會 10% 總資產門檻 (準則§15 & 程序§8) vs 非關係人公告門檻 (準則§31 & 程序§4)
-        if (isRelated) {
-          approvals.push('審計委員會全體成員二分之一以上同意，並提董事會決議通過後始得簽訂交易契約及支付款項 [準則§15 / 程序§8]');
-          if (totalAssets > 0 && (transAmount / totalAssets) >= relShRatio) {
-            if (counterparty === 'RELATED_PARTY_SUB') {
-              ruleItems.push({ id: 'RULE-A04', name: '【法定＆公司辦法】關係人達總資產10%股東會豁免', tag: 'tag-pass', text: `交易金額達總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 以上，惟屬本公司與子公司或子公司彼此間交易，依準則第15條第2項但書及程序第8條規定，免提報股東會決議。` });
-            } else {
-              approvals.push(`提報「股東會」同意後始得簽訂交易契約及支付款項（達總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 以上）[準則§15-II / 程序§8]`);
-              ruleItems.push({ id: 'RULE-A04', name: '【法定＆公司辦法】關係人達總資產10%股東會決議', tag: 'tag-action', text: `向關係人取得/處分資產達總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 以上，依法應將相關資料提交「股東會」同意後，始得簽訂交易契約及支付款項！` });
-            }
-          }
-          if (['REAL_ESTATE', 'ROU_REAL_ESTATE', 'REAL_ESTATE_NON_OP', 'CONSTRUCTION_RE'].includes(category)) {
-            announcementTriggers.push('向關係人取得或處分不動產或其使用權資產（不論金額大小均應於2日內公告）[準則§31-I-(1) / 程序§4]');
-          } else if (reachGeneralThreshold) {
-            announcementTriggers.push(`與關係人取得或處分其他資產且交易金額達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}%、總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 或新臺幣 ${(genAmt/100000000).toFixed(0)} 億元以上 [準則§31-I-(1) / 程序§4]`);
-          }
-        } else {
-          if (category === 'EQUIPMENT_OPERATING') {
-            if (customCompanyProcedures.assetEquipAnnMode === 'CAPITAL_PCT') {
-              const equipCapThreshold = capital * (customCompanyProcedures.assetEquipAnnVal / 100);
-              if (capital > 0 && transAmount >= equipCapThreshold) {
-                announcementTriggers.push(`取得或處分供營業使用之設備或其使用權資產（非關係人）達實收資本額 ${customCompanyProcedures.assetEquipAnnVal}% (NT$${Math.round(equipCapThreshold).toLocaleString()}) 以上 [程序§4]`);
+        if (category !== 'SECURITIES_EXEMPT' && category !== 'MERGER_ACQUISITION') {
+          if (isRelated) {
+            approvals.push('審計委員會全體成員二分之一以上同意，並提董事會決議通過後始得簽訂交易契約及支付款項 [準則§15 / 程序§8]');
+            if (totalAssets > 0 && (transAmount / totalAssets) >= relShRatio) {
+              if (counterparty === 'RELATED_PARTY_SUB') {
+                ruleItems.push({ id: 'RULE-A04', name: '【法定＆公司辦法】關係人達總資產10%股東會豁免', tag: 'tag-pass', text: `交易金額達總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 以上，惟屬本公司與子公司或子公司彼此間交易，依準則第15條第2項但書及程序第8條規定，免提報股東會決議。` });
               } else {
-                ruleItems.push({ id: 'RULE-CP-EQUIP', name: '【公司辦法】非關係人營業用設備公告門檻', tag: 'tag-pass', text: `交易金額未達實收資本額 ${customCompanyProcedures.assetEquipAnnVal}% (NT$${Math.round(equipCapThreshold).toLocaleString()}) 之公告門檻，免辦理 2 日內重訊公告。[程序§4]` });
-              }
-            } else {
-              const equipFixedThreshold = customCompanyProcedures.assetEquipAnnVal || 1000000000;
-              if (transAmount >= equipFixedThreshold) {
-                announcementTriggers.push(`取得或處分供營業使用之設備或其使用權資產（非關係人）達新臺幣 ${equipFixedThreshold.toLocaleString()} 元以上 [程序§4]`);
-              } else {
-                ruleItems.push({ id: 'RULE-CP-EQUIP', name: '【公司辦法】非關係人營業用設備公告門檻', tag: 'tag-pass', text: `交易金額未達新臺幣 ${equipFixedThreshold.toLocaleString()} 元之公告門檻，免辦理 2 日內重訊公告。[程序§4]` });
+                approvals.push(`提報「股東會」同意後始得簽訂交易契約及支付款項（達總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 以上）[準則§15-II / 程序§8]`);
+                ruleItems.push({ id: 'RULE-A04', name: '【法定＆公司辦法】關係人達總資產10%股東會決議', tag: 'tag-action', text: `向關係人取得/處分資產達總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 以上，依法應將相關資料提交「股東會」同意後，始得簽訂交易契約及支付款項！` });
               }
             }
-          } else if (category === 'CONSTRUCTION_RE') {
-            const constThreshold = customCompanyProcedures.assetConstructionAnnAmount || 500000000;
-            if (transAmount >= constThreshold) {
-              announcementTriggers.push(`自地委建/租地委建/合建或取得供營建使用之不動產（非關係人）達新臺幣 ${constThreshold.toLocaleString()} 元以上 [準則§31 / 程序§4]`);
+            if (['REAL_ESTATE', 'ROU_REAL_ESTATE', 'REAL_ESTATE_NON_OP', 'ROU_REAL_ESTATE_NON_OP', 'CONSTRUCTION_RE'].includes(category)) {
+              announcementTriggers.push('向關係人取得或處分不動產或其使用權資產（不論金額大小均應於2日內公告）[準則§31-I-(1) / 程序§4]');
+            } else if (reachGeneralThreshold) {
+              announcementTriggers.push(`與關係人取得或處分不動產外之其他資產（含供營業使用設備）且交易金額達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}%、總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 或新臺幣 ${(genAmt/100000000).toFixed(0)} 億元以上 [準則§31-I-(1) / 程序§4・§8]`);
+            } else {
+              ruleItems.push({ id: 'RULE-CP-REL-EQUIP', name: '【法定＆公司辦法】關係人其他資產(含設備)公告門檻', tag: 'tag-pass', text: `與關係人交易未達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}%、總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 或 NT$${genAmt.toLocaleString()} (3億元) 門檻，免辦理 2 日內重訊公告。[程序§4・§8]` });
             }
           } else {
-            if (transAmount >= genAmt || (capital > 0 && (transAmount / capital) >= genCapRatio)) {
-              announcementTriggers.push(`一般資產交易達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}% 或新臺幣 ${genAmt.toLocaleString()} 元以上 [準則§31 / 程序§4]`);
+            if (['EQUIPMENT_OPERATING', 'ROU_EQUIPMENT_OPERATING'].includes(category)) {
+              if (customCompanyProcedures.assetEquipAnnMode === 'CAPITAL_PCT') {
+                const equipCapThreshold = capital * (customCompanyProcedures.assetEquipAnnVal / 100);
+                if (capital > 0 && transAmount >= equipCapThreshold) {
+                  announcementTriggers.push(`取得或處分供營業使用之設備或其使用權資產（非關係人）達實收資本額 ${customCompanyProcedures.assetEquipAnnVal}% (NT$${Math.round(equipCapThreshold).toLocaleString()}) 以上 [程序§4]`);
+                } else {
+                  ruleItems.push({ id: 'RULE-CP-EQUIP', name: '【公司辦法】非關係人營業用設備公告門檻', tag: 'tag-pass', text: `非關係人交易金額未達實收資本額 ${customCompanyProcedures.assetEquipAnnVal}% (NT$${Math.round(equipCapThreshold).toLocaleString()}) 之放寬公告門檻，免辦理 2 日內重訊公告。[程序§4]` });
+                }
+              } else {
+                const equipFixedThreshold = customCompanyProcedures.assetEquipAnnVal || 1000000000;
+                if (transAmount >= equipFixedThreshold) {
+                  announcementTriggers.push(`取得或處分供營業使用之設備或其使用權資產（非關係人）達新臺幣 ${equipFixedThreshold.toLocaleString()} 元以上 [程序§4]`);
+                } else {
+                  ruleItems.push({ id: 'RULE-CP-EQUIP', name: '【公司辦法】非關係人營業用設備公告門檻', tag: 'tag-pass', text: `非關係人交易金額未達新臺幣 ${equipFixedThreshold.toLocaleString()} 元之放寬公告門檻，免辦理 2 日內重訊公告。[程序§4]` });
+                }
+              }
+            } else if (category === 'CONSTRUCTION_RE') {
+              const constThreshold = customCompanyProcedures.assetConstructionAnnAmount || 500000000;
+              if (transAmount >= constThreshold) {
+                announcementTriggers.push(`自地委建/租地委建/合建或取得供營建使用之不動產（非關係人）達新臺幣 ${constThreshold.toLocaleString()} 元以上 [準則§31 / 程序§4]`);
+              }
+            } else {
+              if (transAmount >= genAmt || (capital > 0 && (transAmount / capital) >= genCapRatio)) {
+                announcementTriggers.push(`一般資產交易達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}% 或新臺幣 ${genAmt.toLocaleString()} 元以上 [準則§31 / 程序§4]`);
+              }
             }
           }
         }
