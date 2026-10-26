@@ -718,23 +718,33 @@
               <div id="form-asset-fields" style="display: none;">
                 <div class="form-row">
                   <div class="form-group">
-                    <label class="form-label">交易類別</label>
+                    <label class="form-label">交易執行主體（母公司 vs. 子公司限額分流）</label>
+                    <select class="form-select" id="asset-entity-role">
+                      <option value="PARENT" selected>本公司（母公司 — 套用母公司投資額度上限）</option>
+                      <option value="SUBSIDIARY">各子公司（套用子公司投資額度上限）</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">交易方向</label>
                     <select class="form-select" id="asset-trans-direction">
                       <option value="ACQUISITION">取得資產</option>
                       <option value="DISPOSAL">處分資產</option>
                     </select>
                   </div>
-                  <div class="form-group">
-                    <label class="form-label">資產標的類別</label>
-                    <select class="form-select" id="asset-category">
-                      <option value="ROU_REAL_ESTATE">不動產使用權資產 (IFRS 16 租賃承租)</option>
-                      <option value="REAL_ESTATE">不動產 (土地、廠房、商辦)</option>
-                      <option value="EQUIPMENT_OPERATING">供營業用設備</option>
-                      <option value="SECURITIES_NON_PUBLIC">未上市櫃有價證券 (私募/股權投資)</option>
-                      <option value="SECURITIES_PUBLIC">集中交易市場有價證券</option>
-                      <option value="INTANGIBLE_ASSET">無形資產 (專利、技術授權、軟體)</option>
-                    </select>
-                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">資產標的類別</label>
+                  <select class="form-select" id="asset-category">
+                    <option value="ROU_REAL_ESTATE">供營業使用之不動產使用權資產 (IFRS 16 租賃承租)</option>
+                    <option value="REAL_ESTATE">供營業使用之不動產 (土地、廠房、商辦)</option>
+                    <option value="REAL_ESTATE_NON_OP">非供營業使用之不動產及其使用權資產 (受內部投資額度上限控管)</option>
+                    <option value="EQUIPMENT_OPERATING">供營業使用之設備或其使用權資產</option>
+                    <option value="SECURITIES_NON_PUBLIC">未上市櫃有價證券 (私募/股權投資 — 受有價證券總額＆單一限額＋會計師意見控管)</option>
+                    <option value="SECURITIES_PUBLIC">上市櫃/公開市場有價證券 (受有價證券總額＆單一限額控管)</option>
+                    <option value="CONSTRUCTION_RE">自地委建 / 租地委建 / 合建或供營建使用之不動產</option>
+                    <option value="INTANGIBLE_ASSET">無形資產或會員證 (專利、技術授權、軟體)</option>
+                  </select>
                 </div>
 
                 <div class="form-row">
@@ -745,15 +755,23 @@
                   <div class="form-group">
                     <label class="form-label">相對人屬性</label>
                     <select class="form-select" id="asset-counterparty-type">
-                      <option value="RELATED_PARTY">關係人 (包含實質關係人)</option>
-                      <option value="NON_RELATED_PARTY">非關係人 (第三方廠商)</option>
+                      <option value="RELATED_PARTY">關係人（一般關係人 / 實質關係人）</option>
+                      <option value="RELATED_PARTY_SUB">關係人（母子公司間或 100% 子公司彼此間 — 適用董事長先行決行授權＆豁免股東會）</option>
+                      <option value="NON_RELATED_PARTY">非關係人（第三方廠商）</option>
                     </select>
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <label class="form-label">交易總金額 (NT$)</label>
-                  <input type="number" class="form-control" id="asset-amount" value="1200000000">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">本次交易總金額 (NT$)</label>
+                    <input type="number" class="form-control" id="asset-amount" value="1200000000">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">同類資產已持有/累計投資餘額 (NT$)</label>
+                    <input type="number" class="form-control" id="asset-existing-total" value="0">
+                    <span class="form-sublabel">併計檢核非營業不動產或有價證券總額上限</span>
+                  </div>
                 </div>
               </div>
 
@@ -1171,10 +1189,12 @@
                               <div style="margin-bottom: 1.25rem;">
             <label class="form-label" style="font-weight: 600;">快速載入官方公版辦法全文與上市公司實務範本：</label>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-              <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('tsmc_2330')">🏭 載入實務案例：2330 台積電《資金貸與他人作業程序》全文 (完整17條)</button>
-              <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('twse_combined')">📚 載入證交所公版《資貸＋背保》合併全文 (完整28條)</button>
-              <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('twse_full_loan')">📜 載入證交所公版《資金貸與作業程序》全文 (完整15條)</button>
-              <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('twse_full_guar')">📜 載入證交所公版《背書保證作業程序》全文 (完整13條)</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('tsmc_2330')">🏭 2330 台積電《資金貸與作業程序》全文 (17條)</button>
+              <button type="button" class="btn btn-primary btn-sm" style="background-color: #0f766e;" onclick="loadProcedureTemplate('tsmc_2330_asset')">🏢 2330 台積電《取得或處分資產處理程序》全文 (14條)</button>
+              <button type="button" class="btn btn-primary btn-sm" style="background-color: #0369a1;" onclick="loadProcedureTemplate('yfy_1907_asset')">🏢 1907 永豐餘《取得或處分資產處理程序》全文 (13條)</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('twse_combined')">📚 證交所公版《資貸＋背保》合併全文 (28條)</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('twse_full_loan')">📜 證交所公版《資金貸與》全文 (15條)</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="loadProcedureTemplate('twse_full_guar')">📜 證交所公版《背書保證》全文 (13條)</button>
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
               <button type="button" class="btn btn-secondary btn-sm" onclick="loadProcedureTemplate('strict')">🛡️ 穩健嚴格型範本 (貸與20% / 單一5% / 背保30% / 授權2,000萬)</button>
@@ -1371,6 +1391,129 @@
               </div>
             </div>
 
+            <!-- ================================================================= -->
+            <!-- 第三部分：取得或處分資產控制參數（投資額度基準與母子公司限額 ＋ 授權決行、公告與估價門檻） -->
+            <!-- ================================================================= -->
+            <h4 style="font-size: 1.05rem; color: #0f766e; margin-top: 1.4rem; margin-bottom: 0.65rem; padding-top: 0.75rem; border-top: 1px dashed var(--slate-300); display: flex; align-items: center; gap: 0.4rem;">
+              <span>🏢 第三部分：取得或處分資產控制參數（依「投資額度基準與母子公司限額、董事長授權、重大公告與估價門檻」分類）</span>
+            </h4>
+
+            <!-- ⑦ 各類資產投資額度上限（非營業不動產、有價證券總額、單一有價證券：母公司 vs 子公司） -->
+            <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-left: 4px solid #0d9488; padding: 0.9rem 1rem; border-radius: 6px; margin-bottom: 0.85rem;">
+              <div style="font-size: 0.88rem; font-weight: 700; color: #115e59; margin-bottom: 0.5rem;">
+                ⑦ 【取得或處分資產 — 各類資產投資額度上限】（如 2330 台積電第 3 條按「淨值」計算 vs. 1907 永豐餘第 3 條按「總資產」計算）
+              </div>
+              <div class="form-row" style="margin-bottom: 0.65rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">投資限額計算分母基準（淨值 vs. 總資產）</label>
+                  <select class="form-select" id="custom-asset-limit-basis">
+                    <option value="NET_WORTH" selected>最近期財務報表「淨值 (Net Worth)」（如 2330 台積電第 3 條）</option>
+                    <option value="TOTAL_ASSETS">最近期財務報表「總資產 (Total Assets)」（如 1907 永豐餘第 3 條）</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">子公司投資限額規範原則</label>
+                  <select class="form-select" id="custom-asset-sub-same-as-parent">
+                    <option value="false" selected>母子公司分別訂定不同比例（如台積電：母公司 15%/70%/40% vs. 子公司 5%/60%/40%）</option>
+                    <option value="true">子公司投資限額與母公司相同（如永豐餘第 3 條：與母公司同 10%/100%/75%）</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row-3" style="margin-bottom: 0.65rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">母公司「非供營業使用不動產及使用權資產」上限 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-asset-non-op-re-ratio" value="15.0">
+                  <span class="form-sublabel">台積電第 3 條為淨值 15% / 永豐餘第 3 條為總資產 10%</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">母公司「有價證券投資總額」上限 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-asset-sec-total-ratio" value="70.0">
+                  <span class="form-sublabel">台積電第 3 條為淨值 70% / 永豐餘第 3 條為總資產 100%</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">母公司「投資個別(單一)有價證券」限額 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-asset-sec-single-ratio" value="40.0">
+                  <span class="form-sublabel">台積電第 3 條為淨值 40% / 永豐餘第 3 條為總資產 75%</span>
+                </div>
+              </div>
+
+              <div class="form-row-3">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">子公司「非供營業使用不動產及使用權資產」上限 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-asset-sub-non-op-re-ratio" value="5.0">
+                  <span class="form-sublabel">台積電第 3 條為母公司淨值 5% / 永豐餘與母公司同為 10%</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">子公司「有價證券投資總額」上限 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-asset-sub-sec-total-ratio" value="60.0">
+                  <span class="form-sublabel">台積電第 3 條為母公司淨值 60% / 永豐餘與母公司同為 100%</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">子公司「投資個別(單一)有價證券」限額 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-asset-sub-sec-single-ratio" value="40.0">
+                  <span class="form-sublabel">台積電第 3 條為母公司淨值 40% / 永豐餘與母公司同為 75%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ⑧ 取得或處分資產：董事長先行決行額度、公告申報門檻與估價／會計師／股東會門檻 -->
+            <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-left: 4px solid #0284c7; padding: 0.9rem 1rem; border-radius: 6px; margin-bottom: 0.85rem;">
+              <div style="font-size: 0.88rem; font-weight: 700; color: #0369a1; margin-bottom: 0.5rem;">
+                ⑧ 【取得或處分資產 — 母子公司董事長先行決行、2日內公告申報與專業估價／股東會門檻】（如台積電第 4、6、8 條 / 永豐餘第 4、7 條）
+              </div>
+              <div class="form-row-3" style="margin-bottom: 0.65rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">母子公司間營業用設備/使用權資產 董長先行決行額度 (NT$)</label>
+                  <input type="number" class="form-control" id="custom-asset-chairman-auth-limit" value="500000000">
+                  <span class="form-sublabel">台積電第 8 條為新台幣 5 億元（事後報董事會追認）</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">非關係人「供營業使用設備/使用權資產」公告門檻模式</label>
+                  <select class="form-select" id="custom-asset-equip-ann-mode">
+                    <option value="CAPITAL_PCT" selected>按實收資本額百分比 (%)（如台積電第 4 條：達資本額 5%）</option>
+                    <option value="FIXED_AMOUNT">按固定金額 (NT$)（如永豐餘第 4 條：達 10 億元 / 一般 5 億元）</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">非關係人營業用設備公告門檻數值（% 或 NT$）</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-asset-equip-ann-val" value="5.0">
+                  <span class="form-sublabel">台積電為 5.0 (%) / 永豐餘為 1000000000 (NT$10億元)</span>
+                </div>
+              </div>
+
+              <div class="form-row-3" style="margin-bottom: 0.65rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">一般資產公告及單一估價/會計師門檻 — 資本額 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-asset-general-cap-ratio" value="20.0">
+                  <span class="form-sublabel">台積電＆永豐餘第 4、6/7 條均為實收資本額 20%</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">一般資產公告及單一估價/會計師門檻 — 金額 (NT$)</label>
+                  <input type="number" class="form-control" id="custom-asset-general-amount" value="300000000">
+                  <span class="form-sublabel">台積電＆永豐餘第 4、6/7 條均為新臺幣 3 億元</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">應洽請「二家以上專業估價者」門檻金額 (NT$)</label>
+                  <input type="number" class="form-control" id="custom-asset-dual-appraisal-amount" value="1000000000">
+                  <span class="form-sublabel">台積電第 6 條＆永豐餘第 7 條均為新臺幣 10 億元</span>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">關係人交易須提報「股東會」同意門檻 — 占總資產 (%)</label>
+                  <input type="number" step="0.1" class="form-control" id="custom-asset-rel-shareholder-ratio" value="10.0">
+                  <span class="form-sublabel">台積電第 8 條＆準則第 15 條為總資產 10%（母子公司間豁免）</span>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label">自地委建/租地委建/合建或營建不動產公告門檻 (NT$)</label>
+                  <input type="number" class="form-control" id="custom-asset-construction-ann-amount" value="500000000">
+                  <span class="form-sublabel">台積電第 4 條＆永豐餘第 4 條均為新臺幣 5 億元</span>
+                </div>
+              </div>
+            </div>
+
             <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
               <button class="btn btn-primary" style="flex: 2;" onclick="saveAndApplyCustomProcedures()">
                 💾 儲存並套用至「交易合規導航精靈」進行雙軌檢核
@@ -1488,7 +1631,24 @@
       guar100Exempt: true,
       guarChairmanAuthLimit: 30000000,
       chairmanAuthLimit: 320000000000,
-      allowRevolving: true
+      allowRevolving: true,
+      // 第三部分：取得或處分資產控制參數
+      assetLimitBasis: 'NET_WORTH',
+      assetSubSameAsParent: false,
+      assetNonOpReRatio: 15.0,
+      assetSecTotalRatio: 70.0,
+      assetSecSingleRatio: 40.0,
+      assetSubNonOpReRatio: 5.0,
+      assetSubSecTotalRatio: 60.0,
+      assetSubSecSingleRatio: 40.0,
+      assetChairmanAuthLimit: 500000000,
+      assetEquipAnnMode: 'CAPITAL_PCT',
+      assetEquipAnnVal: 5.0,
+      assetGeneralCapRatio: 20.0,
+      assetGeneralAmount: 300000000,
+      assetDualAppraisalAmount: 1000000000,
+      assetRelShareholderRatio: 10.0,
+      assetConstructionAnnAmount: 500000000
     };
 
     // 格式五之一資料列清單 (預設為當前試算案例)
@@ -2063,6 +2223,9 @@
       }
     }
 
+    const TSMC_2330_ASSET_PROCEDURE_TEXT = "  \n\n2026/06/04 - 1/6 - \n\nTSMC Property \n\n台灣積體電路製造股份有限公司 \n\n \n\n取得或處分資產處理程序 \n\n \n\n第 一 條 凡本公司取得或處分資產，均應依本程序之規定辦理。本程序如有未盡事宜，悉依相關法令規定辦理之。 \n\n \n\n第 二 條 一、 本程序所稱之「資產」，係指： \n（一） 有價證券投資（含股票、公債、公司債、金融債券、表彰基金\n之有價證券、存託憑證、認購〈售〉權證、受益證券及資產基\n礎證券等）。 \n（二） 不動產（含土地、房屋及建築、投資性不動產）及設備。 \n（三） 會員證。 \n（四） 專利權、著作權、商標權、特許權等無形資產。 \n（五） 使用權資產。 \n（六） 衍生性商品。 \n（七） 依法律合併、分割、收購或股份受讓而取得或處分之資產及其\n他重要資產。 \n二、 本程序所稱「事實發生日」，原則上以交易簽約日、付款日、委託成交\n日、過戶日、董事會決議日或其他足資確定交易對象及交易金額之日為\n準（以孰前者為準）。但屬需經主管機關核准之投資者，以上開日期或\n接獲主管機關核准之日孰前者為準。 \n三、 本程序所稱「專業估價者」，係指不動產估價師或其他依法律得從事不\n動產、設備估價業務者。 \n四、 本程序所稱之「關係人」、「子公司」，應依證券發行人財務報告編製\n準則規定認定之。  \n五、 本程序所稱「最近期財務報表」，係指本公司於取得或處分資產前依法\n公開經會計師查核簽證或核閱之財務報表。 \n本程序有關總資產百分之十之規定，以證券發行人財務報告編製準則規定之\n最近期本公司個體財務報告中之總資產金額計算。 \n本程序中未定義之用詞，悉依主管機關所訂「公開發行公司取得或處分資產\n處理準則」之規定。 \n\n \n\n第 三 條 本公司取得或處分資產之作業程序及額度如下： \n一、 非流動之有價證券取得或處分，由執行單位評估並提報董事會核准後實\n施，惟董事會得授權董事長處理，事後再提報董事會追認。 \n \n二、 流動之有價證券取得或處分，由執行單位評估後，於本條第六項所定之\n額度內進行交易。 \n三、 不動產或其使用權資產之取得或處分，由執行單位評估並提報董事會核\n准後實施，惟董事會得授權董事長處理，事後再提報董事會追認。 \n四、 設備或其使用權資產之取得，於提報董事會核准後，由執行單位依本公\n司內部相關規定辦理。設備之處分，由執行單位逕依本公司內部相關規\n定辦理。 \n五、 執行單位 \n有價證券之取得或處分：財務處或其他相關單位。 \n不動產、設備或其使用權資產之取得或處分：資材處、會計處或其他相\n關單位。 \n六、 額度 \n‧ 本公司購買非供營業使用之不動產及其使用權資產，總額不得高於\n淨值之百分之十五；本公司之各子公司其購買非供營業使用之不動\n產及其使用權資產總額不得高於本公司淨值之百分之五。 \n‧ 本公司有價證券投資總額不得高於淨值之百分之七十；本公司之各\n子公司其有價證券投資總額不得高於本公司淨值之百分之六十。 \n‧ 本公司投資個別有價證券之金額不得高於淨值之百分之四十；本公\n司之各子公司其投資個別有價證券之金額不得高於本公司淨值之百\n分之四十。 \n七、 重大之取得或處分資產交易，應依相關規定經審計暨風險委員會同意，\n並提董事會決議。 \n \n第 四 條 本公司取得或處分資產，有「公開發行公司取得或處分資產處理準則」第三十一條所訂情形者（列舉如下），應按性質依規定格式，於事實發生之即日起算二日內依相關規定辦理公告申報，法令所訂內容如有修正時，依修正後之法令規定辦理： \n一、 向關係人取得或處分不動產或其使用權資產，或與關係人為取得或處分\n不動產或其使用權資產外之其他資產且交易金額達公司實收資本額百分\n之二十、總資產百分之十或新臺幣三億元以上。但買賣國內公債、附買\n回、賣回條件之債券、申購或買回國內證券投資信託事業發行之貨幣市\n場基金，不在此限。 \n二、 進行合併、分割、收購或股份受讓。 \n三、 除前二款以外之資產交易，其交易金額達本公司實收資本額百分之二十\n或新台幣三億元以上者。但下列情形不在此限： \n（一） 買賣國內公債或信用評等不低於我國主權評等等級之外國公債。 \n（二） 買賣附買回、賣回條件之債券、申購或買回國內證券投資信託\n事業發行之貨幣市場基金。 \n\n（三） 取得或處分之資產種類屬供營業使用之設備或其使用權資產且\n其交易對象非為實質關係人，交易金額未達本公司實收資本額\n百分之五。 \n（四） 於證券交易所或證券商營業處所買賣公債、普通公司債及未涉\n及股權之一般金融債券（不含次順位債券），且其交易對象非\n為實質關係人，交易金額未達本公司實收資本額百分之五。 \n（五） 以自地委建、租地委建、合建分屋、合建分成、合建分售方式\n取得不動產且其交易對象非為實質關係人，交易金額未達新台\n幣五億元（以公司預計投入之金額為計算基準）。 \n前項交易金額依下列方式計算之： \n一、 每筆交易金額。 \n二、 一年內累積與同一相對人取得或處分同一性質標的交易之金額。 \n三、 一年內累積取得或處分（取得、處分分別累積）同一開發計畫不動產或\n其使用權資產之金額。 \n四、 一年內累積取得或處分（取得、處分分別累積）同一有價證券之金額。 \n前項所稱一年內係以本次交易事實發生之日為基準，往前追溯推算一年，已\n依本程序規定公告部分免再計入。 \n\n \n\n第 五 條 本公司取得或處分資產，依本程序第四條規定應公告時公告內容悉依相關法\n令之規定辦理。 \n\n \n\n第 六 條 本公司取得或處分資產之評估程序如下： \n一、 本公司取得或處分不動產、設備或其使用權資產，除與國內政府機構交\n易、自地委建、租地委建，或取得、處分供營業使用之設備或其使用權\n資產外，交易金額達公司實收資本額百分之二十或新台幣三億元以上者，\n應於事實發生日前取得專業估價者出具之估價報告，並應符合下列規定： \n（一） 因特殊原因須以限定價格、特定價格或特殊價格作為交易價格\n之參考依據時，該項交易應先提經董事會決議通過，其嗣後有\n交易條件變更時，亦同。 \n（二） 如專業估價者之估價結果與交易金額差距達交易金額百分之二\n十以上者，除取得資產之估價結果均高於交易金額，或處分資\n產之估價結果均低於交易金額外，應請會計師對差異原因及交\n易價格之允當性表示具體意見。 \n（三） 交易金額達新台幣十億元以上者，應請二家以上之專業估價者\n估價；除取得資產之估價結果均高於交易金額，或處分資產之\n估價結果均低於交易金額外，如二家以上專業估價者之估價結\n果差距達交易金額百分之十以上者，應請會計師對差異原因及\n交易價格之允當性表示具體意見。 \n\n（四） 專業估價者出具報告日期與契約成立日期不得逾三個月。但如\n其適用同一期公告現值且未逾六個月者，得由原專業估價者出\n具意見書。 \n二、 本公司取得或處分有價證券，應於事實發生日前取具標的公司最近期經\n會計師查核簽證或核閱之財務報表做為評估交易價格之參考，另交易金\n額達公司實收資本額百分之二十或新台幣三億元以上者，應於事實發生\n日前洽請會計師就交易價格之合理性表示意見。但該有價證券具活絡市\n場之公開報價或主管機關另有規定者，不在此限。 \n三、 本公司取得或處分會員證、無形資產或其使用權資產交易金額達本公司\n實收資本額百分之二十或新台幣三億元以上者，除與國內政府機構交易\n外，應於事實發生日前洽請會計師就交易價格之合理性表示意見。 \n四、 本公司經法院拍賣程序取得或處分資產，得以法院所出具之證明文件替\n代估價報告或會計師意見。 \n五、 本公司取得之估價報告或會計師、律師或證券承銷商之意見書，該專業\n估價者及其估價人員、會計師、律師或證券承銷商應符合相關法令規定。 \n前項交易金額之計算，應依本程序第四條第二項規定辦理，且所稱一年內係\n以本次交易事實發生之日為基準，往前追溯推算一年，已依本程序規定取得\n專業估價者出具之估價報告或會計師意見部分免再計入。 \n\n \n\n第 七 條 一、 本公司之子公司取得或處分資產，應依本程序第六條之規定辦理。 \n二、 本公司之子公司如非屬國內公開發行公司，其取得或處分資產達「公開\n發行公司取得或處分資產處理準則」第三十一條或本程序第四條所訂應\n公告申報標準者，本公司亦應代為公告及申報。如有變更補正者，亦同。 \n三、 本公司應督促本公司之子公司訂定取得或處分資產處理程序，並依相關\n規定送其審計委員會及/或董事會及/或股東會決議後實施。本公司之子\n公司取得或處分資產，應定期提供相關資料予本公司查核。 \n\n \n\n第 八 條 本公司與關係人取得或處分資產之作業程序如下： \n一、 本公司與關係人取得或處分資產，除應依本程序第六條規定辦理外，交\n易金額達本公司總資產百分之十以上者，亦應依本程序第六條規定取得\n專業估價者出具之估價報告或會計師意見。 \n二、 本公司與關係人取得或處分不動產或其使用權資產，或與關係人取得或\n處分不動產或其使用權資產外之其他資產且交易金額達本公司實收資本\n額百分之二十、總資產百分之十或新台幣三億元以上者，除買賣國內公\n債、附買回、賣回條件之債券、申購或買回國內證券投資信託事業發行\n之貨幣市場基金外，下列資料應先經審計暨風險委員會同意，並提董事\n會決議通過，始得簽訂交易契約及支付款項： \n（一）取得或處分資產之目的、必要性及預計效益。 \n（二）選定關係人為交易對象之原因。 \n (三）向關係人取得不動產或其使用權資產依主管機關規定評估預定交\n易條件合理性之相關資料。 \n（四）關係人原取得日期及價格、交易對象及其與本公司和關係人之關\n係等事項。 \n（五）預計訂約月份開始之未來一年各月份現金收支預測表，並評估交\n易之必要性及資金運用之合理性。 \n（六）依前款規定取得之專業估價者出具之估價報告，或會計師意見。 \n（七）本次交易之限制條件及其他重要約定事項。 \n三、 本公司與其子公司間，或本公司直接或間接持有百分之百已發行股份或\n資本總額之子公司彼此間，取得或處分供營業使用之設備或其使用權資\n產、或供營業使用之不動產使用權資產，董事會得授權董事長在新台幣\n伍億元範圍內先行決行，事後再提報最近期之董事會追認。 \n四、 本公司向關係人取得或處分資產，提報董事會討論時，應充分考量各獨\n立董事之意見，獨立董事如有反對意見或保留意見，應於董事會議事錄\n載明。 \n本公司或其非屬國內公開發行公司之子公司有第一項第二款交易，交易金額\n達本公司總資產百分之十以上者，本公司應將第一項第二款所列資料提交股\n東會同意後，始得簽訂交易契約及支付款項。但本公司與子公司，或子公司\n彼此間交易，不在此限。 \n第一項第二款及前項交易金額之計算，應依本程序第四條第二項規定辦理，\n且所稱一年內係以本次交易事實發生之日為基準，往前追溯推算一年，已依\n本程序規定提交股東會、董事會通過部分免再計入。 \n\n \n\n第 九 條 本公司依法律合併、分割、收購或股份受讓而取得或處分資產，除適用本程序之規定外，悉依主管機關所訂「公開發行公司取得或處分資產處理準則」之規定辦理。 \n\n \n\n第 十 條 本公司從事衍生性商品交易，應適用本公司「從事衍生性商品交易處理程序」之規定辦理。 \n\n \n\n第十一條 本公司依規定應公告項目如於公告時有錯誤或缺漏而應予補正時，應於知悉\n之即日起算二日內將全部項目重行公告申報。 \n本公司依規定公告申報交易之後，有下列情形之一者，應於事實發生之即日\n起算二日內將相關資訊依相關規定辦理公告申報： \n一、原交易簽訂之相關契約有變更、終止或解除情事。 \n二、合併、分割、收購或股份受讓未依契約預定日程完成。 \n三、原公告申報內容有變更。 \n\n \n第十二條 本公司取得或處分資產，應將相關契約、議事錄、估價報告、會計師、律師\n或證券承銷商之意見書備置於本公司，除其他法律另有規定者外，至少保存\n五年。 \n\n \n\n第十三條 本公司相關人員於辦理取得或處分資產相關事宜時，應遵循本程序之規定，使公司免於遭受作業不當之損失。如有違反相關法令或本程序規定之情事，其懲戒悉依本公司相關人事規章之規定辦理。 \n\n \n\n第十四條 本程序應經審計暨風險委員會同意，再經董事會通過，並應提股東會同意，修訂時亦同。 ";
+    const YFY_1907_ASSET_PROCEDURE_TEXT = "【2022.6.23 股東會修訂生效】 \n永豐餘投資控股股份有限公司 \n取得或處分資產處理程序 \n\n(依據） \n第一條 本處理程序係依據「公開發行公司取得或處分資產處理準則」之規定訂定。 \n \n(資產之適用範圍) \n第二條 本公司除與關係人交易、從事衍生性商品交易及依法律合併、分割、收購或股份受讓而取得或處分之資產應依其相關處理程序辦理外，本程序所稱資產之適用範\n圍如下： \n(一)股票、公債、公司債、金融債券、表彰基金之有價證券、存託憑證、認購﹝售﹞權證、受益證券及資產基礎證券等投資。 \n(二)不動產（含土地、房屋及建築、投資性不動產、營建業之存貨）及設備。 \n(三)會員證。 \n(四)專利權、著作權、商標權、特許權等無形資產。 \n(五)使用權資產。 \n(六)金融機構之債權(含應收款項、買匯貼現及放款、催收款項)。 \n(七)其他重要資產。 \n \n（投資額度） \n第三條 本公司得投資各類資產之限額如下： \n(一)購買非供營業使用之不動產及其使用權資產總額不得逾總資產之百分之十。 \n(二)對大陸地區之投資金額不得逾主管機關所訂投資金額或比例上限。 \n(三)對外長期有價證券投資總額（含大陸之投資），依公司章程規定，得不受實收資本額百分之四十之限制，單一有價證券投資除股東會另有決議者外，不得逾總資產之百分之七十五。 \n(四)投資短期有價證券之總額，不得逾總資產之百分之一百，單一有價證券投資，則不得逾總資產之百分之七十五。 \n本公司之子公司得購買非供營業使用之不動產或有價證券之總額及得投資個別有價證券之限額與母公司同。 \n\n \n\n(適用之公告標準) \n第四條 本公司取得或處分資產，有下列情形者，應按性質依規定格式，於事實發生之即\n日起算二日內將相關資訊於證券主管機關指定網站辦理公告申報： \n(一)取得或處分之資產種類屬供營業使用之設備或其使用權資產，且其交易對象非為關係人，交易金額達新臺幣十億元以上。 \n(二)取得或處分供營建使用之不動產或其使用權資產，且其交易對象非為關係\n人，交易金額達新臺幣五億元以上。 \n(三) 以自地委建、租地委建、合建分屋、合建分成、合建分售方式取得不動產，且其交易對象非為關係人，公司預計投入之交易金額達新臺幣五億元以上。 \n(四)除前三款以外之資產交易或從事大陸地區投資，其交易金額達公司實收資本\n額百分之二十或新臺幣三億元以上。但下列情形不在此限： \n1.買賣國內公債或信用評等不低於我國主權評等等級之外國公債。 \n2.以投資為專業者，於證券交易所或證券商營業處所所為之有價證券買賣，\n或於初級市場認購外國公債或募集發行之普通公司債及未涉及股權之一般\n金融債券(不含次順位債券)，或申購或買回證券投資信託基金或期貨信託基\n金，或申購或賣回指數投資證券。 \n3.買賣附買回、賣回條件之債券、申購或買回國內證券投資信託事業發行之\n貨幣市場基金。 \n前項交易金額依下列方式計算之： \n(一)每筆交易金額。 \n(二)一年內累積與同一相對人取得或處分同一性質標的交易之金額。 \n(三)一年內累積取得或處分（取得、處分分別累積）同一開發計畫不動產或其使用權資產之金額。 \n(四)一年內累積取得或處分（取得、處分分別累積）同一有價證券之金額。 \n前項所稱一年內係以本次交易事實發生之日為基準，往前追溯推算一年，已依本程序規定公告部分免再計入。 \n\n \n（非以新台幣交易之金額基準） \n第五條 交易金額非以新台幣為計價單位時，則以取得或處分時等值美金或其他等值外幣為計算基準。 \n \n（交易金額之計算） \n第六條 交易金額指取得或處分之約定價格。其他因取得而為達使用狀態前所支付之一切必要費用，雖帳務上需納入資產成本，惟於本處理程序中不予納入基準中計算。 \n \n（處理程序流程） \n第七條 取得或處分資產時，應依不同之資產類型適用以下相關之處理程序： \n(一)申請： \n取得或處分資產，資產管理相關部門應依「長短期股權投資評估要領」或「固\n定資產管理辦法」，或其他足以確保公司投資權益之方法評估得失後，如有必\n要時，應會有關部門並按公司授權層級呈核後辦理之。 \n下列資產因所涉及之資產交易風險極低，無須進行投資前之評估作業： \n1.買賣附買回、賣回條件之債券。 \n2.申購或買回國內證券投資信託事業發行之貨幣市場基金。 \n(二)估價： \n1. 屬不動產、設備或其使用權資產之購入或出售，除與國內政府機關交易、\n自地委建、租地委建或取得、處分供營業使用之設備或其使用權資產外，\n交易金額達公司實收資本額百分之二十或新台幣三億元以上者，應於事實\n發生日前先取得專業估價者出具之估價報告，並符合下列規定： \n(1)如估價機構之估價結果與交易金額差距達百分之二十以上者，除取得資\n產之估價結果均高於交易金額，或處分資產之估價結果均低於交易金額\n外，應請會計師對差異原因及交易價格之允當性表示具體意見。所稱估\n價結果與交易金額差距係以交易金額為基準。 \n(2)交易金額達新台幣十億元以上者，應請二家以上之專業估價機構估價；\n估價結果差距達交易金額百分之十以上者，除取得資產之估價結果均高\n於交易金額，或處分資產之估價結果均低於交易金額外，應請會計師對\n差異原因及交易價格之允當性表示具體意見。 \n(3)契約成立日前估價者，出具報告日期與契約成立日期不得逾三個月；但\n如其適用同一期公告現值且未逾六個月者，得由原估價機構出具意見書\n補正之。 \n(4)取得或處分供營建使用之不動產或其他固定資產除採用限定價格、特定\n價格或特殊價格作為交易價格之參考依據外，如有正當理由未能即時取\n得估價報告，應於事實發生之即日起算二週內取得估價報告及（1）、（2）\n項會計師意見。 \n2. 本公司取得或處分有價證券，應於事實發生日前取具標的公司最近期依規\n定編製經會計師查核簽證或核閱之財務報表作為評估交易價格之參考，如\n交易金額達公司實收資本額百分之二十或新台幣三億元以上者，應於事實\n發生日前洽請會計師就交易價格之合理性表示意見。但該有價證券具活絡\n市場之公開報價或證券主管機關另有規定者，不在此限。 \n3. 取得或處分無形資產或其使用權資產或會員證，交易金額達公司實收資本\n額百分之二十或新台幣三億元以上者，除與國內政府機關交易外，應於事\n實發生日前洽請會計師就交易價格之合理性表示意見。 \n4. 經法院拍賣程序取得或處分資產者，得以法院所出具之證明文件替代估價\n報告或會計師意見。 \n5. 取得之估價報告或會計師、律師或證券承銷商之意見書，該專業估價者及\n其估價人員、會計師、律師或證券承銷商應符合下列規定： \n(1)未曾因違反證券交易法、公司法、銀行法、保險法、金融控股公司法、\n商業會計法，或有詐欺、背信、侵占、偽造文書或因業務上犯罪行為，\n受一年以上有期徒刑之宣告確定。但執行完畢、緩刑期滿或赦免後已\n滿三年者，不在此限。 \n(2)與交易當事人不得為關係人或有實質關係人之情形。 \n(3)公司如應取得二家以上專業估價者之估價報告，不同專業估價者或估\n價人員不得互為關係人或有實質關係人之情形。 \n前項人員於出具估價報告或意見書時，應依其所屬各同業公會之自律規範\n及下列事項辦理： \n(1)承接案件前，應審慎評估自身專業能力、實務經驗及獨立性。 \n(2)執行案件時，應妥善規劃及執行適當作業流程，以形成結論並據以出\n具報告或意見書；並將所執行程序、蒐集資料及結論，詳實登載於案\n件工作底稿。 \n(3)對於所使用之資料來源、參數及資訊等，應逐項評估其適當性及合理\n性，以做為出具估價報告或意見書之基礎。 \n(4)聲明事項，應包括相關人員具備專業性與獨立性、已評估所使用之資\n訊為適當且合理及遵循相關法令等事項。 \n6. 交易金額之計算，應依第四條規定辦理，且所稱一年內係以本次交易事實\n發生之日為基準，往前追溯推算一年，已依本程序規定取得專業估價者出\n具之估價報告或會計師意見部分免再計入。 \n(三)招標比價或議價： \n經估價後，資產管理相關部門應擬定底價，依招標或比價之手續辦理之。若\n宥於事實無法招標或比價者，得用議價方式行之。 \n(四)簽訂合約： \n與相對人簽訂交易合約時，應按比價或議價結果為之，並應力求確保公司之\n權益。 \n(五)公告及申報： \n取得或處分資產時，符合本程序第四條之公告標準者，承辦部門應即按性質\n及規定格式通知股務部門，股務部門應於事實發生之即日起算二日內，將相\n關資訊於證券主管機關指定之網站，辦理公告申報。 \n應公告項目如於公告時有錯誤或缺漏而應予補正時，應於知悉之即日起算二\n日內將全部項目重行公告申報。 \n公告申報後如原交易簽訂之相關契約有變更、終止或解除情事，或原公告申\n報內容有變更，應於事實發生之即日起算二天內將相關資訊於證券主管機關\n指定之網站辦理公告申報。 \n(六)提報董事會： \n1.因特殊原因須以限定價格、特定價格或特殊價格作為交易價格之參考依\n據，且該項交易之交易金額達到第四條應公告申報之標準時，應經審計委\n員會全體成員二分之一以上同意，並提董事會決議通過；如未經審計委員\n會全體成員二分之一以上同意者，得由全體董事三分之二以上同意行之，\n並應於董事會議事錄載明審計委員會之決議，如有董事表示異議且有紀錄\n或書面聲明，應將董事異議資料送審計委員會，未來交易條件變更者，亦\n應比照上開程序辦理。 \n2.除前款規定外，該項交易之交易金額達到第四條應公告申報之標準時，應\n於取得或處分後，提報董事會核備。 \n3.依本項規定提報董事會討論時，應充分考量各獨立董事之意見，獨立董事\n如有反對意見或保留意見，應於董事會議事錄載明。 \n(七)驗收或清點： \n資產之取得或處分應根據合約內容或條件以及其有關文件逐項按進度切實驗\n收或清點，若發現有不符情事，應簽辦處理。 \n(八)產權登記： \n屬不動產之取得，應於法定期間內向主管機關辦理產權登記，變更時亦同。 \n(九)總務部門應按資產之性質及實際情形辦理保險。 \n\n \n(發生日之定義) \n第八條 事實發生之日，原則上以確定交易成立之簽約日、付款日、委託成交日、過戶日、董事會決議日或其他足資確定交易對象及交易金額之日為準（以孰前者為準）；但屬需經主管機關核准之投資者，以上開日期或接獲主管機關核准之日孰前者為準。 \n \n（子公司資訊之公告） \n第九條 本公司之子公司非屬國內公開發行公司，其取得或處分資產達本公司公告申報標準者，子公司於事實發生日應即以書面通知本公司，本公司於事實發生之即日起算二日內，應依本處理程序將相關資訊於證券主管機關指定網站辦理公告申報。 \n本程序所稱之子公司，應依證券發行人財務報告編製準則規定認定之。 \n \n（失職人員之處罰） \n第十條 取得或處分資產時，相關人員未依本程序辦理者，應予以處罰。 \n \n（資料保存） \n第十一條 取得或處分資產時，應將相關契約、議事錄、備查簿、估價報告、會計師、律師或\n證券承銷商之意見書備置於公司，除其他法律另有規定者外，至少保存五年。 \n \n（未盡事宜） \n第十二條 本程序未盡事宜，悉依照「公開發行公司取得或處分資產處理準則」之規定辦理。 \n本公司之子公司得視其營運需求訂定其取得或處分資產處理程序，若無訂定則其相\n關作業規範應依本程序處理。 \n \n（附  則） \n第十三條 本處理程序訂定或修正，應經審計委員會全體成員二分之一以上同意，並提董事會決議通過後提報股東會同意，如有董事表示異議且有紀錄或書面聲明者，應將董事異議資料送審計委員會。如未經審計委員會全體成員二分之一以上同意者，得由全體董事三分之二以上同意行之，並應於董事會議事錄載明審計委員會之決議。 \n本處理程序所稱審計委員會全體成員及全體董事，均以實際在任者計算之。 \n ";
+
     function loadProcedureTemplate(tpl) {
       const textarea = document.getElementById('procedure-raw-text');
       const feedbackBox = document.getElementById('procedure-parse-feedback');
@@ -2072,6 +2235,12 @@
       if (tpl === 'tsmc_2330' || tpl === 'yfy_1907') {
         textarea.value = TSMC_2330_PROCEDURE_TEXT;
         tplTitle = "2330 台積電《資金貸與他人作業程序》全文 (共17條)";
+      } else if (tpl === 'tsmc_2330_asset') {
+        textarea.value = TSMC_2330_ASSET_PROCEDURE_TEXT;
+        tplTitle = "2330 台積電《取得或處分資產處理程序》全文 (共14條)";
+      } else if (tpl === 'yfy_1907_asset') {
+        textarea.value = YFY_1907_ASSET_PROCEDURE_TEXT;
+        tplTitle = "1907 永豐餘《取得或處分資產處理程序》全文 (共13條)";
       } else if (tpl === 'twse_combined') {
         textarea.value = "# 臺灣證券交易所／證券櫃檯買賣中心\n## 上市上櫃與公開發行公司內部作業程序官方參考範例（全文）\n\n---\n\n# 第一部分：《公開發行公司資金貸與他人作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n本公司為健全財務管理並防杜不當之資金貸與他人，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（貸與對象）\n本公司資金貸與對象，除依公司法第十五條規定不得貸與股東或任何個人外，以下列各款為限：\n一、與本公司有業務往來之公司或行號。\n二、有短期融通資金必要之公司或行號。\n前項第二款所稱有短期融通資金之必要者，以本公司直接及間接持有表決權股份超過百分之五十之子公司，因購料、營運週轉或償還銀行借款之必要者為限。\n\n### 第三條（資金貸與總額及個別對象限額）\n本公司辦理資金貸與他人之額度規範如下：\n一、本公司資金貸與他人總額不得超過本公司最近期財務報表淨值之百分之四十。\n二、因業務往來關係從事資金貸與者，個別貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十，且不得超過雙方最近一年度業務往來金額。所稱業務往來金額，以雙方間進貨或銷貨金額孰高者為準。\n三、因有短期融通資金之必要從事資金貸與者，個別對象資金貸與金額不得超過貸與時本公司最近期財務報表淨值之百分之十。\n四、本公司直接及間接持有表決權股份百分之百之國外公司間從事資金貸與，或本公司直接及間接持有表決權股份百分之百之國外公司對本公司從事資金貸與，其貸與總額不得超過貸與公司最近期財務報表淨值百分之一百，個別對象貸與金額不得超過貸與公司最近期財務報表淨值百分之一百。\n\n### 第四條（辦理及審查程序）\n借款人向本公司申請資金貸與時，應檢具基本資料、財務報表及借款申請書，向本公司財務單位提出申請。\n財務單位應就貸與之必要性與合理性、借款人之信用狀況、風險程度、對本公司營運風險、財務狀況及股東權益之影響詳細徵信評估，並作成書面評估報告。\n\n### 第五條（擔保品之徵提與鑑價）\n本公司辦理資金貸與時，除借款人為本公司直接及間接持有表決權股份百分之百之子公司外，原則上應徵提相當於貸與金額之擔保品，並辦理質權或抵押權設定登記。如借款人提供實收資本額大於貸與金額之殷實公司或金融機構保證者，得免徵提擔保品。\n\n### 第六條（決策及授權層級）\n本公司辦理資金貸與他人，應經財務單位審查並作成評估報告，提報審計委員會審議並經董事會決議通過後辦理，不得授權其他人決行。\n本公司與母公司或子公司間，或子公司相互間從事資金貸與，應提報董事會決議。但經董事會決議授權董事長在三千萬元之額度內，對同一對象於一年內分次撥貸或循環動用，並於事後提報最近期董事會備查。\n\n### 第七條（貸與期限及計息）\n本公司資金貸與期限，每次不得超過一年。\n資金貸與之利息，應以不低於本公司向金融機構短期融資之最高利率為原則，按月或按季計收利息。\n\n### 第八條（撥款與後續控管）\n資金貸與案經核准並辦妥保證或擔保品設定後，始得撥款。貸出後應持續追蹤借款人之財務、業務及信用狀況，如有重大變動應立即報告總經理及董事長，並採取適當之保全措施。\n\n### 第九條（超限改善計畫）\n因情事變更致貸與對象不符本作業程序規定或餘額超限時，應訂定改善計畫，將相關改善計畫送審計委員會及各獨立董事，並依計畫時程完成改善。\n\n### 第十條（印鑑章保管及使用程序）\n辦理資金貸與之印鑑章，應由專人保管並建立使用登記簿。本公司印鑑之使用應經核准始得用印。\n\n### 第十一條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份資金貸與餘額。\n本公司資金貸與餘額達處理準則第二十二條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十二條（對子公司之管控程序）\n本公司之子公司擬辦理資金貸與他人者，應依處理準則規定訂定資金貸與他人作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十三條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核資金貸與他人作業程序及其執行情形，並作成書面稽核報告。如發現重大違規情事，應立即以書面通知審計委員會各獨立董事。\n\n### 第十四條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司工作規則及人事管理辦法視情節輕重予以處分。\n\n### 第十五條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。\n\n---\n\n# 第二部分：《公開發行公司為他人背書保證作業程序參考範例》（全文）\n\n### 第一條（訂定目的與法源依據）\n本公司為健全財務管理並降低背書保證風險，特依證券交易法第三十六條之一及金融監督管理委員會訂定之「公開發行公司資金貸與及背書保證處理準則」之規定，訂定本作業程序。\n\n### 第二條（背書保證之範圍）\n本作業程序所稱背書保證，係指融資背書保證、關稅背書保證及其他票據背書保證或提供財產設定擔保之行為。\n\n### 第三條（背書保證對象）\n本公司得為背書保證之對象，以下列各款為限：\n一、有業務往來之公司。\n二、本公司直接及間接持有表決權股份超過百分之五十之公司。\n三、直接及間接對本公司持有表決權股份超過百分之五十之公司。\n本公司直接及間接持有表決權股份達百分之九十以上之公司間，得為背書保證。本公司基於承攬工程需要之同業間或共同起造人間依合約規定互保者，不受前二項規定之限制。\n\n### 第四條（背書保證限額）\n本公司辦理背書保證之總額及個別對象限額規範如下：\n一、本公司背書保證總額不得超過本公司最近期財務報表淨值之百分之五十。\n二、本公司對單一企業背書保證限額不得超過本公司最近期財務報表淨值之百分之二十。\n三、本公司直接及間接持有表決權股份非為百分之百（達百分之九十以上）之子公司間相互背書保證，其最高限額以本公司最近期財務報表淨值之百分之十為限；但直接及間接持有表決權股份百分之百之公司間為背書保證，不在此限（惟仍不得超過第一款背書保證總額及第二款對單一企業背書保證限額）。\n四、因業務往來關係從事背書保證者，對單一企業背書保證金額除不得超過本公司淨值百分之二十外，並不得超過雙方最近一年度業務往來金額。\n\n### 第五條（決策及授權層級）\n本公司辦理背書保證，應經董事會決議通過後辦理。但為配合業務時效需要，經董事會決議授權董事長在三千萬元之額度內決行，並於事後報經最近期董事會追認。\n本公司辦理背書保證因業務需要超過作業程序所訂限額時，應經董事會同意並由半數以上董事對超限可能產生之損失具名聯保，並修正作業程序提報股東會追認。\n\n### 第六條（辦理及審查程序）\n被保證企業向本公司申請背書保證時，應向本公司財務單位提出申請。財務單位應就背書保證之必要性及合理性、被保證對象之信用狀況與營運風險詳細徵信評估，並作成書面評估報告提報審議。\n\n### 第七條（印鑑章保管及使用程序）\n本公司辦理背書保證之專用印鑑，應由專人保管，印鑑之使用應經核准始得用印。\n\n### 第八條（超限改善計畫）\n因情事變更致背書保證對象不符本作業程序規定或金額超限時，應訂定改善計畫，將相關改善計畫送審計委員會各獨立董事，並依計畫時程完成改善。\n\n### 第九條（公告申報程序）\n本公司應於每月十日前公告申報本公司及子公司上月份背書保證餘額。\n本公司背書保證餘額達處理準則第二十五條所定各款標準之一者，應於事實發生日之即日起算二日內公告申報。\n\n### 第十條（對子公司之管控程序）\n本公司之子公司擬為他人辦理背書保證者，本公司應督促該子公司依處理準則規定訂定為他人背書保證作業程序，經該子公司董事會通過後，提報該公司股東會同意後實施。\n\n### 第十一條（內部稽核查核）\n本公司內部稽核人員應至少每季稽核背書保證作業程序及其執行情形，並作成書面稽核報告。\n\n### 第十二條（罰則）\n本公司經理人及主辦人員違反本作業程序時，提報董事會依本公司相關人事規章視情節輕重予以處分。\n\n### 第十三條（實施與修訂）\n本作業程序經審計委員會全體成員二分之一以上同意，並提董事會決議通過後，提報股東會同意後實施，修正時亦同。\n";
         tplTitle = "證交所官方公版《資金貸與＋背書保證作業程序》合併全文 (共28條)";
@@ -2109,7 +2278,7 @@
         if (!l) return false;
         if (/^Page\s+\d+$/i.test(l) || /^\d+$/.test(l)) return false;
         if (/^TSMC\s+Property$/i.test(l)) return false;
-        if (/^\d{4}\/\d{2}\/\d{2}\s*-\s*\d+\s*-$/.test(l)) return false;
+        if (/^\d{4}\/\d{2}\/\d{2}\s*-\s*\d+(?:\/\d+)?\s*-$/.test(l)) return false;
         return true;
       });
       let merged = "";
@@ -2120,7 +2289,7 @@
           continue;
         }
         const prevEndsWithStop = /[。；;：:！!？?】》」]$/.test(merged);
-        const currStartsWithHeader = /^(第[零〇一二三四五六七八九十百\d]+條|\([一二三四五六七八九十\d]+\)|（[一二三四五六七八九十\d]+）|[一二三四五六七八九十]+、|\d+[\.、]|#|\*|【)/.test(line);
+        const currStartsWithHeader = /^(第[零〇一二三四五六七八九十百\d]+條|\([一二三四五六七八九十\d]+\)|（[一二三四五六七八九十\d]+）|[一二三四五六七八九十]+、|\d+[\.、]|#|\*|【|‧|•)/.test(line);
         if (prevEndsWithStop || currStartsWithHeader) {
           merged += "\n" + line;
         } else {
@@ -2280,6 +2449,23 @@
         chairmanAuth: null,
         allowRevolving: null,
         borrowerNetWorthCap: null,
+        // 第三部分：取得或處分資產解析結果
+        assetLimitBasis: null,
+        assetSubSameAsParent: null,
+        assetNonOpRe: null,
+        assetSecTotal: null,
+        assetSecSingle: null,
+        assetSubNonOpRe: null,
+        assetSubSecTotal: null,
+        assetSubSecSingle: null,
+        assetChairmanAuth: null,
+        assetEquipAnnMode: null,
+        assetEquipAnnVal: null,
+        assetGeneralCapRatio: null,
+        assetGeneralAmount: null,
+        assetDualAppraisalAmount: null,
+        assetRelShareholderRatio: null,
+        assetConstructionAnnAmount: null,
         matchedClauses: []
       };
 
@@ -2506,11 +2692,162 @@
           }
         }
 
-        // 識別董事長授權／先行決行條款（支援「授權董事長...三千萬元」、「金額不超過新台幣5億之限額內，由本公司董事長先決行」、「董事長在不超過...淨值10%...追認」等多元句型）
+        // -------------------------------------------------------------------
+        // F. 第七層＆第八層：取得或處分資產處理程序（各類資產投資額度、母子公司授權、公告與估價門檻）
+        // -------------------------------------------------------------------
+        // F-1. 非供營業使用之不動產及其使用權資產限額 (如台積電第3條：母公司淨值15%、子公司5%；永豐餘第3條：總資產10%)
+        if (/非供營業使用之不動產/.test(clause) && !/與母公司同/.test(clause)) {
+          const semiParts = clause.split(/[；;]+/).map(s => s.trim()).filter(Boolean);
+          for (const sp of semiParts) {
+            if (/總資產/.test(sp)) {
+              result.assetLimitBasis = 'TOTAL_ASSETS';
+              upsertClause("custom-asset-limit-basis", "⑦ 取處投資限額計算分母基準", "最近期財務報表「總資產 (Total Assets)」", sp);
+            } else if (/淨值/.test(sp)) {
+              result.assetLimitBasis = 'NET_WORTH';
+              upsertClause("custom-asset-limit-basis", "⑦ 取處投資限額計算分母基準", "最近期財務報表「淨值 (Net Worth)」", sp);
+            }
+            const val = extractPctFromClause(sp);
+            if (val !== null) {
+              const bLabel = (result.assetLimitBasis === 'TOTAL_ASSETS') ? '總資產' : '淨值';
+              if (/子公司/.test(sp)) {
+                result.assetSubNonOpRe = val;
+                result.assetSubSameAsParent = false;
+                upsertClause("custom-asset-sub-non-op-re-ratio", "⑦ 子公司非供營業使用不動產及使用權資產上限", `${bLabel}之 ${val.toFixed(1)}%`, sp);
+              } else {
+                result.assetNonOpRe = val;
+                upsertClause("custom-asset-non-op-re-ratio", "⑦ 母公司非供營業使用不動產及使用權資產上限", `${bLabel}之 ${val.toFixed(1)}%`, sp);
+              }
+            }
+          }
+        }
+
+        // F-2. 有價證券投資總額 ＆ 投資個別(單一)有價證券限額 (如台積電第3條：母70%/子60%、個別40%；永豐餘第3條：總額100%、單一75%)
+        if (/有價證券/.test(clause) && /(不得逾|不得高於|不超過|不得超過|為限)/.test(clause) && !/與母公司同|實收資本額百分之二十|實收資本額百分之五/.test(clause)) {
+          const semiParts = clause.split(/[；;]+/).map(s => s.trim()).filter(Boolean);
+          for (const sp of semiParts) {
+            if (/總資產/.test(sp)) {
+              result.assetLimitBasis = 'TOTAL_ASSETS';
+              upsertClause("custom-asset-limit-basis", "⑦ 取處投資限額計算分母基準", "最近期財務報表「總資產 (Total Assets)」", sp);
+            } else if (/淨值/.test(sp)) {
+              result.assetLimitBasis = 'NET_WORTH';
+              upsertClause("custom-asset-limit-basis", "⑦ 取處投資限額計算分母基準", "最近期財務報表「淨值 (Net Worth)」", sp);
+            }
+            const commaParts = sp.split(/[，,]+/).map(s => s.trim()).filter(Boolean);
+            let subj = /子公司/.test(sp) ? 'SUB' : 'PARENT';
+            let metric = null;
+            for (const cp of commaParts) {
+              if (/子公司/.test(cp)) subj = 'SUB';
+              const cpClean = cp.replace(/不受[^，,。；;]*?之限制/g, "");
+              if (/(個別|單一)有價證券/.test(cpClean)) metric = 'SINGLE';
+              else if (/有價證券.*?(總額|總金額)|(長期|短期)有價證券/.test(cpClean)) metric = 'TOTAL';
+              const val = extractPctFromClause(cpClean);
+              if (val !== null && metric) {
+                const bLabel = (result.assetLimitBasis === 'TOTAL_ASSETS') ? '總資產' : '淨值';
+                if (subj === 'SUB') {
+                  result.assetSubSameAsParent = false;
+                  if (metric === 'TOTAL') {
+                    result.assetSubSecTotal = val;
+                    upsertClause("custom-asset-sub-sec-total-ratio", "⑦ 子公司有價證券投資總額上限", `${bLabel}之 ${val.toFixed(1)}%`, sp);
+                  } else {
+                    result.assetSubSecSingle = val;
+                    upsertClause("custom-asset-sub-sec-single-ratio", "⑦ 子公司投資個別(單一)有價證券限額", `${bLabel}之 ${val.toFixed(1)}%`, sp);
+                  }
+                } else {
+                  if (metric === 'TOTAL') {
+                    result.assetSecTotal = val;
+                    upsertClause("custom-asset-sec-total-ratio", "⑦ 母公司有價證券投資總額上限", `${bLabel}之 ${val.toFixed(1)}%`, sp);
+                  } else {
+                    result.assetSecSingle = val;
+                    upsertClause("custom-asset-sec-single-ratio", "⑦ 母公司投資個別(單一)有價證券限額", `${bLabel}之 ${val.toFixed(1)}%`, sp);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // F-3. 子公司投資限額與母公司同 (如永豐餘第3條第2項)
+        if (/子公司/.test(clause) && /與母公司同/.test(clause)) {
+          result.assetSubSameAsParent = true;
+          upsertClause("custom-asset-sub-same-as-parent", "⑦ 子公司投資限額規範原則", "與母公司相同（自動同步母公司各類資產限額）", clause);
+        }
+
+        // F-4. 非關係人「供營業使用之設備或其使用權資產」公告門檻 (如台積電第4條：實收資本額5%；永豐餘第4條：新臺幣10億元)
+        if (/供營業使用之設備/.test(clause) && /非為(?:實質)?關係人/.test(clause)) {
+          if (/實收資本額/.test(clause)) {
+            const val = extractPctFromClause(clause);
+            if (val !== null) {
+              result.assetEquipAnnMode = 'CAPITAL_PCT';
+              result.assetEquipAnnVal = val;
+              upsertClause("custom-asset-equip-ann-val", "⑧ 非關係人供營業使用設備公告門檻", `實收資本額之 ${val.toFixed(1)}%`, clause);
+            }
+          } else {
+            const m = clause.match(/(?:新[臺台]幣|NT\$)?\s*([零〇一二兩三四五六七八九十百千萬億壹貳參叁肆伍陸柒捌玖拾佰仟\d,.]+\s*(?:億元|億|萬元|萬|元))/);
+            if (m) {
+              const v = parseChineseMoney(m[1]);
+              if (v) {
+                result.assetEquipAnnMode = 'FIXED_AMOUNT';
+                result.assetEquipAnnVal = v;
+                upsertClause("custom-asset-equip-ann-val", "⑧ 非關係人供營業使用設備公告門檻", `NT$ ${v.toLocaleString()}`, clause);
+              }
+            }
+          }
+        }
+
+        // F-5. 自地委建／租地委建／合建或營建業不動產（非關係人）公告門檻 (5億元)
+        if (/(自地委建|租地委建|合建分屋|供營建使用之不動產)/.test(clause) && /非為(?:實質)?關係人/.test(clause)) {
+          const m = clause.match(/(?:新[臺台]幣|NT\$)?\s*([零〇一二兩三四五六七八九十百千萬億壹貳參叁肆伍陸柒捌玖拾佰仟\d,.]+\s*(?:億元|億|萬元|萬|元))/);
+          if (m) {
+            const v = parseChineseMoney(m[1]);
+            if (v) {
+              result.assetConstructionAnnAmount = v;
+              upsertClause("custom-asset-construction-ann-amount", "⑧ 自地委建/合建或營建不動產公告門檻", `NT$ ${v.toLocaleString()}`, clause);
+            }
+          }
+        }
+
+        // F-6. 一般資產交易公告及單一估價師／會計師合理性意見門檻 (實收資本額20%或新臺幣3億元)
+        if (/實收資本額百分之/.test(clause) && /(三億元|3億元)/.test(clause)) {
+          const mCap = clause.match(/實收資本額百分之([零〇一二兩三四五六七八九十百\d.]+)/);
+          if (mCap) {
+            const cVal = convertChineseNumber(mCap[1]);
+            if (cVal !== null) {
+              result.assetGeneralCapRatio = cVal;
+              result.assetGeneralAmount = 300000000;
+              upsertClause("custom-asset-general-cap-ratio", "⑧ 一般資產公告及估價/會計師意見門檻", `實收資本額 ${cVal.toFixed(1)}% 或 NT$ 300,000,000 (3億元)`, clause);
+            }
+          }
+        }
+
+        // F-7. 不動產/設備應請「二家以上專業估價者」門檻 (新臺幣10億元)
+        if (/二家以上.*?估價/.test(clause)) {
+          const m = clause.match(/(?:新[臺台]幣|NT\$)?\s*([零〇一二兩三四五六七八九十百千萬億壹貳參叁肆伍陸柒捌玖拾佰仟\d,.]+\s*(?:億元|億|萬元|萬|元))/);
+          if (m) {
+            const v = parseChineseMoney(m[1]);
+            if (v) {
+              result.assetDualAppraisalAmount = v;
+              upsertClause("custom-asset-dual-appraisal-amount", "⑧ 二家以上專業估價機構門檻", `NT$ ${v.toLocaleString()}`, clause);
+            }
+          }
+        }
+
+        // F-8. 關係人交易須提報股東會／取得估價報告門檻 (總資產10%)
+        if (/總資產百分之([零〇一二兩三四五六七八九十百\d.]+)/.test(clause) && /(關係人|股東會)/.test(clause)) {
+          const mRel = clause.match(/總資產百分之([零〇一二兩三四五六七八九十百\d.]+)/);
+          if (mRel) {
+            const rVal = convertChineseNumber(mRel[1]);
+            if (rVal !== null) {
+              result.assetRelShareholderRatio = rVal;
+              upsertClause("custom-asset-rel-shareholder-ratio", "⑧ 關係人交易提報股東會重大門檻", `總資產之 ${rVal.toFixed(1)}%（母子公司間豁免股東會）`, clause);
+            }
+          }
+        }
+
+        // 識別董事長授權／先行決行條款（自動分流：「取得或處分資產」、「背書保證」與「資金貸與」）
         const isChairmanDecisionClause = isAuthClause || (/董事長/.test(clause) && /(決行|先決行|先行決行|追認|分次撥貸|循環動用)/.test(clause));
         if (isChairmanDecisionClause) {
-          // 決定此授權條款屬於「背書保證」或「資金貸與」
-          const isGuarAuth = isGuarClause || (/背書保證|對外保證/.test(text) && !/資金貸與|分次撥貸|循環動用/.test(clause));
+          const isAssetAuth = (/(取得或處分|設備|使用權資產|不動產)/.test(clause) && !/資金貸與|背書保證|分次撥貸|循環動用/.test(clause)) || (/取得或處分資產/.test(text) && !/資金貸與|背書保證/.test(text));
+          const isGuarAuth = !isAssetAuth && (isGuarClause || (/背書保證|對外保證/.test(text) && !/資金貸與|分次撥貸|循環動用/.test(clause)));
           const moneyRegex = /(?:新[臺台]幣|NT\$|\$)?\s*([零〇一二兩三四五六七八九十百千萬億壹貳參叁肆伍陸柒捌玖拾佰仟\d,.]+\s*(?:億元|億|萬元|萬|元))/g;
           let foundExplicitMoney = null;
           let m;
@@ -2522,7 +2859,13 @@
             }
           }
 
-          if (isGuarAuth) {
+          if (isAssetAuth) {
+            // 取得或處分資產：母子公司間取得/處分營業用設備或使用權資產 董事長先行決行額度 (#custom-asset-chairman-auth-limit)
+            if (foundExplicitMoney !== null) {
+              result.assetChairmanAuth = foundExplicitMoney;
+              upsertClause("custom-asset-chairman-auth-limit", "⑧ 取處母子公司間董事長先行決行額度", "NT$ " + foundExplicitMoney.toLocaleString(), clause);
+            }
+          } else if (isGuarAuth) {
             // 背書保證董事長授權先行決行額度 (#custom-guar-chairman-auth-limit)：優先採計明確金額上限（如第8條「金額不超過新台幣5億之限額內，由本公司董事長先決行」）
             if (foundExplicitMoney !== null) {
               result.guarChairmanAuth = foundExplicitMoney;
@@ -2535,7 +2878,6 @@
                 upsertClause("custom-guar-chairman-auth-limit", "⑤ 背保董事長授權先行決行額度", `淨值之 ${authPct.toFixed(1)}% (依目前淨值折算 NT$ ${calcAuthMoney.toLocaleString()})`, clause);
               }
             } else if (result.guarChairmanAuth !== null && /淨值/.test(clause)) {
-              // 若前條已擷取明確金額上限（如第8條5億元），且後條另有母公司淨值比例（如第15條淨值10%），保留明確金額上限並於明細補充說明
               const authPct = extractPctFromClause(clause);
               if (authPct !== null) {
                 upsertClause("info-guar-auth-pct", "📌 背保母公司董事長追認比例補充", `不超過本公司淨值 ${authPct.toFixed(1)}%（子公司背保先決行上限為 NT$ ${result.guarChairmanAuth.toLocaleString()}）`, clause);
@@ -2557,8 +2899,8 @@
           }
         }
 
-        // 識別「應於事實發生日之即日起算二日內公告申報」條款
-        if (/事實發生日.*?二日內公告申報|二日內公告申報/.test(clause)) {
+        // 識別「應於事實發生日之即日起算二日內公告申報」條款（支援「事實發生之即日起算二日內」）
+        if (/事實發生(?:之日|日)?之?即日起算二日內.*?公告申報|二日內(?:將相關資訊.*?|依相關規定)?辦理公告申報/.test(clause)) {
           upsertClause("info-announce-2day", "🚨 法定 2 日內即時公告申報條款", "已納入系統即時公告倒數與雙軌檢核提醒（事實發生日起算2日內）", clause);
         }
 
@@ -2618,6 +2960,29 @@
         }
       };
 
+      // 若辦法明定「子公司投資限額與母公司同」(如 1907 永豐餘第 3 條第 2 項)，自動將母公司限額同步至子公司欄位
+      const bLabelFinal = (result.assetLimitBasis === 'TOTAL_ASSETS') ? '總資產' : '淨值';
+      if (result.assetSubSameAsParent === true) {
+        if (result.assetNonOpRe !== null) {
+          result.assetSubNonOpRe = result.assetNonOpRe;
+          upsertClause("custom-asset-sub-non-op-re-ratio", "⑦ 子公司非供營業使用不動產上限 (與母公司同)", `${bLabelFinal}之 ${result.assetSubNonOpRe.toFixed(1)}%`, "子公司限額與母公司同");
+        }
+        if (result.assetSecTotal !== null) {
+          result.assetSubSecTotal = result.assetSecTotal;
+          upsertClause("custom-asset-sub-sec-total-ratio", "⑦ 子公司有價證券投資總額上限 (與母公司同)", `${bLabelFinal}之 ${result.assetSubSecTotal.toFixed(1)}%`, "子公司限額與母公司同");
+        }
+        if (result.assetSecSingle !== null) {
+          result.assetSubSecSingle = result.assetSecSingle;
+          upsertClause("custom-asset-sub-sec-single-ratio", "⑦ 子公司投資個別有價證券限額 (與母公司同)", `${bLabelFinal}之 ${result.assetSubSecSingle.toFixed(1)}%`, "子公司限額與母公司同");
+        }
+      }
+      // 若為取得或處分資產專章，且未另設母子公司5億先行決行特例（如1907永豐餘），將先行決行額度重設為 0 並套用法定 10% 關係人股東會門檻
+      const isPureAssetDoc = /取得或處分資產/.test(text) && !/資金貸與他人作業程序|背書保證作業程序/.test(text);
+      if (isPureAssetDoc) {
+        if (result.assetChairmanAuth === null) result.assetChairmanAuth = 0;
+        if (result.assetRelShareholderRatio === null) result.assetRelShareholderRatio = 10.0;
+      }
+
       if (result.overallTotal !== null) setField('custom-overall-loan-total-ratio', result.overallTotal.toFixed(1));
       if (result.overallSingle !== null) setField('custom-overall-loan-single-ratio', result.overallSingle.toFixed(1));
       if (result.busTotal !== null) setField('custom-bus-loan-total-ratio', result.busTotal.toFixed(1));
@@ -2635,6 +3000,23 @@
       if (result.guarChairmanAuth !== null) setField('custom-guar-chairman-auth-limit', result.guarChairmanAuth);
       if (result.chairmanAuth !== null) setField('custom-chairman-auth-limit', result.chairmanAuth);
       if (result.allowRevolving !== null) setField('custom-allow-revolving', result.allowRevolving ? "true" : "false");
+      // 寫入第三部分：取得或處分資產控制參數欄位
+      if (result.assetLimitBasis !== null) setField('custom-asset-limit-basis', result.assetLimitBasis);
+      if (result.assetSubSameAsParent !== null) setField('custom-asset-sub-same-as-parent', result.assetSubSameAsParent ? "true" : "false");
+      if (result.assetNonOpRe !== null) setField('custom-asset-non-op-re-ratio', result.assetNonOpRe.toFixed(1));
+      if (result.assetSecTotal !== null) setField('custom-asset-sec-total-ratio', result.assetSecTotal.toFixed(1));
+      if (result.assetSecSingle !== null) setField('custom-asset-sec-single-ratio', result.assetSecSingle.toFixed(1));
+      if (result.assetSubNonOpRe !== null) setField('custom-asset-sub-non-op-re-ratio', result.assetSubNonOpRe.toFixed(1));
+      if (result.assetSubSecTotal !== null) setField('custom-asset-sub-sec-total-ratio', result.assetSubSecTotal.toFixed(1));
+      if (result.assetSubSecSingle !== null) setField('custom-asset-sub-sec-single-ratio', result.assetSubSecSingle.toFixed(1));
+      if (result.assetChairmanAuth !== null) setField('custom-asset-chairman-auth-limit', result.assetChairmanAuth);
+      if (result.assetEquipAnnMode !== null) setField('custom-asset-equip-ann-mode', result.assetEquipAnnMode);
+      if (result.assetEquipAnnVal !== null) setField('custom-asset-equip-ann-val', result.assetEquipAnnMode === 'CAPITAL_PCT' ? result.assetEquipAnnVal.toFixed(1) : result.assetEquipAnnVal);
+      if (result.assetGeneralCapRatio !== null) setField('custom-asset-general-cap-ratio', result.assetGeneralCapRatio.toFixed(1));
+      if (result.assetGeneralAmount !== null) setField('custom-asset-general-amount', result.assetGeneralAmount);
+      if (result.assetDualAppraisalAmount !== null) setField('custom-asset-dual-appraisal-amount', result.assetDualAppraisalAmount);
+      if (result.assetRelShareholderRatio !== null) setField('custom-asset-rel-shareholder-ratio', result.assetRelShareholderRatio.toFixed(1));
+      if (result.assetConstructionAnnAmount !== null) setField('custom-asset-construction-ann-amount', result.assetConstructionAnnAmount);
 
       // 自動同步至全域雙軌合規引擎狀態
       syncCustomProceduresState();
@@ -2692,11 +3074,30 @@
       customCompanyProcedures.guarChairmanAuthLimit = parseFloat(document.getElementById('custom-guar-chairman-auth-limit').value) || 30000000;
       customCompanyProcedures.chairmanAuthLimit = parseFloat(document.getElementById('custom-chairman-auth-limit').value) || 320000000000;
       customCompanyProcedures.allowRevolving = (document.getElementById('custom-allow-revolving').value === 'true');
+      // 同步第三部分：取得或處分資產控制參數
+      customCompanyProcedures.assetLimitBasis = document.getElementById('custom-asset-limit-basis').value || 'NET_WORTH';
+      customCompanyProcedures.assetSubSameAsParent = (document.getElementById('custom-asset-sub-same-as-parent').value === 'true');
+      customCompanyProcedures.assetNonOpReRatio = parseFloat(document.getElementById('custom-asset-non-op-re-ratio').value) || 15.0;
+      customCompanyProcedures.assetSecTotalRatio = parseFloat(document.getElementById('custom-asset-sec-total-ratio').value) || 70.0;
+      customCompanyProcedures.assetSecSingleRatio = parseFloat(document.getElementById('custom-asset-sec-single-ratio').value) || 40.0;
+      customCompanyProcedures.assetSubNonOpReRatio = parseFloat(document.getElementById('custom-asset-sub-non-op-re-ratio').value) || 5.0;
+      customCompanyProcedures.assetSubSecTotalRatio = parseFloat(document.getElementById('custom-asset-sub-sec-total-ratio').value) || 60.0;
+      customCompanyProcedures.assetSubSecSingleRatio = parseFloat(document.getElementById('custom-asset-sub-sec-single-ratio').value) || 40.0;
+      const rawAssetChairAuth = parseFloat(document.getElementById('custom-asset-chairman-auth-limit').value);
+      customCompanyProcedures.assetChairmanAuthLimit = isNaN(rawAssetChairAuth) ? 500000000 : rawAssetChairAuth;
+      customCompanyProcedures.assetEquipAnnMode = document.getElementById('custom-asset-equip-ann-mode').value || 'CAPITAL_PCT';
+      customCompanyProcedures.assetEquipAnnVal = parseFloat(document.getElementById('custom-asset-equip-ann-val').value) || 5.0;
+      customCompanyProcedures.assetGeneralCapRatio = parseFloat(document.getElementById('custom-asset-general-cap-ratio').value) || 20.0;
+      customCompanyProcedures.assetGeneralAmount = parseFloat(document.getElementById('custom-asset-general-amount').value) || 300000000;
+      customCompanyProcedures.assetDualAppraisalAmount = parseFloat(document.getElementById('custom-asset-dual-appraisal-amount').value) || 1000000000;
+      customCompanyProcedures.assetRelShareholderRatio = parseFloat(document.getElementById('custom-asset-rel-shareholder-ratio').value) || 10.0;
+      customCompanyProcedures.assetConstructionAnnAmount = parseFloat(document.getElementById('custom-asset-construction-ann-amount').value) || 500000000;
 
+      const bText = (customCompanyProcedures.assetLimitBasis === 'TOTAL_ASSETS') ? '總資產' : '淨值';
       const labelEl = document.getElementById('active-procedure-label');
       const summaryEl = document.getElementById('active-procedure-summary');
-      if (labelEl) labelEl.innerText = "已啟用【貴公司自訂內部作業程序（四層分類限額）】進行雙軌檢核";
-      if (summaryEl) summaryEl.innerText = `(全公司總額 ${customCompanyProcedures.overallLoanTotalRatio}% / 業務往來 ${customCompanyProcedures.busLoanTotalRatio}%[個別${customCompanyProcedures.busLoanSingleRatio}%] / 短期融通 ${customCompanyProcedures.loanTotalRatio}%[個別${customCompanyProcedures.loanSingleRatio}%] / 100%國外子公司 ${customCompanyProcedures.sub100LoanTotalRatio}% / 背保 ${customCompanyProcedures.guarTotalRatio}%)`;
+      if (labelEl) labelEl.innerText = "已啟用【貴公司自訂內部作業程序（資貸・背保・取處全模組）】進行雙軌檢核";
+      if (summaryEl) summaryEl.innerText = `(資貸總額 ${customCompanyProcedures.overallLoanTotalRatio}% / 背保總額 ${customCompanyProcedures.guarTotalRatio}% / 取處按${bText}：非營業不動產${customCompanyProcedures.assetNonOpReRatio}%・有價證券總額${customCompanyProcedures.assetSecTotalRatio}%・單一${customCompanyProcedures.assetSecSingleRatio}%)`;
     }
 
     function saveAndApplyCustomProcedures() {
@@ -2731,6 +3132,22 @@
       document.getElementById('custom-guar-100-exempt').value = "true";
       document.getElementById('custom-guar-chairman-auth-limit').value = "30000000";
       document.getElementById('custom-chairman-auth-limit').value = "50000000";
+      document.getElementById('custom-asset-limit-basis').value = "NET_WORTH";
+      document.getElementById('custom-asset-sub-same-as-parent').value = "false";
+      document.getElementById('custom-asset-non-op-re-ratio').value = "15.0";
+      document.getElementById('custom-asset-sec-total-ratio').value = "70.0";
+      document.getElementById('custom-asset-sec-single-ratio').value = "40.0";
+      document.getElementById('custom-asset-sub-non-op-re-ratio').value = "5.0";
+      document.getElementById('custom-asset-sub-sec-total-ratio').value = "60.0";
+      document.getElementById('custom-asset-sub-sec-single-ratio').value = "40.0";
+      document.getElementById('custom-asset-chairman-auth-limit').value = "500000000";
+      document.getElementById('custom-asset-equip-ann-mode').value = "CAPITAL_PCT";
+      document.getElementById('custom-asset-equip-ann-val').value = "5.0";
+      document.getElementById('custom-asset-general-cap-ratio').value = "20.0";
+      document.getElementById('custom-asset-general-amount').value = "300000000";
+      document.getElementById('custom-asset-dual-appraisal-amount').value = "1000000000";
+      document.getElementById('custom-asset-rel-shareholder-ratio').value = "10.0";
+      document.getElementById('custom-asset-construction-ann-amount').value = "500000000";
 
       document.getElementById('active-procedure-label').innerText = "採用金管會主管法規標準（未設定更嚴格之內部規章）";
       document.getElementById('active-procedure-summary').innerText = "(貸與法定40% / 背保法定50%)";
@@ -3261,49 +3678,183 @@
         if (transAmount >= 30000000 && (transAmount / netWorth) >= 0.05) announcementTriggers.push(`新增背書保證金額達 3,000 萬元以上且達淨值 5% 以上 [準則§25-I-(4) / 程序§18-4]`);
       }
 
-      // 取得處分資產
+      // 取得處分資產（雙軌檢核：公司內部取處程序第3/4/6/7/8條 vs 金管會取處準則）
       else if (currentTransType === 'ASSET') {
         transAmount = parseFloat(document.getElementById('asset-amount').value) || 0;
+        const existingAssetTotal = parseFloat((document.getElementById('asset-existing-total') || {}).value) || 0;
+        const projectedAssetTotal = existingAssetTotal + transAmount;
+        const entityRole = (document.getElementById('asset-entity-role') || {}).value || 'PARENT';
+        const isSubEntity = (entityRole === 'SUBSIDIARY');
+        const entityLabel = isSubEntity ? '子公司' : '母公司（本公司）';
         const category = document.getElementById('asset-category').value;
         const counterparty = document.getElementById('asset-counterparty-type').value;
+        const isRelated = (counterparty === 'RELATED_PARTY' || counterparty === 'RELATED_PARTY_SUB');
 
-        if (['REAL_ESTATE', 'ROU_REAL_ESTATE'].includes(category)) {
-          const isAppraisal = (transAmount >= 300000000) || (capital > 0 && (transAmount / capital) >= 0.20);
-          if (isAppraisal) {
-            if (transAmount >= 1000000000) {
-              expertOpinions.push('洽請『二家以上』專業估價機構出具估價報告 [準則§9-I-(1)]');
-              ruleItems.push({ id: 'RULE-A02', name: '雙估價報告', tag: 'tag-action', text: '交易金額達 10 億元以上，應洽請二家以上專業估價機構出具估價報告。' });
+        const basisVal = (customCompanyProcedures.assetLimitBasis === 'TOTAL_ASSETS') ? totalAssets : netWorth;
+        const basisName = (customCompanyProcedures.assetLimitBasis === 'TOTAL_ASSETS') ? '總資產' : '淨值';
+        const genCapRatio = (customCompanyProcedures.assetGeneralCapRatio || 20.0) / 100;
+        const genAmt = customCompanyProcedures.assetGeneralAmount || 300000000;
+        const dualAppraisalAmt = customCompanyProcedures.assetDualAppraisalAmount || 1000000000;
+        const relShRatio = (customCompanyProcedures.assetRelShareholderRatio || 10.0) / 100;
+
+        // 1. 第一軌：【公司辦法】各類資產投資額度上限檢核 (第 3 條)
+        if (customCompanyProcedures.isActive) {
+          if (category === 'REAL_ESTATE_NON_OP') {
+            const nonOpRatio = isSubEntity ? customCompanyProcedures.assetSubNonOpReRatio : customCompanyProcedures.assetNonOpReRatio;
+            const maxNonOp = basisVal * (nonOpRatio / 100);
+            const currPct = ((projectedAssetTotal / (basisVal || 1)) * 100).toFixed(1);
+            if (projectedAssetTotal > maxNonOp) {
+              hasCompanyProcedureViolation = true;
+              ruleItems.push({
+                id: 'RULE-CP-A01',
+                name: `【公司辦法】${entityLabel}非供營業使用不動產及使用權資產上限`,
+                tag: 'tag-warn',
+                text: `⚠️ 逾越貴公司取處程序第 3 條：累計金額占${basisName} ${currPct}% (NT$${projectedAssetTotal.toLocaleString()})，超過${entityLabel}訂定之${basisName} ${nonOpRatio}% 上限 (NT$${maxNonOp.toLocaleString()})！`
+              });
             } else {
-              expertOpinions.push('洽請專業估價機構出具估價報告 [準則§9-I]');
-              ruleItems.push({ id: 'RULE-A01', name: '估價報告', tag: 'tag-action', text: '交易金額達 3 億元或資本額 20%，簽約前應取得估價報告。' });
+              ruleItems.push({
+                id: 'RULE-CP-A01',
+                name: `【公司辦法】${entityLabel}非供營業使用不動產及使用權資產上限`,
+                tag: 'tag-pass',
+                text: `符合貴公司取處程序第 3 條：${entityLabel}非營業不動產累計占${basisName} ${currPct}%，未逾越${basisName} ${nonOpRatio}% 上限 (NT$${maxNonOp.toLocaleString()})。`
+              });
+            }
+          } else if (['SECURITIES_NON_PUBLIC', 'SECURITIES_PUBLIC'].includes(category)) {
+            const secTotalRatio = isSubEntity ? customCompanyProcedures.assetSubSecTotalRatio : customCompanyProcedures.assetSecTotalRatio;
+            const secSingleRatio = isSubEntity ? customCompanyProcedures.assetSubSecSingleRatio : customCompanyProcedures.assetSecSingleRatio;
+            const maxSecTotal = basisVal * (secTotalRatio / 100);
+            const maxSecSingle = basisVal * (secSingleRatio / 100);
+            const totalPct = ((projectedAssetTotal / (basisVal || 1)) * 100).toFixed(1);
+            const singlePct = ((transAmount / (basisVal || 1)) * 100).toFixed(1);
+
+            if (projectedAssetTotal > maxSecTotal) {
+              hasCompanyProcedureViolation = true;
+              ruleItems.push({
+                id: 'RULE-CP-A01',
+                name: `【公司辦法】${entityLabel}有價證券投資總額上限`,
+                tag: 'tag-warn',
+                text: `⚠️ 逾越貴公司取處程序第 3 條：累計有價證券投資占${basisName} ${totalPct}%，超過${entityLabel}訂定之${basisName} ${secTotalRatio}% 總額上限 (NT$${maxSecTotal.toLocaleString()})！`
+              });
+            } else {
+              ruleItems.push({
+                id: 'RULE-CP-A01',
+                name: `【公司辦法】${entityLabel}有價證券投資總額上限`,
+                tag: 'tag-pass',
+                text: `符合貴公司取處程序第 3 條：${entityLabel}累計有價證券投資占${basisName} ${totalPct}%，未逾越${basisName} ${secTotalRatio}% 總額上限 (NT$${maxSecTotal.toLocaleString()})。`
+              });
+            }
+
+            if (transAmount > maxSecSingle) {
+              hasCompanyProcedureViolation = true;
+              ruleItems.push({
+                id: 'RULE-CP-A02',
+                name: `【公司辦法】${entityLabel}投資個別(單一)有價證券限額`,
+                tag: 'tag-warn',
+                text: `⚠️ 逾越貴公司取處程序第 3 條：單一有價證券投資占${basisName} ${singlePct}%，超過${entityLabel}訂定之${basisName} ${secSingleRatio}% 個別上限 (NT$${maxSecSingle.toLocaleString()})！`
+              });
+            } else {
+              ruleItems.push({
+                id: 'RULE-CP-A02',
+                name: `【公司辦法】${entityLabel}投資個別(單一)有價證券限額`,
+                tag: 'tag-pass',
+                text: `符合貴公司取處程序第 3 條：${entityLabel}單一有價證券投資占${basisName} ${singlePct}%，未逾越${basisName} ${secSingleRatio}% 個別限額 (NT$${maxSecSingle.toLocaleString()})。`
+              });
+            }
+          } else {
+            const nonOpRatio = isSubEntity ? customCompanyProcedures.assetSubNonOpReRatio : customCompanyProcedures.assetNonOpReRatio;
+            ruleItems.push({
+              id: 'RULE-CP-A01',
+              name: '【公司辦法】取處程序第 3 條投資額度上限檢核',
+              tag: 'tag-pass',
+              text: `本案屬供營業使用之不動產／設備或無形資產，不受「非供營業使用不動產 (${basisName} ${nonOpRatio}%)」或「有價證券投資限額」之投資額度上限限制。`
+            });
+          }
+
+          // 母子公司間營業用設備／使用權資產 董事長先行決行額度檢核 (如台積電第 8 條第 1 項第 3 款：5 億元)
+          if (counterparty === 'RELATED_PARTY_SUB' && ['EQUIPMENT_OPERATING', 'ROU_REAL_ESTATE'].includes(category)) {
+            if (customCompanyProcedures.assetChairmanAuthLimit > 0) {
+              if (transAmount <= customCompanyProcedures.assetChairmanAuthLimit) {
+                ruleItems.push({
+                  id: 'RULE-CP-A03',
+                  name: '【公司辦法】母子公司間董事長先行決行額度',
+                  tag: 'tag-pass',
+                  text: `屬母子公司或 100% 子公司彼此間取得/處分供營業使用之設備或使用權資產，金額 (NT$${transAmount.toLocaleString()}) 在董事長授權先行決行額度 (NT$${customCompanyProcedures.assetChairmanAuthLimit.toLocaleString()}) 內，得由董事長先行決行，事後提報最近期董事會追認。[準則§15-II / 程序§8]`
+                });
+              } else {
+                ruleItems.push({
+                  id: 'RULE-CP-A03',
+                  name: '【公司辦法】母子公司間董事長先行決行額度',
+                  tag: 'tag-action',
+                  text: `本次母子公司間交易金額 (NT$${transAmount.toLocaleString()}) 超過貴公司董事長先行決行額度 (NT$${customCompanyProcedures.assetChairmanAuthLimit.toLocaleString()})，必須先經審計委員會同意並提董事會決議通過後始得簽約！`
+                });
+              }
+            }
+          }
+        }
+
+        // 2. 第二軌：【法定＆公司辦法】專業估價報告與會計師合理性意見書門檻 (準則§9/§10/§11 & 程序§6/§7/§8)
+        const reachGeneralThreshold = (transAmount >= genAmt) || (capital > 0 && (transAmount / capital) >= genCapRatio) || (isRelated && totalAssets > 0 && (transAmount / totalAssets) >= relShRatio);
+
+        if (['REAL_ESTATE', 'ROU_REAL_ESTATE', 'REAL_ESTATE_NON_OP'].includes(category)) {
+          if (reachGeneralThreshold) {
+            if (transAmount >= dualAppraisalAmt) {
+              expertOpinions.push(`於事實發生日前洽請『二家以上』專業估價者出具估價報告（達 NT$${(dualAppraisalAmt/100000000).toFixed(0)}億元以上；若估價差距達10%以上應請會計師表示意見）[準則§9-I-(3) / 程序§6・§7]`);
+              ruleItems.push({ id: 'RULE-A02', name: '【法定＆公司辦法】雙估價機構報告門檻', tag: 'tag-action', text: `交易金額達 NT$${dualAppraisalAmt.toLocaleString()} 以上，應於事實發生日前請二家以上之專業估價者估價（出具報告日與契約成立日不得逾 3 個月）。` });
+            } else {
+              expertOpinions.push(`於事實發生日前洽請專業估價者出具估價報告（達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}% 或 NT$${(genAmt/100000000).toFixed(0)}億元以上）[準則§9-I / 程序§6・§7]`);
+              ruleItems.push({ id: 'RULE-A01', name: '【法定＆公司辦法】專業估價報告門檻', tag: 'tag-action', text: `交易金額達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}% 或 NT$${genAmt.toLocaleString()} 以上，應於事實發生日前先取得專業估價者出具之估價報告。` });
             }
           }
         }
 
         if (['SECURITIES_NON_PUBLIC', 'INTANGIBLE_ASSET'].includes(category)) {
-          if (transAmount >= 300000000 || (capital > 0 && (transAmount / capital) >= 0.20)) {
-            expertOpinions.push('洽請會計師就交易價格合理性出具意見書 [準則§10/§11]');
-            ruleItems.push({ id: 'RULE-A03', name: '會計師意見書', tag: 'tag-action', text: '非公開市場證券或無形資產達 3 億或資本額 20%，應取具會計師合理性意見書。' });
+          if (reachGeneralThreshold) {
+            expertOpinions.push(`於事實發生日前取具標的公司最近期經會計師查核/核閱財報，並洽請會計師就交易價格合理性表示意見 [準則§10/§11 / 程序§6・§7]`);
+            ruleItems.push({ id: 'RULE-A03', name: '【法定＆公司辦法】會計師價格合理性意見書', tag: 'tag-action', text: `非活絡市場有價證券、無形資產或會員證交易達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}% 或 NT$${genAmt.toLocaleString()} 以上，應於事實發生日前洽請會計師就交易價格合理性表示意見。` });
           }
         }
 
-        if (counterparty === 'RELATED_PARTY') {
-          approvals.push('審計委員會全體成員二分之一以上同意');
-          if (totalAssets > 0 && (transAmount / totalAssets) >= 0.10) {
-            approvals.push('提報「股東會」決議通過後始得簽約與付款 [準則§15-I]');
-            ruleItems.push({ id: 'RULE-A04', name: '關係人重大審批', tag: 'tag-action', text: '向關係人取得/處分資產達總資產 10%，依法應提報股東會決議通過！' });
+        // 3. 關係人交易審批＆股東會 10% 總資產門檻 (準則§15 & 程序§8) vs 非關係人公告門檻 (準則§31 & 程序§4)
+        if (isRelated) {
+          approvals.push('審計委員會全體成員二分之一以上同意，並提董事會決議通過後始得簽訂交易契約及支付款項 [準則§15 / 程序§8]');
+          if (totalAssets > 0 && (transAmount / totalAssets) >= relShRatio) {
+            if (counterparty === 'RELATED_PARTY_SUB') {
+              ruleItems.push({ id: 'RULE-A04', name: '【法定＆公司辦法】關係人達總資產10%股東會豁免', tag: 'tag-pass', text: `交易金額達總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 以上，惟屬本公司與子公司或子公司彼此間交易，依準則第15條第2項但書及程序第8條規定，免提報股東會決議。` });
+            } else {
+              approvals.push(`提報「股東會」同意後始得簽訂交易契約及支付款項（達總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 以上）[準則§15-II / 程序§8]`);
+              ruleItems.push({ id: 'RULE-A04', name: '【法定＆公司辦法】關係人達總資產10%股東會決議', tag: 'tag-action', text: `向關係人取得/處分資產達總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 以上，依法應將相關資料提交「股東會」同意後，始得簽訂交易契約及支付款項！` });
+            }
           }
-          if (['REAL_ESTATE', 'ROU_REAL_ESTATE'].includes(category)) {
-            announcementTriggers.push('向關係人取得或處分不動產或其使用權資產 [準則§31-I-(1)]');
-          } else if (transAmount >= 300000000 || (capital > 0 && (transAmount / capital) >= 0.20) || (totalAssets > 0 && (transAmount / totalAssets) >= 0.10)) {
-            announcementTriggers.push('向關係人取得或處分其他資產達法定重大門檻 [準則§31-I-(1)]');
+          if (['REAL_ESTATE', 'ROU_REAL_ESTATE', 'REAL_ESTATE_NON_OP', 'CONSTRUCTION_RE'].includes(category)) {
+            announcementTriggers.push('向關係人取得或處分不動產或其使用權資產（不論金額大小均應於2日內公告）[準則§31-I-(1) / 程序§4]');
+          } else if (reachGeneralThreshold) {
+            announcementTriggers.push(`與關係人取得或處分其他資產且交易金額達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}%、總資產 ${customCompanyProcedures.assetRelShareholderRatio}% 或新臺幣 ${(genAmt/100000000).toFixed(0)} 億元以上 [準則§31-I-(1) / 程序§4]`);
           }
         } else {
           if (category === 'EQUIPMENT_OPERATING') {
-            if (transAmount >= 500000000) announcementTriggers.push('取得供營業用設備達新臺幣 5 億元以上 [準則§31-I-(2)]');
+            if (customCompanyProcedures.assetEquipAnnMode === 'CAPITAL_PCT') {
+              const equipCapThreshold = capital * (customCompanyProcedures.assetEquipAnnVal / 100);
+              if (capital > 0 && transAmount >= equipCapThreshold) {
+                announcementTriggers.push(`取得或處分供營業使用之設備或其使用權資產（非關係人）達實收資本額 ${customCompanyProcedures.assetEquipAnnVal}% (NT$${Math.round(equipCapThreshold).toLocaleString()}) 以上 [程序§4]`);
+              } else {
+                ruleItems.push({ id: 'RULE-CP-EQUIP', name: '【公司辦法】非關係人營業用設備公告門檻', tag: 'tag-pass', text: `交易金額未達實收資本額 ${customCompanyProcedures.assetEquipAnnVal}% (NT$${Math.round(equipCapThreshold).toLocaleString()}) 之公告門檻，免辦理 2 日內重訊公告。[程序§4]` });
+              }
+            } else {
+              const equipFixedThreshold = customCompanyProcedures.assetEquipAnnVal || 1000000000;
+              if (transAmount >= equipFixedThreshold) {
+                announcementTriggers.push(`取得或處分供營業使用之設備或其使用權資產（非關係人）達新臺幣 ${equipFixedThreshold.toLocaleString()} 元以上 [程序§4]`);
+              } else {
+                ruleItems.push({ id: 'RULE-CP-EQUIP', name: '【公司辦法】非關係人營業用設備公告門檻', tag: 'tag-pass', text: `交易金額未達新臺幣 ${equipFixedThreshold.toLocaleString()} 元之公告門檻，免辦理 2 日內重訊公告。[程序§4]` });
+              }
+            }
+          } else if (category === 'CONSTRUCTION_RE') {
+            const constThreshold = customCompanyProcedures.assetConstructionAnnAmount || 500000000;
+            if (transAmount >= constThreshold) {
+              announcementTriggers.push(`自地委建/租地委建/合建或取得供營建使用之不動產（非關係人）達新臺幣 ${constThreshold.toLocaleString()} 元以上 [準則§31 / 程序§4]`);
+            }
           } else {
-            if (transAmount >= 300000000 || (capital > 0 && (transAmount / capital) >= 0.20)) {
-              announcementTriggers.push('一般資產交易達新臺幣 3 億元或實收資本額 20% [準則§31-I-(5)]');
+            if (transAmount >= genAmt || (capital > 0 && (transAmount / capital) >= genCapRatio)) {
+              announcementTriggers.push(`一般資產交易達實收資本額 ${customCompanyProcedures.assetGeneralCapRatio}% 或新臺幣 ${genAmt.toLocaleString()} 元以上 [準則§31 / 程序§4]`);
             }
           }
         }
