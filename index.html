@@ -2277,6 +2277,7 @@
         guarSingle: null,
         guarNon100: null,
         guar100Exempt: null,
+        guarChairmanAuth: null,
         chairmanAuth: null,
         allowRevolving: null,
         borrowerNetWorthCap: null,
@@ -2506,22 +2507,60 @@
           }
         }
 
-        if (result.chairmanAuth === null && isAuthClause) {
-          const mAuthMoney = clause.match(/授權(?:其)?董事長[\s\S]{0,45}?(?:新[臺台]幣|NT\$|\$)?\s*([零〇一二兩三四五六七八九十百千萬億壹貳參叁肆伍陸柒捌玖拾佰仟\d,.]+\s*(?:億元|億|萬元|萬|元))/);
-          if (mAuthMoney) {
-            const moneyVal = parseChineseMoney(mAuthMoney[1]);
-            if (moneyVal !== null && moneyVal >= 10000) {
-              result.chairmanAuth = moneyVal;
-              upsertClause("custom-chairman-auth-limit", "⑤ 董事長授權決行額度", "NT$ " + moneyVal.toLocaleString(), clause);
-            }
-          } else if (/授權額度/.test(clause) && /淨值/.test(clause)) {
-            const authPct = extractPctFromClause(clause);
-            if (authPct !== null) {
-              const calcAuthMoney = Math.round(currentNetWorth * (authPct / 100));
-              result.chairmanAuth = calcAuthMoney;
-              upsertClause("custom-chairman-auth-limit", "⑤ 董事長授權分次撥貸額度", `淨值之 ${authPct.toFixed(1)}% (依目前淨值折算 NT$ ${calcAuthMoney.toLocaleString()})`, clause);
+        // 識別董事長授權／先行決行條款（支援「授權董事長...三千萬元」、「金額不超過新台幣5億之限額內，由本公司董事長先決行」、「董事長在不超過...淨值10%...追認」等多元句型）
+        const isChairmanDecisionClause = isAuthClause || (/董事長/.test(clause) && /(決行|先決行|先行決行|追認|分次撥貸|循環動用)/.test(clause));
+        if (isChairmanDecisionClause) {
+          // 決定此授權條款屬於「背書保證」或「資金貸與」
+          const isGuarAuth = isGuarClause || (/背書保證|對外保證/.test(text) && !/資金貸與|分次撥貸|循環動用/.test(clause));
+          const moneyRegex = /(?:新[臺台]幣|NT\$|\$)?\s*([零〇一二兩三四五六七八九十百千萬億壹貳參叁肆伍陸柒捌玖拾佰仟\d,.]+\s*(?:億元|億|萬元|萬|元))/g;
+          let foundExplicitMoney = null;
+          let m;
+          while ((m = moneyRegex.exec(clause)) !== null) {
+            const v = parseChineseMoney(m[1]);
+            if (v !== null && v >= 10000) {
+              foundExplicitMoney = v;
+              break;
             }
           }
+
+          if (isGuarAuth) {
+            // 背書保證董事長授權先行決行額度 (#custom-guar-chairman-auth-limit)：優先採計明確金額上限（如第8條「金額不超過新台幣5億之限額內，由本公司董事長先決行」）
+            if (foundExplicitMoney !== null) {
+              result.guarChairmanAuth = foundExplicitMoney;
+              upsertClause("custom-guar-chairman-auth-limit", "⑤ 背保董事長授權先行決行額度", "NT$ " + foundExplicitMoney.toLocaleString(), clause);
+            } else if (result.guarChairmanAuth === null && /淨值/.test(clause)) {
+              const authPct = extractPctFromClause(clause);
+              if (authPct !== null) {
+                const calcAuthMoney = Math.round(currentNetWorth * (authPct / 100));
+                result.guarChairmanAuth = calcAuthMoney;
+                upsertClause("custom-guar-chairman-auth-limit", "⑤ 背保董事長授權先行決行額度", `淨值之 ${authPct.toFixed(1)}% (依目前淨值折算 NT$ ${calcAuthMoney.toLocaleString()})`, clause);
+              }
+            } else if (result.guarChairmanAuth !== null && /淨值/.test(clause)) {
+              // 若前條已擷取明確金額上限（如第8條5億元），且後條另有母公司淨值比例（如第15條淨值10%），保留明確金額上限並於明細補充說明
+              const authPct = extractPctFromClause(clause);
+              if (authPct !== null) {
+                upsertClause("info-guar-auth-pct", "📌 背保母公司董事長追認比例補充", `不超過本公司淨值 ${authPct.toFixed(1)}%（子公司背保先決行上限為 NT$ ${result.guarChairmanAuth.toLocaleString()}）`, clause);
+              }
+            }
+          } else {
+            // 資金貸與董事長分次撥貸／決行授權額度 (#custom-chairman-auth-limit)
+            if (foundExplicitMoney !== null && result.chairmanAuth === null) {
+              result.chairmanAuth = foundExplicitMoney;
+              upsertClause("custom-chairman-auth-limit", "③ 資貸董事長分次撥貸/決行授權額度", "NT$ " + foundExplicitMoney.toLocaleString(), clause);
+            } else if (result.chairmanAuth === null && /淨值/.test(clause)) {
+              const authPct = extractPctFromClause(clause);
+              if (authPct !== null) {
+                const calcAuthMoney = Math.round(currentNetWorth * (authPct / 100));
+                result.chairmanAuth = calcAuthMoney;
+                upsertClause("custom-chairman-auth-limit", "③ 資貸董事長分次撥貸授權額度", `淨值之 ${authPct.toFixed(1)}% (依目前淨值折算 NT$ ${calcAuthMoney.toLocaleString()})`, clause);
+              }
+            }
+          }
+        }
+
+        // 識別「應於事實發生日之即日起算二日內公告申報」條款
+        if (/事實發生日.*?二日內公告申報|二日內公告申報/.test(clause)) {
+          upsertClause("info-announce-2day", "🚨 法定 2 日內即時公告申報條款", "已納入系統即時公告倒數與雙軌檢核提醒（事實發生日起算2日內）", clause);
         }
 
         if (result.allowRevolving === null) {
@@ -2594,6 +2633,7 @@
       if (result.guarSingle !== null) setField('custom-guar-single-ratio', result.guarSingle.toFixed(1));
       if (result.guarNon100 !== null) setField('custom-guar-non100-ratio', result.guarNon100.toFixed(1));
       if (result.guar100Exempt !== null) setField('custom-guar-100-exempt', result.guar100Exempt ? "true" : "false");
+      if (result.guarChairmanAuth !== null) setField('custom-guar-chairman-auth-limit', result.guarChairmanAuth);
       if (result.chairmanAuth !== null) setField('custom-chairman-auth-limit', result.chairmanAuth);
       if (result.allowRevolving !== null) setField('custom-allow-revolving', result.allowRevolving ? "true" : "false");
 
@@ -3194,13 +3234,32 @@
           }
         }
 
-        if ((existingGroupGuar + transAmount) / netWorth >= 0.50) announcementTriggers.push(`集團背保總餘額達淨值 50% [準則§25-I-(1)]`);
-        if (transAmount / netWorth >= 0.20) announcementTriggers.push(`對單一企業背保達淨值 20% [準則§25-I-(2)]`);
+        // 4. 背書保證董事長先行決行額度檢核 (如永豐餘第 8 條：新台幣 5 億元限額內得由董事長先決行，事後報董事會追認)
+        if (customCompanyProcedures.isActive) {
+          if (transAmount > customCompanyProcedures.guarChairmanAuthLimit) {
+            ruleItems.push({
+              id: 'RULE-CP-E03',
+              name: '【公司辦法】背保董事長先行決行額度',
+              tag: 'tag-action',
+              text: `本次背保金額 (NT$${transAmount.toLocaleString()}) 超過貴公司董事長授權先行決行額度 (NT$${customCompanyProcedures.guarChairmanAuthLimit.toLocaleString()})，必須提報董事會事前決議通過，不得由董事長先行決行後追認。`
+            });
+          } else {
+            ruleItems.push({
+              id: 'RULE-CP-E03',
+              name: '【公司辦法】背保董事長先行決行額度',
+              tag: 'tag-pass',
+              text: `本次背保金額在貴公司董事長授權先行決行額度 (NT$${customCompanyProcedures.guarChairmanAuthLimit.toLocaleString()}) 內，必要時得由董事長先決行，事後再報經最近期董事會追認。[準則§12-I-(8)]`
+            });
+          }
+        }
+
+        if ((existingGroupGuar + transAmount) / netWorth >= 0.50) announcementTriggers.push(`集團背保總餘額達淨值 50% 以上 [準則§25-I-(1) / 程序§18-1]`);
+        if (transAmount / netWorth >= 0.20) announcementTriggers.push(`對單一企業背保餘額達淨值 20% 以上 [準則§25-I-(2) / 程序§18-2]`);
         const threeSum = transAmount + equityBookVal + loanBal;
         if (transAmount >= 10000000 && (threeSum / netWorth) >= 0.30) {
-          announcementTriggers.push(`三合一穿透門檻達標：單一背保≧1,000萬且【背保+權益法投資+資貸】達淨值 30% [準則§25-I-(3)]`);
+          announcementTriggers.push(`三合一穿透門檻達標：對單一企業背保達 1,000 萬元以上且【背保+權益法投資+資貸餘額】合計達淨值 30% 以上 [準則§25-I-(3) / 程序§18-3]`);
         }
-        if (transAmount >= 30000000 && (transAmount / netWorth) >= 0.05) announcementTriggers.push(`單次新增背保達 3,000 萬元且達淨值 5% [準則§25-I-(4)]`);
+        if (transAmount >= 30000000 && (transAmount / netWorth) >= 0.05) announcementTriggers.push(`新增背書保證金額達 3,000 萬元以上且達淨值 5% 以上 [準則§25-I-(4) / 程序§18-4]`);
       }
 
       // 取得處分資產
@@ -3251,7 +3310,23 @@
         }
       }
 
-      if (announcementTriggers.length > 0) requiresAnnouncement = true;
+      if (announcementTriggers.length > 0) {
+        requiresAnnouncement = true;
+        ruleItems.push({
+          id: 'RULE-ANN-2D',
+          name: '【法定重訊】事實發生日之即日起算 2 日內公告申報檢核',
+          tag: 'tag-warn',
+          text: `🚨 觸發即時公告申報標準（共 ${announcementTriggers.length} 項）：應於「事實發生日（簽約日、付款日、董事會決議日或足資確定對象及金額之日孰前者）」之即日起算 2 日內於公開資訊觀測站公告申報！若屬非國內公發之子公司，應由母公司代為公告申報。`
+        });
+        approvals.push('🚨 於事實發生日之即日起算 2 日內辦理 MOPS 重大訊息公告申報（另於次月 10 日前辦理上月份餘額定期申報）');
+      } else {
+        ruleItems.push({
+          id: 'RULE-ANN-2D',
+          name: '【法定重訊】事實發生日之即日起算 2 日內公告申報檢核',
+          tag: 'tag-pass',
+          text: `✅ 未達「事實發生日之即日起算 2 日內」即時公告申報門檻；僅需於每月 10 日前公告申報本公司及子公司上月份餘額。`
+        });
+      }
 
       const capitalPct = (capital > 0) ? ((transAmount / capital) * 100).toFixed(1) : "0.0";
       const netWorthPct = (netWorth > 0) ? ((transAmount / netWorth) * 100).toFixed(1) : "0.0";
