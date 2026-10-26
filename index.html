@@ -474,7 +474,6 @@
         <button class="nav-tab-btn" onclick="switchNavTab('company-procedure')">📑 公司內部辦法上傳與設定</button>
         <button class="nav-tab-btn" onclick="switchNavTab('faq')">📚 法規與官方問答集 (全文檢索)</button>
         <button class="nav-tab-btn" onclick="switchNavTab('benchmarks')">📊 典型案例演練庫</button>
-        <button class="nav-tab-btn" style="background: rgba(16, 185, 129, 0.25); border-color: #34d399;" onclick="downloadSelfHtml()">⬇️ 下載 index.html</button>
       </div>
     </div>
   </header>
@@ -3743,20 +3742,6 @@ ${content}
       ];
       renderForm52Table();
       alert("✅ 已成功載入 3 筆示範集團背書保證歷史台帳！");
-    }
-
-
-    function downloadSelfHtml() {
-      const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-      const blob = new Blob([fullHtml], { type: "text/html;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "index.html";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
     }
   </script>
 </body>
